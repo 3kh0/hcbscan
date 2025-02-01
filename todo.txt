@@ -1,0 +1,15 @@
+- Card viewer page
+- Transfer viewer page
+- Auto index organzations
+- Caching of data from HCB (stored on supabase, would make site much much faster)
+- Search by user
+- Pretty print recent action types
+- Setup a image proxy to load images much faster (tried wsrv.nl but many things broke with it)
+- Fix a bug where the footer appears above the page content (how the fuck did that happen)
+- Autoupdating feed of activities
+- View more page for transactions on orgs
+- Analytics opt out
+- Activities in past 24 hours countdown
+- Animations???
+- Public API for other functions (eg total value held by hcb) (kinda already out, but make it more offical instead of scraping my db)
+- First class intergrations with HCB (work required)
