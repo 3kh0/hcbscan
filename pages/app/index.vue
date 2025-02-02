@@ -95,6 +95,11 @@ onMounted(async () => {
   } else {
     stats.totalBalance = fixMoney(data || "-");
   }
+
+  // keep data fresh
+  setInterval(() => {
+    gimmeData();
+  }, 30000);
 });
 
 useHead({
