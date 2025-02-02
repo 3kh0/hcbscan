@@ -7,7 +7,7 @@ import * as math from "~/utils/math.js";
   <div class="max-w-7xl mx-auto">
     <div class="flex items-center justify-between mb-6">
       <NuxtLink
-        to="/app"
+        to="/"
         class="flex items-center hover:opacity-80 transition-opacity"
       >
         <img
