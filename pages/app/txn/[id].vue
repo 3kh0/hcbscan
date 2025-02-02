@@ -272,7 +272,7 @@ watch(txnData, (metadata) => {
               <td class="py-2 px-4">{{ txnData.comments.count }}</td>
             </tr>
             <tr v-if="txnData.tags.length">
-              <td class="py-2 text-zinc-400">Tags</td>
+              <td class="py-2 px-4 text-zinc-400">Tags</td>
               <td class="py-2 px-4">
                 <span
                   v-for="tag in txnData.tags"
@@ -287,7 +287,11 @@ watch(txnData, (metadata) => {
         </table>
       </div>
 
-      <div v-if="isCardCharge" class="bg-zinc-900 rounded-lg p-4">
+      <!-- card charge -->
+      <div
+        v-if="txnData.type == 'card_charge'"
+        class="bg-zinc-900 rounded-lg p-4"
+      >
         <h2 class="text-lg font-semibold mb-4">Card Charge Details</h2>
 
         <div v-if="cardChargeLoading" class="text-center py-4">
