@@ -1,32 +1,9 @@
 <script setup lang="ts">
-interface User {
-  id: string;
-  full_name: string;
-  admin: boolean;
-  photo: string;
-}
-
-interface Organization {
-  id: string;
-  name: string;
-  slug: string;
-  logo: string | null;
-  website: string | null;
-}
-
-interface Activity {
-  id: string;
-  object: string;
-  key: string;
-  created_at: string;
-  organization: Organization;
-  user: User | null;
-}
-
 const route = useRoute();
 const activityData = ref<Activity | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
+const activityId = route.params.id;
 
 const formatActivityKey = (key: string) => {
   return key
@@ -118,7 +95,7 @@ watch(activityData, (metadata) => {
       <div class="flex items-center justify-between mb-4">
         <div>
           <h1 class="text-xl font-bold font-mono">{{ activityData.id }}</h1>
-          <p class="text-zinc-400">{{ formatActivityKey(activityData.key) }}</p>
+          <p class="text-zinc-400">{{ activityData.key }}</p>
         </div>
         <p class="text-zinc-400">{{ date(activityData.created_at) }}</p>
       </div>
@@ -184,7 +161,7 @@ watch(activityData, (metadata) => {
               </td>
             </tr>
             <tr>
-              <td class="py-2 px-4 text-zinc-400">Action</td>
+              <td class="py-2 px-4 text-zinc-400">Timestamp</td>
               <td class="py-2 px-4">
                 {{ activityData.created_at }}
                 <span class="text-zinc-400">{{
@@ -196,52 +173,8 @@ watch(activityData, (metadata) => {
         </table>
       </div>
 
-      <!-- txn -->
-      <div class="bg-zinc-900 rounded-lg p-4" v-if="activityData.transaction">
-        <h2 class="text-sm text-zinc-400 mb-3">Related Transaction</h2>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="p-3 bg-zinc-800/50 rounded-lg">
-            <div class="text-zinc-400 text-sm mb-1">ID</div>
-            <div class="font-mono">{{ activityData.transaction.id }}</div>
-          </div>
-          <div class="p-3 bg-zinc-800/50 rounded-lg">
-            <div class="text-zinc-400 text-sm mb-1">Amount</div>
-            <div>{{ fixMoney(activityData.transaction.amount_cents) }}</div>
-          </div>
-          <div
-            class="p-3 bg-zinc-800/50 rounded-lg"
-            v-if="activityData.transaction.memo"
-          >
-            <div class="text-zinc-400 text-sm mb-1">Memo</div>
-            <div>{{ activityData.transaction.memo }}</div>
-          </div>
-          <div class="p-3 bg-zinc-800/50 rounded-lg">
-            <div class="text-zinc-400 text-sm mb-1">Status</div>
-            <div>
-              <span
-                class="px-3 py-1 rounded-full text-sm"
-                :class="
-                  activityData.transaction.pending
-                    ? 'bg-yellow-400/10 text-yellow-400'
-                    : 'bg-green-400/10 text-green-400'
-                "
-              >
-                {{ activityData.transaction.pending ? "Pending" : "Completed" }}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div class="mt-2">
-          <NuxtLink
-            :to="`/app/txn/${activityData.transaction.id}`"
-            class="text-blue-400 hover:underline text-sm font-semibold"
-          >
-            View Full Transaction
-          </NuxtLink>
-        </div>
-      </div>
-      <div class="bg-zinc-900 rounded-lg p-4" v-else>
-        <p class="text-zinc-400">No related transaction found</p>
+      <div class="mx-auto">
+        <ActDetail :id="activityId" />
       </div>
     </div>
   </div>
