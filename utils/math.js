@@ -20,11 +20,11 @@ export function date(date) {
   const d = new Date(date);
   return d.toLocaleDateString();
 }
-
-export function fixMoney(cents) {
+export function fixMoney(cents, flip = false) {
+  const amount = flip ? Math.abs(cents) : cents;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
-  }).format(cents / 100);
+  }).format(amount / 100);
 }
