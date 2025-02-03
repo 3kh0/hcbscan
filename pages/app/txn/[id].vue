@@ -1,64 +1,10 @@
 <script setup lang="ts">
-interface User {
-  id: string;
-  object: string;
-  full_name: string;
-  admin: boolean;
-  photo: string;
-}
-
-interface Card {
-  id: string;
-  object: string;
-  href: string;
-}
-
-interface CardCharge {
-  id: string;
-  object: string;
-  href: string;
-  memo: string;
-  amount_cents: number;
-  date: string;
-  card: Card;
-  user: User;
-}
-
-interface Transaction {
-  id: string;
-  object: string;
-  href: string;
-  amount_cents: number;
-  memo: string;
-  date: string;
-  type:
-    | "invoice"
-    | "donation"
-    | "ach_transfer"
-    | "check"
-    | "transfer"
-    | "bank_account_transaction"
-    | "card_charge";
-  pending: boolean;
-  receipts: { count: number; missing: boolean };
-  comments: { count: number };
-  organization: {
-    id: string;
-    name: string;
-  };
-  tags: Array<{ id: string; label: string }>;
-  card_charge?: CardCharge;
-}
-
 const route = useRoute();
 const txnData = ref<Transaction | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
-const cardChargeData = ref<CardCharge | null>(null);
-const cardChargeLoading = ref(false);
-const cardChargeError = ref<string | null>(null);
 
-onMounted(async () => {
+const getTxn = async () => {
   try {
     const response = await fetch(
       `https://hcb.hackclub.com/api/v3/transactions/${route.params.id}`,
@@ -72,39 +18,9 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
-});
-
-const isCardCharge = computed(() => {
-  return txnData.value?.type === "card_charge";
-});
-
-const fetchCardCharge = async (chargeId: string) => {
-  cardChargeLoading.value = true;
-  try {
-    const response = await fetch(
-      `https://hcb.hackclub.com/api/v3/card_charges/${chargeId}`,
-      { headers: { Accept: "application/json" } }
-    );
-    if (!response.ok) throw new Error("Card charge not found");
-    cardChargeData.value = await response.json();
-  } catch (e) {
-    cardChargeError.value =
-      e instanceof Error ? e.message : "Failed to load card charge";
-    console.error("Error fetching card charge:", e);
-  } finally {
-    cardChargeLoading.value = false;
-  }
 };
 
-watch(
-  () => txnData.value?.card_charge?.id,
-  (newChargeId) => {
-    if (newChargeId && isCardCharge.value) {
-      fetchCardCharge(newChargeId);
-    }
-  }
-);
-
+onMounted(getTxn);
 useHead({
   title: "Viewing transaction - HCBScan",
   meta: [
@@ -158,7 +74,7 @@ watch(txnData, (metadata) => {
       </svg>
       <p class="mt-4 text-white animate-pulse">Loading transaction...</p>
     </div>
-    <!-- shit broke -->
+    <!-- error -->
     <div
       v-else-if="error"
       class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center"
@@ -189,12 +105,10 @@ watch(txnData, (metadata) => {
       </div>
 
       <!-- top -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-0">
         <div class="bg-zinc-900 rounded-lg p-4">
           <p class="text-sm text-zinc-400">Amount</p>
-          <p class="text-2xl font-bold">
-            {{ fixMoney(txnData.amount_cents) }}
-          </p>
+          <p class="text-2xl font-bold">{{ fixMoney(txnData.amount_cents) }}</p>
         </div>
 
         <div class="bg-zinc-900 rounded-lg p-4">
@@ -212,9 +126,8 @@ watch(txnData, (metadata) => {
           <NuxtLink
             :to="`/app/org/${txnData.organization.id}`"
             class="text-blue-400 hover:underline text-2xl font-semibold"
+            >View Organization</NuxtLink
           >
-            View Organization
-          </NuxtLink>
         </div>
       </div>
 
@@ -278,66 +191,16 @@ watch(txnData, (metadata) => {
                   v-for="tag in txnData.tags"
                   :key="tag.id"
                   class="inline-block bg-zinc-700 px-2 py-1 rounded mr-2 text-sm"
+                  >{{ tag.label }}</span
                 >
-                  {{ tag.label }}
-                </span>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- card charge -->
-      <div
-        v-if="txnData.type == 'card_charge'"
-        class="bg-zinc-900 rounded-lg p-4"
-      >
-        <h2 class="text-lg font-semibold mb-4">Card Charge Details</h2>
-
-        <div v-if="cardChargeLoading" class="text-center py-4">
-          <p class="text-zinc-400">Loading card details...</p>
-        </div>
-
-        <div v-else-if="cardChargeError" class="text-red-400 text-sm">
-          {{ cardChargeError }}
-        </div>
-
-        <div v-else-if="cardChargeData" class="space-y-4">
-          <!-- card -->
-          <div class="flex items-center gap-3">
-            <img
-              :src="cardChargeData.user.photo"
-              :alt="cardChargeData.user.full_name"
-              class="w-10 h-10 rounded-full"
-            />
-            <div>
-              <p class="font-medium">{{ cardChargeData.user.full_name }}</p>
-              <p v-if="cardChargeData.user.admin" class="text-sm text-red-400">
-                Admin Card User
-              </p>
-              <p v-else class="text-sm text-zinc-400">Card User</p>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-sm text-zinc-400">Card ID</p>
-              <p class="font-mono">{{ cardChargeData.card.id }}</p>
-            </div>
-            <div>
-              <p class="text-sm text-zinc-400">Charge ID</p>
-              <p class="font-mono">{{ cardChargeData.id }}</p>
-            </div>
-          </div>
-          <!-- coming later
-          <div class="flex justify-end">
-            <NuxtLink
-              :to="`/app/crd/${cardChargeData.card.id}`"
-              class="text-blue-400 hover:underline font-semibold"
-              >View Card</NuxtLink
-            >
-          </div>-->
-        </div>
-      </div>
+      <!-- detail data -->
+      <txnDetail :type="txnData.type" :id="txnData[txnData.type]?.id" />
     </div>
   </div>
 </template>
