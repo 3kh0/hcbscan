@@ -109,7 +109,10 @@ watch(orgData, (metadata) => {
       v-else-if="error"
       class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center"
     >
-      <p class="text-red-400">{{ error }}</p>
+      <p class="text-red-400">
+        It seems like we can not load this organization right now. It is either
+        private or does not exist.
+      </p>
     </div>
     <div v-else>
       <!-- header -->
