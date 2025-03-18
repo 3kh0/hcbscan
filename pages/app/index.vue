@@ -238,7 +238,7 @@ useHead({
         <p class="text-2xl font-bold">{{ stats.volume24h.toLocaleString() }}</p>
       </div>
       <div class="bg-zinc-900 p-4 rounded-lg">
-        <p class="text-sm text-zinc-400 mb-1">Public Organizations</p>
+        <p class="text-sm text-zinc-400 mb-1">Indexed Organizations</p>
         <p class="text-2xl font-bold">
           {{ stats.totalAccounts.toLocaleString() }}
         </p>
