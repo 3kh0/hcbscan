@@ -1,20 +1,7 @@
 // tool to manually grab all orgs and their balances from the api
-// the csv is later uploaded into supabase manually
-// working on automating this
-
+// and then sync them to the supabase table using service role
 import axios from "axios";
-import fs from "fs";
-import { Parser } from "json2csv";
-
-const out = "orgs.csv";
-
-const fields = [
-  { label: "Organization ID", value: "id" },
-  { label: "Name", value: "name" },
-  { label: "Slug", value: "slug" },
-  { label: "Category", value: "category" },
-  { label: "Balance", value: (row) => row.balances.balance_cents },
-];
+import { supabaseAdmin } from "./supabase-admin.js";
 
 function time() {
   return new Date().toLocaleTimeString("en-US", {
@@ -67,24 +54,62 @@ async function yoink() {
   return all;
 }
 
-async function save(data) {
+async function sync(organizations) {
+  const formatted = organizations.map((org) => ({
+    "Organization ID": org.id,
+    Name: org.name,
+    Slug: org.slug,
+    Category: org.category,
+    Balance: org.balances?.balance_cents || 0,
+  }));
+
+  console.log(`[${time()}] starting sync for ${formatted.length} rows`);
+
+  let success = 0;
+  let errors = 0;
+
+  for (let i = 0; i < formatted.length; i += 100) {
+    const batch = formatted.slice(i, i + 100);
+    const { data, error } = await supabaseAdmin.from("orgs").upsert(batch, {
+      onConflict: "Organization ID",
+      ignoreDuplicates: false,
+    });
+
+    if (error) {
+      console.error(
+        `[${time()}] fuck up in batch ${i / 100 + 1}:`,
+        error.message
+      );
+      errors += batch.length;
+    } else {
+      console.log(
+        `[${time()}] imported batch ${i / 100 + 1} (${batch.length} rows)`
+      );
+      success += batch.length;
+    }
+
+    // play nice with supabase api limits
+    if (i + 100 < formatted.length) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+  }
+
+  console.log(`[${time()}] sync done. success ${success} error ${errors}`);
+}
+
+async function runSync() {
   try {
-    const parser = new Parser({ fields });
-    const csv = parser.parse(data);
-    fs.writeFileSync(out, csv);
-    console.log(`[${time()}] saved to ${out}`);
+    console.log(`[${time()}] starting sync...`);
+    const all = await yoink();
+    await sync(all);
+    console.log(`[${time()}] sync done`);
+    return true;
   } catch (error) {
-    console.error(`[${time()}] ah fuck it broke `, error.message);
+    console.error(`[${time()}] sync failed `, error.message);
+    return false;
   }
 }
 
-(async () => {
-  try {
-    const all = await yoink();
-    await save(all);
-    console.log(`[${time()}] fin`);
-  } catch (error) {
-    console.error(`[${time()}] ah fuck it broke `, error.message);
-    process.exit(1);
-  }
-})();
+runSync();
+
+export { runSync };
