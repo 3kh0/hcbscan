@@ -13,6 +13,7 @@
     "@supabase/supabase-js": "^2.48.1",
     "@tailwindcss/vite": "^4.0.3",
     "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
     "json2csv": "6.0.0-alpha.2",
     "lodash": "^4.17.21",
     "marked": "^15.0.6",
