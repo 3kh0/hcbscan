@@ -1,4 +1,4 @@
-# HCBScan
+# HCBScan [![test build](https://github.com/3kh0/hcbscan/actions/workflows/build.yml/badge.svg)](https://github.com/3kh0/hcbscan/actions/workflows/build.yml)
 
 The first public explorer for [HCB](https://hcb.hackclub.com/). HCBScan allows to search for organizations, transactions, and more!
 
