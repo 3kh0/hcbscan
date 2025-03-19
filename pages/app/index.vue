@@ -102,6 +102,10 @@ onMounted(async () => {
   }, 30000);
 });
 
+onUnmounted(() => {
+  clearInterval();
+});
+
 useHead({
   title: "HCBScan",
   meta: [
@@ -171,7 +175,7 @@ useHead({
           placeholder="Search for organizations on HCB..."
         />
         <div
-          v-if="isFocused && !gettingResults"
+          v-if="isFocused && !gettingResults && !query"
           class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg"
         >
           <div class="px-4 py-2 text-zinc-400">
