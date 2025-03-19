@@ -11,15 +11,16 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        name: install pnpm
+        with:
+          run_install: false
+
       - name: Install Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: "pnpm"
 
-      - uses: pnpm/action-setup@v4
-        name: install pnpm
-        with:
-          run_install: true
-
-      - name: build
-        run: pnpm build
+      - name: Run it
+        run: pnpm install && pnpm build
