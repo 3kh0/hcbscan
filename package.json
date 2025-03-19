@@ -10,19 +10,26 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.48.1",
-    "@tailwindcss/vite": "^4.0.3",
-    "axios": "^1.7.9",
+    "@supabase/supabase-js": "^2.49.1",
+    "@tailwindcss/vite": "^4.0.14",
+    "axios": "^1.8.3",
     "dotenv": "^16.4.7",
     "json2csv": "6.0.0-alpha.2",
     "lodash": "^4.17.21",
-    "marked": "^15.0.6",
-    "nuxt": "^3.15.4",
-    "tailwindcss": "^4.0.3",
+    "marked": "^15.0.7",
+    "nuxt": "^3.16.0",
+    "tailwindcss": "^4.0.14",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
-    "supabase": "^2.9.6"
+    "supabase": "^2.19.7"
+  },
+  "packageManager": "pnpm@10.0.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "supabase"
+    ]
   }
 }
