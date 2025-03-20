@@ -2,12 +2,9 @@
 // and then sync them to the supabase table using service role
 import axios from "axios";
 import { supabaseAdmin } from "./supabase-admin.js";
-import "dotenv/config";
 
 // CONFIG OPTIONS
 const HCB_DOMAIN = "hcb.hackclub.com";
-const NOTIFY_HOOK = process.env.NOTIFY_HOOK || "";
-const HCBSCAN_URL = "https://hcbscan.3kh0.net";
 
 function time() {
   return new Date().toLocaleTimeString("en-US", {
@@ -60,87 +57,6 @@ async function yoink() {
   return all;
 }
 
-function fixMoney(cents) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
-
-async function newOrg(org) {
-  if (!NOTIFY_HOOK) {
-    console.log(`[${time()}] no webhook, skipping notification`);
-    return;
-  }
-
-  try {
-    const viewUrl = `${HCBSCAN_URL}/app/org/${org["Organization ID"]}`;
-    const hcbUrl = `https://${HCB_DOMAIN}/${org.Slug}`;
-    const balance = fixMoney(org.Balance);
-    const message = {
-      blocks: [
-        {
-          type: "header",
-          text: {
-            type: "plain_text",
-            text: `🆕 New Organization Found: ${org.Name}`,
-            emoji: true,
-          },
-        },
-        {
-          type: "section",
-          fields: [
-            {
-              type: "mrkdwn",
-              text: `*ID:* ${org["Organization ID"]}`,
-            },
-            {
-              type: "mrkdwn",
-              text: `*Slug:* ${org.Slug}`,
-            },
-            {
-              type: "mrkdwn",
-              text: `*Balance:* ${balance}`,
-            },
-          ],
-        },
-        {
-          type: "divider",
-        },
-        {
-          type: "actions",
-          elements: [
-            {
-              type: "button",
-              text: {
-                type: "plain_text",
-                text: "View on HCBScan",
-                emoji: true,
-              },
-              url: viewUrl,
-              style: "primary",
-            },
-            {
-              type: "button",
-              text: {
-                type: "plain_text",
-                text: "View on HCB",
-                emoji: true,
-              },
-              url: hcbUrl,
-            },
-          ],
-        },
-      ],
-    };
-
-    await axios.post(NOTIFY_HOOK, message);
-    console.log(`[${time()}] alert sent for new org! ${org.Name}`);
-  } catch (error) {
-    console.error(`[${time()}] ah shit it fucking broke ${error.message}`);
-  }
-}
-
 async function sync(organizations) {
   const formatted = organizations.map((org) => ({
     "Organization ID": org.id,
@@ -154,33 +70,9 @@ async function sync(organizations) {
 
   let success = 0;
   let errors = 0;
-  let newOrgs = 0;
-
-  const { data: existingOrgs, error: fetchError } = await supabaseAdmin
-    .from(HCB_DOMAIN)
-    .select('"Organization ID"');
-
-  if (fetchError) {
-    console.error(`[${time()}] shit it broke: ${fetchError.message}`);
-    return;
-  }
-  const existingOrgIds = new Set(
-    existingOrgs.map((org) => org["Organization ID"])
-  );
 
   for (let i = 0; i < formatted.length; i += 100) {
     const batch = formatted.slice(i, i + 100);
-    for (const org of batch) {
-      if (!existingOrgIds.has(org["Organization ID"])) {
-        console.log(
-          `[${time()}] new org found: ${org.Name} (${org["Organization ID"]})`
-        );
-        newOrgs++;
-        await newOrg(org);
-        existingOrgIds.add(org["Organization ID"]);
-      }
-    }
-
     const { data, error } = await supabaseAdmin.from(HCB_DOMAIN).upsert(batch, {
       onConflict: "Organization ID",
       ignoreDuplicates: false,
@@ -205,9 +97,7 @@ async function sync(organizations) {
     }
   }
 
-  console.log(
-    `[${time()}] sync done. success ${success} error ${errors} new orgs ${newOrgs}`
-  );
+  console.log(`[${time()}] sync done. success ${success} error ${errors}`);
 }
 
 async function runSync() {
