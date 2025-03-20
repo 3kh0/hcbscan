@@ -70,10 +70,12 @@ async function sync(organizations) {
 
   for (let i = 0; i < formatted.length; i += 100) {
     const batch = formatted.slice(i, i + 100);
-    const { data, error } = await supabaseAdmin.from("orgs").upsert(batch, {
-      onConflict: "Organization ID",
-      ignoreDuplicates: false,
-    });
+    const { data, error } = await supabaseAdmin
+      .from("hcb.hackclub.com")
+      .upsert(batch, {
+        onConflict: "Organization ID",
+        ignoreDuplicates: false,
+      });
 
     if (error) {
       console.error(

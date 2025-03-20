@@ -30,6 +30,8 @@ const query = ref("");
 const results = ref([]);
 const gettingResults = ref(false);
 let isFocused = ref(false);
+const supabaseTable = getApiDomain().replace(/^https?:\/\//, ""); // remove url junk
+console.log(supabaseTable);
 
 const searchOrgs = debounce(async (query: string) => {
   if (!query.trim()) {
@@ -40,7 +42,7 @@ const searchOrgs = debounce(async (query: string) => {
   }
 
   const { data, error } = await supabase
-    .from("orgs")
+    .from(supabaseTable)
     .select("*")
     .or(
       `Name.ilike.%${query}%,Slug.ilike.%${query}%,Organization ID.ilike.%${query}%,Category.ilike.%${query}%`
@@ -84,7 +86,7 @@ onMounted(async () => {
 
   // org count
   const { count } = await supabase
-    .from("orgs")
+    .from(supabaseTable)
     .select("*", { count: "exact", head: true });
   stats.totalAccounts = count || "-";
 
