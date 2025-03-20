@@ -11,14 +11,14 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
-    "@tailwindcss/vite": "^4.0.14",
+    "@tailwindcss/vite": "^4.0.15",
     "axios": "^1.8.4",
     "dotenv": "^16.4.7",
     "json2csv": "6.0.0-alpha.2",
     "lodash": "^4.17.21",
     "marked": "^15.0.7",
     "nuxt": "^3.16.1",
-    "tailwindcss": "^4.0.14",
+    "tailwindcss": "^4.0.15",
     "vue": "latest",
     "vue-router": "latest"
   },
