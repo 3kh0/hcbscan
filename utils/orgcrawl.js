@@ -3,6 +3,9 @@
 import axios from "axios";
 import { supabaseAdmin } from "./supabase-admin.js";
 
+// CONFIG OPTIONS
+const HCB_DOMAIN = "hcb.cyteon.dev";
+
 function time() {
   return new Date().toLocaleTimeString("en-US", {
     hour12: false,
@@ -20,7 +23,7 @@ async function yoink() {
     try {
       console.log(`[${time()}] yoinking page ${page}...`);
       const response = await axios.get(
-        `https://hcb.hackclub.com/api/v3/organizations?page=${page}&per_page=100`
+        `https://${HCB_DOMAIN}/api/v3/organizations?page=${page}&per_page=100`
       );
       const data = response.data;
 
@@ -70,12 +73,10 @@ async function sync(organizations) {
 
   for (let i = 0; i < formatted.length; i += 100) {
     const batch = formatted.slice(i, i + 100);
-    const { data, error } = await supabaseAdmin
-      .from("hcb.hackclub.com")
-      .upsert(batch, {
-        onConflict: "Organization ID",
-        ignoreDuplicates: false,
-      });
+    const { data, error } = await supabaseAdmin.from(HCB_DOMAIN).upsert(batch, {
+      onConflict: "Organization ID",
+      ignoreDuplicates: false,
+    });
 
     if (error) {
       console.error(
@@ -101,13 +102,13 @@ async function sync(organizations) {
 
 async function runSync() {
   try {
-    console.log(`[${time()}] starting sync...`);
+    console.log(`[${time()}] starting sync for ${HCB_DOMAIN}...`);
     const all = await yoink();
     await sync(all);
-    console.log(`[${time()}] sync done`);
+    console.log(`[${time()}] sync done for ${HCB_DOMAIN}...`);
     return true;
   } catch (error) {
-    console.error(`[${time()}] sync failed `, error.message);
+    console.error(`[${time()}] sync failed for ${HCB_DOMAIN} `, error.message);
     return false;
   }
 }
