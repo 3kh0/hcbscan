@@ -4,7 +4,7 @@ import axios from "axios";
 import { supabaseAdmin } from "./supabase-admin.js";
 
 // CONFIG OPTIONS
-const HCB_DOMAIN = "hcb.cyteon.dev";
+const HCB_DOMAIN = "hcb.hackclub.com";
 
 function time() {
   return new Date().toLocaleTimeString("en-US", {
