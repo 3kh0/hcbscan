@@ -91,7 +91,9 @@ onMounted(async () => {
   stats.totalAccounts = count || "-";
 
   // total value
-  const { data, error } = await supabase.rpc("sum_balance");
+  const { data, error } = await supabase.rpc("sum_balance", {
+    table_name: supabaseTable,
+  });
   if (error) {
     console.error(error);
     stats.totalBalance = "-";
