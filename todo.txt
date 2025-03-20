@@ -4,8 +4,6 @@
 - Search by user
 - Pretty print recent action types
 - Setup a image proxy to load images much faster (tried wsrv.nl but many things broke with it)
-- Fix a bug where the footer appears above the page content (how the fuck did that happen, only on dev, not prod)
-- Autoupdating feed of activities
 - View more page for transactions on orgs
 - Analytics opt out
 - Activities in past 24 hours countdown
