@@ -10,8 +10,8 @@ export function setApiDomain(domain) {
     return "https://hcb.hackclub.com";
   }
 
-  const fixup = domain.startsWith("http") ? domain : `https://${domain}`;
-
+  let fixup = domain.startsWith("http") ? domain : `https://${domain}`;
+  fixup = fixup.replace(/\/+$/, "");
   localStorage.setItem("hcb-domain", fixup);
   return fixup;
 }
