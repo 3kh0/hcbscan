@@ -318,11 +318,11 @@
           <b>{{ detail.object }}</b> but I am not sure how to analyze it. Here
           is the endpoint I contacted:
           <a
-            :href="`https://hcb.hackclub.com/api/v3/${props.type}s/${props.id}`"
+            :href="buildApiUrl(`api/v3/${props.type}s/${props.id}`)"
             class="text-blue-400 hover:underline"
             target="_blank"
             ><code>{{
-              `https://hcb.hackclub.com/api/v3/${props.type}s/${props.id}`
+              buildApiUrl(`api/v3/${props.type}s/${props.id}`)
             }}</code></a
           >. You might be able to find more information there.
         </p>
@@ -351,7 +351,7 @@ const getDetail = async () => {
   loading.value = true;
   try {
     const response = await fetch(
-      `https://hcb.hackclub.com/api/v3/${props.type}s/${props.id}`,
+      buildApiUrl(`api/v3/${props.type}s/${props.id}`),
       { headers: { Accept: "application/json" } }
     );
     if (!response.ok)

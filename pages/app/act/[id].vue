@@ -15,7 +15,7 @@ const formatActivityKey = (key: string) => {
 onMounted(async () => {
   try {
     const response = await fetch(
-      `https://hcb.hackclub.com/api/v3/activities/${route.params.id}`,
+      buildApiUrl(`api/v3/activities/${route.params.id}`),
       { headers: { Accept: "application/json" } }
     );
     if (!response.ok) throw new Error("Activity not found");

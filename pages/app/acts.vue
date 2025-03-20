@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { buildApiUrl } from "~/utils/apiConfig";
+
 interface Activity {
   id: string;
   key: string;
@@ -26,7 +28,7 @@ const gimmeData = async (page: number) => {
   loading.value = true;
   try {
     const response = await fetch(
-      `https://hcb.hackclub.com/api/v3/activities?page=${page}&per_page=${itemsPerPage}`,
+      buildApiUrl(`api/v3/activities?page=${page}&per_page=${itemsPerPage}`),
       {
         method: "GET",
         headers: { Accept: "application/json" },

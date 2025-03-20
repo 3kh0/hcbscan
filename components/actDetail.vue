@@ -141,10 +141,9 @@ const error = ref<string | null>(null);
 const getDetail = async () => {
   loading.value = true;
   try {
-    const response = await fetch(
-      `https://hcb.hackclub.com/api/v3/activities/${props.id}`,
-      { headers: { Accept: "application/json" } }
-    );
+    const response = await fetch(buildApiUrl(`api/v3/activities/${props.id}`), {
+      headers: { Accept: "application/json" },
+    });
     if (!response.ok) throw new Error("Activity not found");
     detail.value = await response.json();
   } catch (e) {

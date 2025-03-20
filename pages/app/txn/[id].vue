@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { buildApiUrl } from "~/utils/apiConfig";
+
 const route = useRoute();
 const txnData = ref<Transaction | null>(null);
 const loading = ref(true);
@@ -7,7 +9,7 @@ const error = ref<string | null>(null);
 const getTxn = async () => {
   try {
     const response = await fetch(
-      `https://hcb.hackclub.com/api/v3/transactions/${route.params.id}`,
+      buildApiUrl(`api/v3/transactions/${route.params.id}`),
       { headers: { Accept: "application/json" } }
     );
     if (!response.ok) throw new Error("Transaction not found");

@@ -24,7 +24,7 @@ const pubMsg = computed(() => {
 onMounted(async () => {
   try {
     const response = await fetch(
-      `https://hcb.hackclub.com/api/v3/organizations/${route.params.id}`,
+      buildApiUrl(`api/v3/organizations/${route.params.id}`),
       {
         method: "GET",
         headers: { Accept: "application/json" },
@@ -35,7 +35,9 @@ onMounted(async () => {
     loading.value = false;
 
     const transactionsResponse = await fetch(
-      `https://hcb.hackclub.com/api/v3/organizations/${route.params.id}/transactions?per_page=25`,
+      buildApiUrl(
+        `api/v3/organizations/${route.params.id}/transactions?per_page=25`
+      ),
       {
         method: "GET",
         headers: { Accept: "application/json" },
@@ -206,7 +208,7 @@ watch(orgData, (metadata) => {
             <td class="py-2 px-4 border-b border-zinc-700">
               <a
                 class="underline text-blue-400"
-                :href="`https://hcb.hackclub.com/${orgData?.slug}`"
+                :href="buildApiUrl(`${orgData?.slug}`)"
                 target="_blank"
               >
                 {{ orgData?.slug }}

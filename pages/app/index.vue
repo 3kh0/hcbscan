@@ -5,6 +5,7 @@ const stats = reactive({
   totalAccounts: "-",
   activeToday: "-",
 });
+import { buildApiUrl } from "~/utils/apiConfig";
 import { supabase } from "~/utils/supabase";
 import { debounce } from "lodash"; // for search bar
 
@@ -63,7 +64,7 @@ watch(query, (newQuery) => {
 const gimmeData = async () => {
   try {
     const response = await fetch(
-      "https://hcb.hackclub.com/api/v3/activities?page=1&per_page=15",
+      buildApiUrl("api/v3/activities?page=1&per_page=15"),
       {
         headers: { Accept: "application/json" },
       }
