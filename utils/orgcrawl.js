@@ -77,16 +77,6 @@ async function newOrg(org) {
     const viewUrl = `${HCBSCAN_URL}/app/org/${org["Organization ID"]}`;
     const hcbUrl = `https://${HCB_DOMAIN}/${org.Slug}`;
     const balance = fixMoney(org.Balance);
-    const category = org.Category || "Unknown";
-    const createdAt = org["Created At"]
-      ? new Date(org["Created At"]).toLocaleString()
-      : "Unknown";
-    const website = org.Website
-      ? `<${org.Website}|${org.Website.replace(/^https?:\/\//, "")}>`
-      : "None";
-
-    const logoUrl = org.Logo || "https://assets.hackclub.com/icon-rounded.png";
-
     const message = {
       blocks: [
         {
@@ -99,11 +89,6 @@ async function newOrg(org) {
         },
         {
           type: "section",
-          accessory: {
-            type: "image",
-            image_url: logoUrl,
-            alt_text: `${org.Name} logo`,
-          },
           fields: [
             {
               type: "mrkdwn",
@@ -115,19 +100,7 @@ async function newOrg(org) {
             },
             {
               type: "mrkdwn",
-              text: `*Category:* ${category}`,
-            },
-            {
-              type: "mrkdwn",
               text: `*Balance:* ${balance}`,
-            },
-            {
-              type: "mrkdwn",
-              text: `*Website:* ${website}`,
-            },
-            {
-              type: "mrkdwn",
-              text: `*Created:* ${createdAt}`,
             },
           ],
         },
@@ -158,15 +131,6 @@ async function newOrg(org) {
             },
           ],
         },
-        {
-          type: "context",
-          elements: [
-            {
-              type: "mrkdwn",
-              text: `Discovered at ${new Date().toLocaleString()}`,
-            },
-          ],
-        },
       ],
     };
 
@@ -182,14 +146,8 @@ async function sync(organizations) {
     "Organization ID": org.id,
     Name: org.name,
     Slug: org.slug,
-    Website: org.website,
     Category: org.category,
     Balance: org.balances?.balance_cents || 0,
-    Logo: org.logo,
-    "Created At": org.created_at,
-    Transparent: org.transparent,
-    "Fee Balance": org.balances?.fee_balance_cents || 0,
-    "Total Raised": org.balances?.total_raised || 0,
   }));
 
   console.log(`[${time()}] starting sync for ${formatted.length} rows`);
