@@ -31,7 +31,6 @@ const results = ref([]);
 const gettingResults = ref(false);
 let isFocused = ref(false);
 const supabaseTable = getApiDomain().replace(/^https?:\/\//, ""); // remove url junk
-console.log(supabaseTable);
 
 const searchOrgs = debounce(async (query: string) => {
   if (!query.trim()) {
