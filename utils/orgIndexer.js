@@ -41,7 +41,7 @@ async function yoink() {
       }
     } catch (error) {
       console.error(
-        `[${time()}] problem yoinking page ${page}:`,
+        `[${time()}] problem yoinking page ${page}: `,
         error.message
       );
       console.error(`${error.response?.status}, raw:`, error.response?.data);
@@ -114,5 +114,3 @@ async function runSync() {
 }
 
 runSync();
-
-export { runSync };
