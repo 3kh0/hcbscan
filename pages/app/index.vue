@@ -3,25 +3,11 @@ const stats = reactive({
   totalBalance: "-",
   volume24h: "-",
   totalAccounts: "-",
-  activeToday: "-",
 });
 import { buildApiUrl } from "~/utils/apiConfig";
 import { supabase } from "~/utils/supabase";
 import { debounce } from "lodash"; // for search bar
-
-interface Activity {
-  id: string;
-  key: string;
-  created_at: string;
-  user: {
-    full_name: string;
-    photo: string;
-  } | null;
-  organization: {
-    name: string;
-    logo: string | null;
-  };
-}
+import RecentActivites from "~/components/recentActivites.vue";
 
 const acts = ref<Activity[]>([]);
 const loading = ref(true);
@@ -62,27 +48,7 @@ watch(query, (newQuery) => {
   searchOrgs(newQuery);
 });
 
-const gimmeData = async () => {
-  try {
-    const response = await fetch(
-      buildApiUrl("api/v3/activities?page=1&per_page=15"),
-      {
-        headers: { Accept: "application/json" },
-      }
-    );
-    const data = await response.json();
-    acts.value = data;
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : "Something went wrong";
-    console.error(error);
-  } finally {
-    loading.value = false;
-  }
-};
-
 onMounted(async () => {
-  gimmeData();
-
   // org count
   const { count } = await supabase
     .from(supabaseTable)
@@ -99,11 +65,6 @@ onMounted(async () => {
   } else {
     stats.totalBalance = fixMoney(data || "-");
   }
-
-  // keep data fresh
-  setInterval(() => {
-    gimmeData();
-  }, 30000);
 });
 
 onUnmounted(() => {
@@ -254,111 +215,6 @@ useHead({
     </div>
 
     <!-- recent -->
-    <div class="bg-zinc-900 rounded-lg p-6">
-      <h2 class="text-xl font-semibold mb-4">Recent Activities</h2>
-      <p class="text-sm text-zinc-400 mb-4">
-        Only showing recent activities from HCB organizations that are in
-        Transparency Mode and have opted in to public listing.
-      </p>
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="text-left text-zinc-400 text-sm">
-              <th class="pb-4">ID</th>
-              <th class="pb-4">Action</th>
-              <th class="pb-4">User</th>
-              <th class="pb-4">Organization</th>
-              <th class="pb-4">Time</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-zinc-700">
-            <tr v-if="loading" class="text-sm">
-              <td colspan="5" class="py-4 text-center text-zinc-400">
-                <div
-                  v-if="loading"
-                  class="flex flex-col items-center justify-center py-12"
-                >
-                  <svg
-                    class="animate-spin h-8 w-8 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  <p class="mt-4 text-white animate-pulse">
-                    Loading activities...
-                  </p>
-                </div>
-              </td>
-            </tr>
-            <tr
-              v-else
-              v-for="activity in acts"
-              :key="activity.id"
-              class="text-sm"
-            >
-              <td class="py-4">
-                <NuxtLink
-                  :to="`/app/act/${activity.id}`"
-                  class="text-blue-400 hover:underline font-mono"
-                  >{{ activity.id }}</NuxtLink
-                >
-              </td>
-              <td class="py-4">{{ activity.key }}</td>
-              <td class="py-4">
-                <div v-if="activity.user" class="flex items-center gap-2">
-                  <img
-                    :src="activity.user.photo"
-                    :alt="activity.user.full_name"
-                    class="w-6 h-6 rounded-full"
-                  />
-                  <span>{{ activity.user.full_name }}</span>
-                </div>
-                <span v-else class="text-zinc-500">System</span>
-              </td>
-              <td class="py-4">
-                <NuxtLink
-                  :to="`/app/org/${activity.organization.id}`"
-                  class="text-blue-400 hover:underline"
-                >
-                  <div class="flex items-center gap-2">
-                    <img
-                      v-if="activity.organization.logo"
-                      :src="activity.organization.logo"
-                      :alt="activity.organization.name"
-                      class="w-6 h-6 rounded-full"
-                    />
-                    <span> {{ activity.organization.name }}</span>
-                  </div>
-                </NuxtLink>
-              </td>
-              <td class="py-4 text-zinc-400">
-                <span :title="date(activity.created_at)">
-                  {{ relativeTime(activity.created_at) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="text-center mt-4">
-        <NuxtLink to="/app/acts" class="text-blue-400 hover:underline"
-          >View all transactions</NuxtLink
-        >
-      </div>
-    </div>
+    <RecentActivites />
   </div>
 </template>
