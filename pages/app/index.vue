@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const stats = reactive({
   totalBalance: "-",
-  volume24h: "-",
+  volume7d: "-",
   totalAccounts: "-",
 });
 import { buildApiUrl } from "~/utils/apiConfig";
@@ -56,15 +56,13 @@ onMounted(async () => {
   stats.totalAccounts = count || "-";
 
   // total value
-  const { data, error } = await supabase.rpc("sum_balance", {
+  const { data } = await supabase.rpc("sum_balance", {
     table_name: supabaseTable,
   });
-  if (error) {
-    console.error(error);
-    stats.totalBalance = "-";
-  } else {
-    stats.totalBalance = fixMoney(data || "-");
-  }
+  stats.totalBalance = fixMoney(data || "-");
+
+  const { data: volumeData } = await supabase.rpc("count_volume");
+  stats.volume7d = volumeData || "-";
 });
 
 onUnmounted(() => {
@@ -203,8 +201,8 @@ useHead({
         <p class="text-2xl font-bold">{{ stats.totalBalance }}</p>
       </div>
       <div class="bg-zinc-900 p-4 rounded-lg">
-        <p class="text-sm text-zinc-400 mb-1">Activities (24h)</p>
-        <p class="text-2xl font-bold">{{ stats.volume24h.toLocaleString() }}</p>
+        <p class="text-sm text-zinc-400 mb-1">Activities (7 days)</p>
+        <p class="text-2xl font-bold">{{ stats.volume7d.toLocaleString() }}</p>
       </div>
       <div class="bg-zinc-900 p-4 rounded-lg">
         <p class="text-sm text-zinc-400 mb-1">Indexed Organizations</p>
