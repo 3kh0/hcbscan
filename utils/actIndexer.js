@@ -43,7 +43,6 @@ async function yoinkAllPages() {
   let hasMoreData = true;
   let page = 1;
 
-  // Continue fetching until we hit MAX_PAGES or run out of data
   while (hasMoreData && page <= MAX_PAGES) {
     const activities = await yoinkPage(page);
 
@@ -144,8 +143,4 @@ async function runSync() {
   }
 }
 
-// Run immediately when this file is executed
 runSync();
-
-// Export for programmatic usage
-export { runSync };
