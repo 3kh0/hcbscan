@@ -203,86 +203,155 @@ watch(query, (newQuery) => {
         placeholder="Search for organizations on HCB..."
         autocomplete="off"
       />
-      <div
-        v-if="isFocused && !fetching && !query"
-        class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg overflow-hidden"
-      >
-        <div class="px-4 py-3 text-zinc-400 border-b border-zinc-700">
-          <p>Start typing to search for organizations. You can search by:</p>
-          <ul class="mt-1 text-sm list-disc pl-5 space-y-1">
-            <li>Organization name</li>
-            <li>Category</li>
-            <li>URL slug</li>
-            <li>Organization ID</li>
-          </ul>
-          <p class="mt-2 text-xs text-zinc-500">
-            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">↑/↓</span> to
-            navigate •
-            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">Tab</span> to
-            cycle •
-            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">Enter</span>
-            to select
-          </p>
-        </div>
-      </div>
-      <div
-        v-if="fetching && isFocused"
-        class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg"
-      >
-        <div class="px-4 py-2 text-zinc-400 animate-pulse">Searching...</div>
-      </div>
-      <div
-        v-if="results.length > 0 && isFocused"
-        class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10 max-h-80 overflow-y-auto"
+      <transition
+        name="dropdown"
+        enter-active-class="transition ease-out duration-200"
+        enter-from-class="opacity-0 transform -translate-y-2"
+        enter-to-class="opacity-100 transform translate-y-0"
+        leave-active-class="transition ease-in duration-150"
+        leave-from-class="opacity-100 transform translate-y-0"
+        leave-to-class="opacity-0 transform -translate-y-2"
       >
         <div
-          v-for="(org, index) in results"
-          :id="`search-result-${index}`"
-          :key="org['Organization ID']"
-          :class="[
-            'px-4 py-3 cursor-pointer flex justify-between items-center transition duration-200 ease-in-out',
-            selected === index
-              ? 'bg-blue-900/40 border-l-2 border-blue-500'
-              : 'hover:bg-zinc-700 border-l-2 border-transparent',
-          ]"
-          @mouseenter="selected = index"
-          @click="sendResult(org)"
+          v-if="isFocused && !fetching && !query"
+          class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg overflow-hidden"
         >
-          <div class="flex-grow">
-            <div class="text-white font-semibold">{{ org.Name }}</div>
-            <div class="flex items-center mt-1">
-              <span class="text-zinc-400 text-sm">{{ org.Slug }}</span>
-              <span
-                v-if="org.Category"
-                class="ml-2 px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
+          <div class="px-4 py-3 text-zinc-400 border-b border-zinc-700">
+            <p>Start typing to search for organizations. You can search by:</p>
+            <ul class="mt-1 text-sm list-disc pl-5 space-y-1">
+              <li>Organization name</li>
+              <li>Category</li>
+              <li>URL slug</li>
+              <li>Organization ID</li>
+            </ul>
+            <p class="mt-2 text-xs text-zinc-500">
+              <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">↑/↓</span>
+              to navigate •
+              <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">Tab</span>
+              to cycle •
+              <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded"
+                >Enter</span
               >
-                {{ org.Category }}
-              </span>
-            </div>
-          </div>
-          <div class="text-zinc-400 text-sm ml-4 text-right">
-            <div>Balance: {{ fixMoney(org.Balance) }}</div>
-            <div class="text-xs text-zinc-500 mt-1 font-mono">
-              {{ org["Organization ID"] }}
-            </div>
+              to select
+            </p>
           </div>
         </div>
-      </div>
-      <div
-        v-else-if="!fetching && query && isFocused"
-        class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10"
+      </transition>
+
+      <transition
+        name="dropdown"
+        enter-active-class="transition ease-out duration-200"
+        enter-from-class="opacity-0 transform -translate-y-2"
+        enter-to-class="opacity-100 transform translate-y-0"
+        leave-active-class="transition ease-in duration-150"
+        leave-from-class="opacity-100 transform translate-y-0"
+        leave-to-class="opacity-0 transform -translate-y-2"
       >
-        <div class="px-4 py-3 text-red-400">
-          <p>
-            We looked everywhere but we can't find anything with the query
-            <span class="font-semibold">{{ query }}</span>
-          </p>
-          <p class="text-sm text-zinc-400 mt-1">
-            This could be because, the organization is not indexed yet, it does
-            not exist, or you made a typo looking for something else.
-          </p>
+        <div
+          v-if="fetching && isFocused"
+          class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg"
+        >
+          <div class="px-4 py-2 text-zinc-400 animate-pulse">Searching...</div>
         </div>
-      </div>
+      </transition>
+
+      <transition
+        name="dropdown"
+        enter-active-class="transition ease-out duration-300"
+        enter-from-class="opacity-0 transform -translate-y-2"
+        enter-to-class="opacity-100 transform translate-y-0"
+        leave-active-class="transition ease-in duration-150"
+        leave-from-class="opacity-100 transform translate-y-0"
+        leave-to-class="opacity-0 transform -translate-y-2"
+        v-if="results.length > 0 && isFocused"
+      >
+        <div
+          class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10 max-h-80 overflow-y-auto"
+        >
+          <transition-group
+            name="list"
+            tag="div"
+            enter-active-class="transition duration-300 ease-out"
+            enter-from-class="opacity-0 transform scale-95"
+            enter-to-class="opacity-100 transform scale-100"
+            leave-active-class="transition duration-200 ease-in"
+            leave-from-class="opacity-100 transform scale-100"
+            leave-to-class="opacity-0 transform scale-95"
+          >
+            <div
+              v-for="(org, index) in results"
+              :id="`search-result-${index}`"
+              :key="org['Organization ID']"
+              :class="[
+                'px-4 py-3 cursor-pointer flex justify-between items-center transition duration-200 ease-in-out',
+                selected === index
+                  ? 'bg-blue-900/40 border-l-2 border-blue-500'
+                  : 'hover:bg-zinc-700 border-l-2 border-transparent',
+              ]"
+              :style="{ transitionDelay: `${index * 25}ms` }"
+              @mouseenter="selected = index"
+              @click="sendResult(org)"
+            >
+              <div class="flex-grow">
+                <div class="text-white font-semibold">{{ org.Name }}</div>
+                <div class="flex items-center mt-1">
+                  <span class="text-zinc-400 text-sm">{{ org.Slug }}</span>
+                  <span
+                    v-if="org.Category"
+                    class="ml-2 px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
+                  >
+                    {{ org.Category }}
+                  </span>
+                </div>
+              </div>
+              <div class="text-zinc-400 text-sm ml-4 text-right">
+                <div>Balance: {{ fixMoney(org.Balance) }}</div>
+                <div class="text-xs text-zinc-500 mt-1 font-mono">
+                  {{ org["Organization ID"] }}
+                </div>
+              </div>
+            </div>
+          </transition-group>
+        </div>
+      </transition>
+
+      <transition
+        name="dropdown"
+        enter-active-class="transition ease-out duration-200"
+        enter-from-class="opacity-0 transform -translate-y-2"
+        enter-to-class="opacity-100 transform translate-y-0"
+        leave-active-class="transition ease-in duration-150"
+        leave-from-class="opacity-100 transform translate-y-0"
+        leave-to-class="opacity-0 transform -translate-y-2"
+        v-else-if="!fetching && query && isFocused"
+      >
+        <div
+          class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10"
+        >
+          <div class="px-4 py-3 text-red-400">
+            <p>
+              We looked everywhere but we can't find anything with the query
+              <span class="font-semibold">{{ query }}</span>
+            </p>
+            <p class="text-sm text-zinc-400 mt-1">
+              This could be because, the organization is not indexed yet, it
+              does not exist, or you made a typo looking for something else.
+            </p>
+          </div>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
+<style scoped>
+.list-move {
+  transition: transform 0.3s ease;
+}
+.dropdown-enter-active,
+.dropdown-leave-active,
+.list-enter-active,
+.list-leave-active {
+  position: absolute;
+  width: 100%;
+}
+</style>
