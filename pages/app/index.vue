@@ -87,7 +87,7 @@ useHead({
           <p class="text-sm text-zinc-400 mb-1">Activities (7 days)</p>
           <div v-if="loading" class="animate-pulse">
             <div
-              class="text-xs mb-1 font-medium bg-zinc-800 text-zinc-800 rounded h-4 w-12"
+              class="text-xs mb-1 font-medium bg-zinc-800 text-zinc-800 rounded h-4 w-24"
             ></div>
           </div>
           <div
@@ -96,7 +96,7 @@ useHead({
             class="text-xs mb-1 font-medium"
           >
             {{ stats.c > 0 ? "+" : "" }}{{ stats.c.toFixed(2) }}%
-            {{ stats.c > 0 ? "up" : "down" }} from the previous week
+            {{ stats.c > 0 ? "up" : "down" }}
           </div>
         </div>
         <div v-if="loading" class="animate-pulse">
