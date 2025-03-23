@@ -1,61 +1,146 @@
 <script setup lang="ts">
-const stats = reactive({
-  totalBalance: "-",
-  volume7d: "-",
-  totalAccounts: "-",
-});
 import { buildApiUrl } from "~/utils/apiConfig";
 import { supabase } from "~/utils/supabase";
-import { debounce } from "lodash"; // for search bar
-import RecentActivites from "~/components/recentActivites.vue";
-import SearchBar from "~/components/searchBar.vue";
+import { debounce } from "lodash";
+import { onClickOutside } from "@vueuse/core";
 
-const acts = ref<Activity[]>([]);
-const loading = ref(true);
 const error = ref<string | null>(null);
 const query = ref("");
 const results = ref([]);
-const gettingResults = ref(false);
-let isFocused = ref(false);
-const supabaseTable = getApiDomain().replace(/^https?:\/\//, ""); // remove url junk
+const fetching = ref(false);
+const isFocused = ref(false);
+const selected = ref(-1);
+const searchCon = ref(null);
 
 const searchOrgs = debounce(async (query: string) => {
   if (!query.trim()) {
-    // no query
-    gettingResults.value = false;
+    fetching.value = false;
     results.value = [];
+    selected.value = -1;
     return;
   }
+  fetching.value = true;
 
-  const { data, error } = await supabase
-    .from(supabaseTable)
-    .select("*")
-    .or(
-      `Name.ilike.%${query}%,Slug.ilike.%${query}%,Organization ID.ilike.%${query}%,Category.ilike.%${query}%`
-    )
-    .limit(10);
+  try {
+    const { data, error } = await supabase
+      .from(getApiDomain().replace(/^https?:\/\//, ""))
+      .select("*")
+      .or(
+        `Name.ilike.%${query}%,Slug.ilike.%${query}%,Organization ID.ilike.%${query}%`
+      )
+      .limit(20);
 
-  if (error) {
-    console.error("fuck ", error);
-    return;
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    results.value = data || [];
+    selected.value = results.value.length > 0 ? 0 : -1;
+  } catch (err) {
+    console.error(err);
+  } finally {
+    fetching.value = false;
   }
+}, 300);
 
-  results.value = data || [];
-  gettingResults.value = false;
-}, 300); // delay let the user finish typing before searching
+const k = (event) => {
+  if (results.value.length === 0) return;
+  switch (event.key) {
+    case "ArrowDown":
+      event.preventDefault();
+      selected.value = (selected.value + 1) % results.value.length;
+      goResult();
+      break;
+    case "ArrowUp":
+      event.preventDefault();
+      selected.value =
+        selected.value <= 0 ? results.value.length - 1 : selected.value - 1;
+      goResult();
+      break;
+    case "Tab":
+      event.preventDefault();
+      if (event.shiftKey) {
+        selected.value =
+          selected.value <= 0 ? results.value.length - 1 : selected.value - 1;
+      } else {
+        selected.value = (selected.value + 1) % results.value.length;
+      }
+      goResult();
+      break;
+    case "Enter":
+      event.preventDefault();
+      if (selected.value >= 0) {
+        sendResult(results.value[selected.value]);
+      }
+      break;
+    case "Escape":
+      event.preventDefault();
+      isFocused.value = false;
+      break;
+  }
+};
+
+const sendResult = (org) => {
+  const router = useRouter();
+  router.push(`/app/org/${org["Organization ID"]}`);
+  query.value = "";
+  results.value = [];
+  selected.value = -1;
+  isFocused.value = false;
+};
+
+const goResult = () => {
+  nextTick(() => {
+    const selectedElement = document.getElementById(
+      `search-result-${selected.value}`
+    );
+    if (selectedElement) {
+      selectedElement.scrollIntoView({ block: "nearest" });
+    }
+  });
+};
+
+const f = () => {
+  isFocused.value = true;
+};
+
+const b = () => {
+  setTimeout(() => {
+    isFocused.value = false;
+  }, 150);
+};
+
+onMounted(() => {
+  onClickOutside(searchCon.value, () => {
+    isFocused.value = false;
+  });
+
+  const slash = (event) => {
+    if (event.key === "/" && document.activeElement?.tagName !== "INPUT") {
+      event.preventDefault();
+      document.getElementById("search-input")?.focus();
+    }
+  };
+  window.addEventListener("keydown", slash);
+  onUnmounted(() => {
+    window.removeEventListener("keydown", slash);
+  });
+});
 
 watch(query, (newQuery) => {
-  gettingResults.value = true;
+  if (newQuery.trim()) {
+    fetching.value = true;
+  }
   searchOrgs(newQuery);
 });
 </script>
 <template>
   <div class="mb-4">
-    <div class="relative">
-      <!-- mag glass-->
+    <div ref="searchCon" class="relative">
       <div
         class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-        v-if="!gettingResults"
+        v-if="!fetching"
       >
         <svg
           class="h-5 w-5 text-zinc-400"
@@ -70,7 +155,6 @@ watch(query, (newQuery) => {
           />
         </svg>
       </div>
-      <!-- spinner -->
       <div
         class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
         v-else
@@ -96,64 +180,107 @@ watch(query, (newQuery) => {
           ></path>
         </svg>
       </div>
-      <input
-        v-model="query"
-        @focus="isFocused = true"
-        @blur="isFocused = false"
-        type="text"
-        class="block w-full bg-zinc-900 rounded-lg py-3 pl-10 pr-3 text-white placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-        placeholder="Search for organizations on HCB..."
-      />
+
       <div
-        v-if="isFocused && !gettingResults && !query"
-        class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg"
+        class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
       >
-        <div class="px-4 py-2 text-zinc-400">
-          Welcome to HCBScan search! This is still being worked on, but for the
-          time being, you can search for organizations by name, category, URL
-          slug, or just the organization ID.
-        </div>
-      </div>
-      <div>
-        <div
-          v-if="gettingResults"
-          class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg"
+        <span
+          class="px-2 py-0.5 text-xs rounded bg-zinc-700 text-zinc-400"
+          v-show="!isFocused"
         >
-          <div class="px-4 py-2 text-zinc-400 animate-pulse">Searching...</div>
-        </div>
+          /
+        </span>
       </div>
 
-      <!-- results -->
+      <input
+        id="search-input"
+        v-model="query"
+        @focus="f"
+        @blur="b"
+        @keydown="k"
+        type="text"
+        class="block w-full bg-zinc-900 rounded-lg py-3 pl-10 pr-10 text-white placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+        placeholder="Search for organizations on HCB..."
+        autocomplete="off"
+      />
       <div
-        v-if="results.length > 0"
-        class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10"
+        v-if="isFocused && !fetching && !query"
+        class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg overflow-hidden"
+      >
+        <div class="px-4 py-3 text-zinc-400 border-b border-zinc-700">
+          <p>Start typing to search for organizations. You can search by:</p>
+          <ul class="mt-1 text-sm list-disc pl-5 space-y-1">
+            <li>Organization name</li>
+            <li>Category</li>
+            <li>URL slug</li>
+            <li>Organization ID</li>
+          </ul>
+          <p class="mt-2 text-xs text-zinc-500">
+            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">↑/↓</span> to
+            navigate •
+            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">Tab</span> to
+            cycle •
+            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">Enter</span>
+            to select
+          </p>
+        </div>
+      </div>
+      <div
+        v-if="fetching && isFocused"
+        class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg"
+      >
+        <div class="px-4 py-2 text-zinc-400 animate-pulse">Searching...</div>
+      </div>
+      <div
+        v-if="results.length > 0 && isFocused"
+        class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10 max-h-80 overflow-y-auto"
       >
         <div
-          v-for="org in results"
+          v-for="(org, index) in results"
+          :id="`search-result-${index}`"
           :key="org['Organization ID']"
-          class="px-4 py-2 hover:bg-zinc-700 cursor-pointer flex justify-between items-center rounded-lg transition duration-200 ease-in-out"
+          :class="[
+            'px-4 py-3 cursor-pointer flex justify-between items-center transition duration-200 ease-in-out',
+            selected === index
+              ? 'bg-blue-900/40 border-l-2 border-blue-500'
+              : 'hover:bg-zinc-700 border-l-2 border-transparent',
+          ]"
+          @mouseenter="selected = index"
+          @click="sendResult(org)"
         >
-          <NuxtLink
-            :to="`/app/org/${org['Organization ID']}`"
-            class="flex-grow"
-          >
-            <div>
-              <div class="text-white font-semibold">{{ org.Name }}</div>
-              <div class="text-zinc-400 text-sm">{{ org.Slug }}</div>
+          <div class="flex-grow">
+            <div class="text-white font-semibold">{{ org.Name }}</div>
+            <div class="flex items-center mt-1">
+              <span class="text-zinc-400 text-sm">{{ org.Slug }}</span>
+              <span
+                v-if="org.Category"
+                class="ml-2 px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
+              >
+                {{ org.Category }}
+              </span>
             </div>
-          </NuxtLink>
-          <div class="text-zinc-400 text-sm ml-4">
-            Balance: {{ fixMoney(org.Balance) }}
+          </div>
+          <div class="text-zinc-400 text-sm ml-4 text-right">
+            <div>Balance: {{ fixMoney(org.Balance) }}</div>
+            <div class="text-xs text-zinc-500 mt-1 font-mono">
+              {{ org["Organization ID"] }}
+            </div>
           </div>
         </div>
       </div>
       <div
-        v-else-if="!gettingResults && query"
+        v-else-if="!fetching && query && isFocused"
         class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10"
       >
-        <div class="px-4 py-2 text-red-400">
-          Hmm, that did not pull up anything in the database. Either what you
-          are looking for does not exist or it has not been indexed yet.
+        <div class="px-4 py-3 text-red-400">
+          <p>
+            We looked everywhere but we can't find anything with the query
+            <span class="font-semibold">{{ query }}</span>
+          </p>
+          <p class="text-sm text-zinc-400 mt-1">
+            This could be because, the organization is not indexed yet, it does
+            not exist, or you made a typo looking for something else.
+          </p>
         </div>
       </div>
     </div>
