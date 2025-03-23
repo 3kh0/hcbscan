@@ -1,14 +1,8 @@
-<br />
-<h1>
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/6b56aa00-a81d-499e-ba06-cc417f6906a1" alt="Logo" />
-  <br>HCBScan
+<h1 align="center">
+  <img src="./public/readme.png" alt="Logo" />
+  <br />HCBScan
 </h1>
-  <p align="center">
-    The first public explorer for HCB transactions and organizations.
-    <br />
-    </p>
-</p>
+<h3 align="center">The first public explorer for HCB transactions and organizations.</h3>
 <p align="center">
   <a href="#about">About</a> •
   <a href="#features">Features</a> •
@@ -18,8 +12,6 @@
   <a href="#deployment">Deployment</a> •
   <a href="#license">License</a>
 </p>
-
-[![test build](https://github.com/3kh0/hcbscan/actions/workflows/build.yml/badge.svg)](https://github.com/3kh0/hcbscan/actions/workflows/build.yml)
 
 ## About
 
@@ -45,9 +37,6 @@ hcbscan/
 │   ├── css/                 # tailwind + overrides
 │   └── img/                 # images
 ├── components/              # reusable components
-│   ├── actDetail.vue        # activity details
-│   ├── apiSettings.vue      # api settings
-│   └── txnDetail.vue        # transaction details
 ├── layouts/
 │   └── default.vue          # default layout
 ├── pages/                   # the meat and bones
@@ -60,10 +49,6 @@ hcbscan/
 ├── public/                  # stuff, ignore
 ├── server/                  # not sure why this is here honestly
 ├── utils/                   # utility functions
-│   ├── apiConfig.js         # handle third party api
-│   ├── math.js              # math functions
-│   ├── orgcrawl.js          # the indexer
-│   └── supabase.js          # supabase client
 ├── app.vue                  # nothing much here
 └── nuxt.config.ts           # nuxt configuration
 ```
