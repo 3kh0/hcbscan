@@ -23,7 +23,7 @@
 
 ## About
 
-HCBScan is an open-source explorer for [Hack Club Bank](https://hcb.hackclub.com/) that allows you to search for organizations, view transactions, and explore public financial data. It is built using [Nuxt](https://nuxt.com) and [Vue](https://vuejs.org) with a little help from [Supabase](https://supabase.com/) and it uses the [HCB API](https://hcb.hackclub.com/docs/api/v3) to fetch data.
+HCBScan is an open-source explorer for [HCB](https://hcb.hackclub.com/) that allows you to search for organizations, view transactions, and explore public financial data. It is built using [Nuxt](https://nuxt.com) and [Vue](https://vuejs.org) with a little help from [Supabase](https://supabase.com/) and it uses the [HCB API](https://hcb.hackclub.com/docs/api/v3) to fetch data.
 
 ### Live Demo
 
