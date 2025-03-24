@@ -2,6 +2,7 @@
 const stats = reactive({
   balance: "-",
   volume7d: "-",
+  volumePast: "-",
   accounts: "-",
   c: 0,
 });
@@ -14,9 +15,8 @@ import SearchBar from "~/components/searchBar.vue";
 const table = getApiDomain().replace(/^https?:\/\//, ""); // remove url junk
 const loading = ref(true);
 
-const c = (c, p) => {
-  if (!p || p === 0) return 0;
-  return ((c - p) / p) * 100;
+const c = (a: number, b: number) => {
+  return ((a - b) / b) * 100;
 };
 
 const fetch = async () => {
@@ -36,8 +36,10 @@ const fetch = async () => {
 
     const { data: volume } = await supabase.rpc("count_volume");
     const { data: volumePast } = await supabase.rpc("count_volume_previous");
+    console.log(volume, volumePast);
 
     stats.volume7d = volume || "-";
+    stats.volumePast = volumePast || "-";
 
     if (volume && volumePast) {
       stats.c = c(volume, volumePast);
@@ -95,8 +97,9 @@ useHead({
             :class="stats.c > 0 ? 'text-green-500' : 'text-rose-500'"
             class="text-xs mb-1 font-medium"
           >
-            {{ stats.c > 0 ? "+" : "" }}{{ stats.c.toFixed(2) }}%
-            {{ stats.c > 0 ? "up" : "down" }}
+            {{ stats.c > 0 ? "+" : "" }}{{ stats.c.toFixed(0) }}%
+            {{ stats.c > 0 ? "up" : "down" }} from
+            {{ stats.volumePast.toLocaleString() }}
           </div>
         </div>
         <div v-if="loading" class="animate-pulse">
