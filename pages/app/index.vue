@@ -36,7 +36,6 @@ const fetch = async () => {
 
     const { data: volume } = await supabase.rpc("count_volume");
     const { data: volumePast } = await supabase.rpc("count_volume_previous");
-    console.log(volume, volumePast);
 
     stats.volume7d = volume || "-";
     stats.volumePast = volumePast || "-";
