@@ -24,4 +24,4 @@ logs
 .env.*
 !.env.example
 
-orgs.csv
+users.json

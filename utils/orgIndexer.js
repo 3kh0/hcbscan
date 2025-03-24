@@ -2,6 +2,8 @@
 // and then sync them to the supabase table using service role
 import axios from "axios";
 import { supabaseAdmin } from "./supabase-admin.js";
+import fs from "fs";
+import path from "path";
 
 // CONFIG OPTIONS
 const HCB_DOMAIN = "hcb.hackclub.com";
@@ -16,6 +18,7 @@ async function yoink() {
   let page = 1;
   let all = [];
   let hasMoreData = true;
+  let allUsers = {};
 
   console.log(`[${time()}] start`);
 
@@ -31,6 +34,26 @@ async function yoink() {
         console.log(`[${time()}] no more to yoink`);
         hasMoreData = false;
       } else {
+        data.forEach((org) => {
+          if (org.users && Array.isArray(org.users)) {
+            org.users.forEach((user) => {
+              if (!allUsers[user.id]) {
+                allUsers[user.id] = {
+                  id: user.id,
+                  name: user.full_name,
+                  avatar: user.photo,
+                  orgs: {},
+                };
+              }
+              allUsers[user.id].orgs[org.id] = {
+                id: org.id,
+                name: org.name,
+                logo: org.logo || null,
+              };
+            });
+          }
+        });
+
         all = all.concat(data);
         console.log(
           `[${time()}] yoinked page ${page}, yoinked ${
@@ -47,6 +70,19 @@ async function yoink() {
       console.error(`${error.response?.status}, raw:`, error.response?.data);
       break;
     }
+  }
+
+  const usrArray = Object.values(allUsers).map((user) => {
+    user.orgs = Object.values(user.orgs);
+    return user;
+  });
+
+  try {
+    const usrPath = path.join(process.cwd(), "users.json");
+    fs.writeFileSync(usrPath, JSON.stringify(usrArray, null, 2));
+    console.log(`[${time()}] saved ${usrArray.length} rows`);
+  } catch (error) {
+    console.error(`[${time()}] ah shit it broke `, error.message);
   }
 
   console.log(
@@ -106,6 +142,15 @@ async function runSync() {
     const all = await yoink();
     await sync(all);
     console.log(`[${time()}] sync done for ${HCB_DOMAIN}...`);
+
+    try {
+      const { execSync } = await import("child_process");
+      console.log(`[${time()}] starting user indexer...`);
+      execSync("node utils/usrIndexer.js", { stdio: "inherit" });
+    } catch (error) {
+      console.error(`[${time()}] error in user indexer:`, error.message);
+    }
+
     return true;
   } catch (error) {
     console.error(`[${time()}] sync failed for ${HCB_DOMAIN} `, error.message);
