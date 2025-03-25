@@ -11,7 +11,7 @@ const error = ref<string | null>(null);
 
 const pubMsg = computed(() => {
   if (!orgData.value?.public_message) return "";
-  const pubMsg = orgData.value.public_message // fix things that marked does not catch
+  const pubMsg = orgData.value.public_message
     .replace(/\]\s*\n\s*\(/g, "](")
     .replace(/\[(.*?)\]\s*\((.*?)\)/g, (_, text, url) => {
       if (url.includes(text)) return `[${text}](${url})`;
@@ -444,16 +444,15 @@ watch(orgData, (metadata) => {
                 </div>
               </td>
             </tr>
-            <!-- coming soon
             <tr>
               <td class="py-2 px-4 border-zinc-700 text-center" colspan="4">
                 <NuxtLink
-                  :to="`/app/org/${route.params.id}/transactions`"
+                  :to="`/app/org/${route.params.id}/txns`"
                   class="text-blue-400"
                   >View all transactions</NuxtLink
                 >
-              </td> to do make this happen
-            </tr>-->
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

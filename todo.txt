@@ -2,7 +2,6 @@
 - Caching of data from HCB (stored on supabase, would make site much much faster)
 - Pretty print recent action types
 - Setup a image proxy to load images much faster (tried wsrv.nl but many things broke with it)
-- View more page for transactions on orgs
 - Analytics opt out
 - Animations???
 - Public API for other functions (eg total value held by hcb) (kinda already out, but make it more offical instead of scraping my db)
