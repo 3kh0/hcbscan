@@ -148,7 +148,7 @@ onMounted(() => {
     >
       <div class="max-w-7xl mx-auto px-4 pt-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="space-y-4" :class="{ 'fade-in-up': fot }">
+          <div class="space-y-4">
             <h3 class="text-xl font-bold">HCBScan</h3>
             <p class="text-zinc-500 dark:text-zinc-400">
               HCBScan is an open-source explorer for HCB that allows you to
@@ -163,13 +163,7 @@ onMounted(() => {
               >. We do not have control over the data provided by the API.
             </p>
           </div>
-          <div
-            class="space-y-4"
-            :class="{
-              'fade-in-up': fot,
-              'delay-100': fot,
-            }"
-          >
+          <div class="space-y-4">
             <h3 class="text-xl font-bold">Links</h3>
             <ul class="space-y-2">
               <li>
@@ -242,13 +236,7 @@ onMounted(() => {
               </li>
             </ul>
           </div>
-          <div
-            class="space-y-4"
-            :class="{
-              'fade-in-up': fot,
-              'delay-200': fot,
-            }"
-          >
+          <div>
             <h3 class="text-xl font-bold">Status</h3>
             <div class="space-y-2">
               <template v-if="loading">
@@ -349,10 +337,6 @@ onMounted(() => {
         </div>
         <div
           class="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-800 text-center text-sm text-zinc-400 mx-auto"
-          :class="{
-            'fade-in-up': fot,
-            'delay-300': fot,
-          }"
         >
           <p class="max-w-3xl mx-auto">
             HCBScan is not affiliated, fiscally sponsored, or endorsed by HCB.
@@ -364,32 +348,3 @@ onMounted(() => {
     </footer>
   </div>
 </template>
-<style scoped>
-.fade-in-up {
-  animation: a 0.6s ease-out forwards;
-  opacity: 0;
-}
-
-.delay-100 {
-  animation-delay: 0.1s;
-}
-
-.delay-200 {
-  animation-delay: 0.2s;
-}
-
-.delay-300 {
-  animation-delay: 0.3s;
-}
-
-@keyframes a {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-</style>
