@@ -63,6 +63,15 @@ onMounted(() => {
 <template>
   <div class="max-w-7xl mx-auto">
     <div
+      class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4 text-center"
+    >
+      <span class="text-red-400"
+        >Due to changes in the HCB API, data may be delayed and/or incorrect.
+        These are not issues that I can fix and we are working with the HCB team
+        for this to be resolved.</span
+      >
+    </div>
+    <div
       v-if="isCustom"
       class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4 text-center"
     >
