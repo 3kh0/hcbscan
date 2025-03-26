@@ -94,13 +94,39 @@ async function yoink() {
 }
 
 async function sync(organizations) {
-  const formatted = organizations.map((org) => ({
-    "Organization ID": org.id,
-    Name: org.name,
-    Slug: org.slug,
-    Category: org.category,
-    Balance: org.balances?.balance_cents || 0,
-  }));
+  const { data: existing, error: error } = await supabaseAdmin
+    .from(HCB_DOMAIN)
+    .select('"Organization ID", Added')
+    .is("Added", null);
+
+  if (error) {
+    console.error(`[${time()}] error fetching existing orgs:`, error.message);
+  }
+
+  const noTime = new Set();
+  if (existing) {
+    existing.forEach((org) => {
+      noTime.add(org["Organization ID"]);
+    });
+  }
+
+  const now = new Date().toISOString();
+
+  const formatted = organizations.map((org) => {
+    const formattedOrg = {
+      "Organization ID": org.id,
+      Name: org.name,
+      Slug: org.slug,
+      Category: org.category,
+      Balance: org.balances?.balance_cents || 0,
+    };
+
+    if (!noTime.has(org.id)) {
+      formattedOrg.Added = now;
+    }
+
+    return formattedOrg;
+  });
 
   console.log(`[${time()}] starting sync for ${formatted.length} rows`);
 
