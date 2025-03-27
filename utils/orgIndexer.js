@@ -1,6 +1,6 @@
 // tool to manually grab all orgs and their balances from the api
 // and then sync them to the supabase table using service role
-import axios from "axios";
+import { apiClient } from "./apiConfig.js";
 import { supabaseAdmin } from "./supabase-admin.js";
 import fs from "fs";
 import path from "path";
@@ -25,7 +25,7 @@ async function yoink() {
   while (hasMoreData) {
     try {
       console.log(`[${time()}] yoinking page ${page}...`);
-      const response = await axios.get(
+      const response = await apiClient.get(
         `https://${HCB_DOMAIN}/api/v3/organizations?page=${page}&per_page=100`
       );
       const data = response.data;

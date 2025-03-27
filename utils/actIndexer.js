@@ -1,5 +1,5 @@
 // Tool to fetch recent activities from the HCB API and save them to the database
-import axios from "axios";
+import { apiClient } from "./apiConfig.js";
 import { supabaseAdmin } from "./supabase-admin.js";
 
 // CONFIG OPTIONS
@@ -17,11 +17,8 @@ async function yoinkPage(page) {
   try {
     console.log(`[${time()}] yoinking page ${page}...`);
 
-    const response = await axios.get(
-      `https://${HCB_DOMAIN}/api/v3/activities?page=${page}&per_page=${PER_PAGE}`,
-      {
-        headers: { Accept: "application/json" },
-      }
+    const response = await apiClient.get(
+      `https://${HCB_DOMAIN}/api/v3/activities?page=${page}&per_page=${PER_PAGE}`
     );
 
     const activities = response.data;

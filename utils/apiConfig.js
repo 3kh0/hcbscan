@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export function getApiDomain() {
   if (process.server) return "https://hcb.hackclub.com";
 
@@ -26,3 +28,9 @@ export function buildApiUrl(endpoint) {
   const fixup = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
   return `${domain}${fixup}`;
 }
+
+export const apiClient = axios.create({
+  headers: {
+    "User-Agent": "HCBScan/1.0",
+  },
+});
