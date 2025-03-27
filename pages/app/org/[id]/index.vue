@@ -30,7 +30,21 @@ onMounted(async () => {
         headers: { Accept: "application/json" },
       }
     );
-    if (!response.ok) throw new Error("org not found");
+    if (!response.ok) {
+      const { valid } = await fetch(
+        `https://api.saahild.com/api/hcb_revers/${route.params.id}/available`,
+        {
+          headers: {
+            "User-Agent": "HcbScan /1.0 ()",
+          },
+        }
+      ).then((r) => r.json());
+      if (!valid) {
+        throw new Error("Org is private");
+      } else {
+        throw new Error("Org does not exist");
+      }
+    }
     orgData.value = await response.json();
     loading.value = false;
 
@@ -112,8 +126,7 @@ watch(orgData, (metadata) => {
       class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center"
     >
       <p class="text-red-400">
-        It seems like we can not load this organization right now. It is either
-        private or does not exist.
+        {{ error }}
       </p>
     </div>
     <div v-else>
