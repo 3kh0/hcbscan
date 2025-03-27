@@ -35,7 +35,7 @@ onMounted(async () => {
         `https://api.saahild.com/api/hcb_revers/${route.params.id}/available`,
         {
           headers: {
-            "User-Agent": "HcbScan /1.0 ()",
+            "User-Agent": "HCBScan/1.0",
           },
         }
       ).then((r) => r.json());
