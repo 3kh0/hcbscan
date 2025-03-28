@@ -34,3 +34,17 @@ export const apiClient = axios.create({
     "User-Agent": "HCBScan/1.0",
   },
 });
+
+export function handleQuery() {
+  if (process.server) return;
+
+  const d = new URLSearchParams(window.location.search);
+  const a = d.get("custom_instance");
+
+  if (a) {
+    const b = a.startsWith("http") ? a : `https://${a}`;
+    const c = b.replace(/\/+$/, "");
+    localStorage.setItem("hcb-domain", c);
+    console.log(`custom instance set to: ${c}`);
+  }
+}
