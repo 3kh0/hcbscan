@@ -16,16 +16,16 @@ onMounted(async () => {
       .eq("id", userId);
 
     if (uerror) {
-      console.error(uerror);
-      throw new Error(uerror.message);
+      throw new Error("Failed to fetch user data.");
     }
 
     if (!data || data.length === 0) {
-      throw new Error(`User ${userId} not found`);
+      throw new Error(`User ${userId} not found.`);
     }
+
     udata.value = data[0];
   } catch (e) {
-    error.value = e instanceof Error ? e.message : "Failed to load user";
+    error.value = e instanceof Error ? e.message : "An unknown error occurred.";
     console.error("Error loading user:", error.value);
   } finally {
     loading.value = false;
@@ -60,6 +60,7 @@ watch(udata, (newudata) => {
   }
 });
 </script>
+
 <template>
   <div class="mx-auto">
     <div v-if="loading" class="flex flex-col items-center justify-center py-12">
@@ -85,29 +86,11 @@ watch(udata, (newudata) => {
       </svg>
       <p class="mt-4 text-white animate-pulse">Loading user data...</p>
     </div>
-    <div
-      v-else-if="error"
-      class="bg-red-500/10 border border-red-500/20 rounded-lg p-6 text-center my-8"
-    >
-      <div class="flex flex-col items-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-12 w-12 text-red-400 mb-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          />
-        </svg>
-        <h3 class="text-xl font-bold text-red-400 mb-2">User not found</h3>
-        <p class="text-zinc-400">{{ error }}</p>
-      </div>
+
+    <div v-else-if="error">
+      <ErrorBanner :message="error" />
     </div>
+
     <div v-else-if="udata" class="space-y-6">
       <div class="flex items-center mb-6">
         <img

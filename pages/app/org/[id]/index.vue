@@ -23,6 +23,7 @@ const pubMsg = computed(() => {
 
 onMounted(async () => {
   try {
+    loading.value = true;
     const response = await fetch(
       buildApiUrl(`api/v3/organizations/${route.params.id}`),
       {
@@ -30,6 +31,7 @@ onMounted(async () => {
         headers: { Accept: "application/json" },
       }
     );
+
     if (!response.ok) {
       const { valid } = await fetch(
         `https://api.saahild.com/api/hcb_revers/${route.params.id}/available`,
@@ -40,13 +42,12 @@ onMounted(async () => {
         }
       ).then((r) => r.json());
       if (!valid) {
-        throw new Error("Org is private");
+        throw new Error("This organization is private and cannot be viewed.");
       } else {
-        throw new Error("Org does not exist");
+        throw new Error("This organization does not exist.");
       }
     }
     orgData.value = await response.json();
-    loading.value = false;
 
     const transactionsResponse = await fetch(
       buildApiUrl(
@@ -57,13 +58,17 @@ onMounted(async () => {
         headers: { Accept: "application/json" },
       }
     );
-    if (!transactionsResponse.ok) throw new Error("transactions not found");
+
+    if (!transactionsResponse.ok) {
+      throw new Error("Failed to fetch transactions.");
+    }
+
     transactions.value = await transactionsResponse.json();
     txnsLoading.value = false;
   } catch (e) {
     error.value =
-      e instanceof Error ? e.message : "failed to load organization";
-    console.error(error);
+      e instanceof Error ? e.message : "Failed to load organization data.";
+    console.error("Error:", error.value);
   } finally {
     loading.value = false;
   }
@@ -121,16 +126,12 @@ watch(orgData, (metadata) => {
       </svg>
       <p class="mt-4 text-white animate-pulse">Loading organization...</p>
     </div>
-    <div
-      v-else-if="error"
-      class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center"
-    >
-      <p class="text-red-400">
-        {{ error }}
-      </p>
+
+    <div v-else-if="error">
+      <ErrorBanner :message="error" />
     </div>
+
     <div v-else>
-      <!-- header -->
       <div class="flex items-center justify-center mb-6">
         <a :href="orgData?.logo" target="_blank" rel="noreferrer">
           <img
@@ -145,7 +146,6 @@ watch(orgData, (metadata) => {
         </h1>
       </div>
 
-      <!-- balances -->
       <div class="flex flex-col md:flex-row gap-4 mb-6">
         <div class="bg-zinc-900 p-4 rounded-lg flex-1">
           <h2 class="text-sm text-zinc-400">Confirmed Balance</h2>
@@ -161,7 +161,6 @@ watch(orgData, (metadata) => {
         </div>
       </div>
 
-      <!-- stats -->
       <table class="w-full mb-6 border-collapse bg-zinc-900 text-sm rounded-lg">
         <thead>
           <tr class="text-left">
@@ -342,13 +341,11 @@ watch(orgData, (metadata) => {
         </tbody>
       </table>
 
-      <!-- public msg -->
       <div v-if="pubMsg" class="mb-6 bg-zinc-900 p-4 rounded-lg pub">
         <h2 class="text-xl font-semibold mb-2">Public Message</h2>
         <div v-html="pubMsg"></div>
       </div>
 
-      <!-- users -->
       <div v-if="orgData?.users?.length > 0" class="mb-6">
         <h2 class="text-xl font-semibold mb-2">Users</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -374,6 +371,7 @@ watch(orgData, (metadata) => {
       <div v-else class="bg-zinc-900 p-4 rounded-lg">
         <p class="text-zinc-400">No users found associated with this account</p>
       </div>
+
       <div
         v-if="txnsLoading"
         class="flex flex-col items-center justify-center py-12 bg-zinc-900 rounded-lg"
@@ -400,7 +398,6 @@ watch(orgData, (metadata) => {
         </svg>
         <p class="mt-4 text-white animate-pulse">Loading transactions...</p>
       </div>
-      <!-- recents -->
       <div v-else class="mb-6">
         <h2 class="text-xl font-semibold mb-2">Recent Transactions</h2>
         <table class="w-full border-collapse bg-zinc-900 text-sm rounded-lg">

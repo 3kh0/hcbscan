@@ -8,21 +8,25 @@ const error = ref<string | null>(null);
 
 const getTxn = async () => {
   try {
+    loading.value = true;
     const response = await fetch(
       buildApiUrl(`api/v3/transactions/${route.params.id}`),
       { headers: { Accept: "application/json" } }
     );
+
     if (!response.ok) throw new Error("Transaction not found");
+
     txnData.value = await response.json();
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Failed to load transaction";
-    console.error("Something went wrong", error);
+    console.error("Error loading transaction:", error.value);
   } finally {
     loading.value = false;
   }
 };
 
 onMounted(getTxn);
+
 useHead({
   title: "Viewing transaction - HCBScan",
   meta: [
@@ -52,7 +56,6 @@ watch(txnData, (metadata) => {
 
 <template>
   <div class="mx-auto">
-    <!-- load -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-12">
       <svg
         class="animate-spin h-8 w-8 text-white"
@@ -76,17 +79,12 @@ watch(txnData, (metadata) => {
       </svg>
       <p class="mt-4 text-white animate-pulse">Loading transaction...</p>
     </div>
-    <!-- error -->
-    <div
-      v-else-if="error"
-      class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center"
-    >
-      <p class="text-red-400">{{ error }}</p>
+
+    <div v-else-if="error">
+      <ErrorBanner :message="error" />
     </div>
 
-    <!-- txn -->
     <div v-else-if="txnData" class="space-y-6">
-      <!-- head -->
       <div class="flex items-center justify-between mb-4">
         <div>
           <h1 class="text-xl font-bold font-mono">{{ txnData.id }}</h1>
@@ -106,7 +104,6 @@ watch(txnData, (metadata) => {
         </div>
       </div>
 
-      <!-- top -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-0">
         <div class="bg-zinc-900 rounded-lg p-4">
           <p class="text-sm text-zinc-400">Amount</p>
@@ -133,7 +130,6 @@ watch(txnData, (metadata) => {
         </div>
       </div>
 
-      <!-- detail -->
       <div class="bg-zinc-900 rounded-lg my-4" v-if="txnData">
         <table class="w-full">
           <thead>
@@ -201,7 +197,6 @@ watch(txnData, (metadata) => {
         </table>
       </div>
 
-      <!-- detail data -->
       <txnDetail :type="txnData.type" :id="txnData[txnData.type]?.id" />
     </div>
   </div>

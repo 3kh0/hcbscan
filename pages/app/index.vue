@@ -14,6 +14,7 @@ import SearchBar from "~/components/searchBar.vue";
 
 const table = getApiDomain().replace(/^https?:\/\//, ""); // remove url junk
 const loading = ref(true);
+const error = ref<string | null>(null);
 
 const c = (a: number, b: number) => {
   return ((a - b) / b) * 100;
@@ -23,26 +24,47 @@ const fetch = async () => {
   loading.value = true;
   try {
     // org count
-    const { count } = await supabase
+    const { count, error: countError } = await supabase
       .from(table)
       .select("*", { count: "exact", head: true });
+    if (countError)
+      throw new Error(
+        `Failed to fetch organization count: ${countError.message}`
+      );
     stats.accounts = count || "-";
 
     // total value
-    const { data } = await supabase.rpc("sum_balance", {
-      table_name: table,
-    });
-    stats.balance = fixMoney(data || "-");
+    const { data: balanceData, error: balanceError } = await supabase.rpc(
+      "sum_balance",
+      {
+        table_name: table,
+      }
+    );
+    if (balanceError)
+      throw new Error(`Failed to fetch total balance: ${balanceError.message}`);
+    stats.balance = balanceData ? fixMoney(balanceData) : "-";
 
-    const { data: volume } = await supabase.rpc("count_volume");
-    const { data: volumePast } = await supabase.rpc("count_volume_previous");
-
+    const { data: volume, error: volumeError } = await supabase.rpc(
+      "count_volume"
+    );
+    if (volumeError)
+      throw new Error(`Failed to fetch 7-day volume: ${volumeError.message}`);
     stats.volume7d = volume || "-";
+
+    const { data: volumePast, error: volumePastError } = await supabase.rpc(
+      "count_volume_previous"
+    );
+    if (volumePastError)
+      throw new Error(
+        `Failed to fetch previous volume: ${volumePastError.message}`
+      );
     stats.volumePast = volumePast || "-";
 
     if (volume && volumePast) {
       stats.c = c(volume, volumePast);
     }
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : "An unknown error occurred.";
   } finally {
     loading.value = false;
   }
@@ -73,6 +95,10 @@ useHead({
   <div>
     <!-- search bar -->
     <SearchBar />
+
+    <div v-if="error" class="mb-4">
+      <ErrorBanner :message="error" />
+    </div>
 
     <!-- stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
