@@ -14,14 +14,21 @@ const formatActivityKey = (key: string) => {
 
 onMounted(async () => {
   try {
+    loading.value = true;
     const response = await fetch(
-      buildApiUrl(`api/v3/activities/${route.params.id}`),
+      buildApiUrl(`api/v3/activities/${activityId}`),
       { headers: { Accept: "application/json" } }
     );
-    if (!response.ok) throw new Error("Activity not found");
+
+    if (!response.ok) {
+      throw new Error(
+        "Failed to fetch activity as this activity does not exist."
+      );
+    }
+
     activityData.value = await response.json();
   } catch (e) {
-    error.value = e instanceof Error ? e.message : "Failed to load activity";
+    error.value = e instanceof Error ? e.message : "An unknown error occurred.";
   } finally {
     loading.value = false;
   }
@@ -56,7 +63,6 @@ watch(activityData, (metadata) => {
 
 <template>
   <div class="mx-auto">
-    <!-- load -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-12">
       <svg
         class="animate-spin h-8 w-8 text-white"
@@ -81,17 +87,11 @@ watch(activityData, (metadata) => {
       <p class="mt-4 text-white animate-pulse">Loading activity...</p>
     </div>
 
-    <!-- error -->
-    <div
-      v-else-if="error"
-      class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center"
-    >
-      <p class="text-red-400">{{ error }}</p>
+    <div v-else-if="error">
+      <ErrorBanner :message="error" />
     </div>
 
-    <!-- act -->
     <div v-else-if="activityData" class="space-y-6">
-      <!-- head -->
       <div class="flex items-center justify-between mb-4">
         <div>
           <h1 class="text-xl font-bold font-mono">{{ activityData.id }}</h1>
@@ -100,7 +100,6 @@ watch(activityData, (metadata) => {
         <p class="text-zinc-400">{{ date(activityData.created_at) }}</p>
       </div>
 
-      <!-- org -->
       <div class="bg-zinc-900 rounded-lg p-4 mb-4">
         <h2 class="text-sm text-zinc-400 mb-3">Organization</h2>
         <div class="flex items-center gap-4">
@@ -124,7 +123,6 @@ watch(activityData, (metadata) => {
         </div>
       </div>
 
-      <!-- user -->
       <div v-if="activityData.user" class="bg-zinc-900 rounded-lg p-4 mb-4">
         <h2 class="text-sm text-zinc-400 mb-3">Performed By</h2>
         <div class="flex items-center gap-3">
@@ -142,7 +140,6 @@ watch(activityData, (metadata) => {
         </div>
       </div>
 
-      <!-- data -->
       <div class="bg-zinc-900 rounded-lg mb-4">
         <table class="w-full">
           <tbody class="divide-y divide-zinc-800">

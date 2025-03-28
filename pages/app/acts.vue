@@ -34,22 +34,28 @@ const gimmeData = async (page: number) => {
         headers: { Accept: "application/json" },
       }
     );
-    if (!response.ok) throw new Error("ah fuck it broke");
+    if (!response.ok) throw new Error("Failed to load activities.");
+
     const data = await response.json();
     acts.value = data;
   } catch (e) {
-    error.value = e instanceof Error ? e.message : "something something";
-    console.error(error);
+    error.value = e instanceof Error ? e.message : "An unknown error occurred.";
+    console.error("Error loading activities:", error.value);
   } finally {
     loading.value = false;
   }
 };
 
 const changePage = async (page: number) => {
-  await router.push({ query: { page: page.toString() } });
-  await gimmeData(page);
-  currentPage.value = page;
-  window.scrollTo(0, 0);
+  try {
+    await router.push({ query: { page: page.toString() } });
+    await gimmeData(page);
+    currentPage.value = page;
+    window.scrollTo(0, 0);
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : "Failed to change page.";
+    console.error("Error changing page:", error.value);
+  }
 };
 
 watch(
@@ -68,11 +74,11 @@ onMounted(() => {
 });
 
 useHead({
-  title: "Viewing recent activites - HCBScan",
+  title: "Viewing recent activities - HCBScan",
   meta: [
     {
       name: "description",
-      content: "View all the recent activies and browse them using HCBScan",
+      content: "View all the recent activities and browse them using HCBScan",
     },
   ],
 });
@@ -80,8 +86,11 @@ useHead({
 
 <template>
   <div class="space-y-4">
-    <!-- list -->
-    <div class="bg-zinc-900 rounded-lg p-6">
+    <div v-if="error" class="mb-4">
+      <ErrorBanner :message="error" />
+    </div>
+
+    <div v-else class="bg-zinc-900 rounded-lg p-6">
       <h2 class="text-xl font-semibold mb-4">Activities list</h2>
       <p class="text-sm text-zinc-400 mb-4">
         Only showing recent activities from HCB organizations that are in
@@ -90,7 +99,7 @@ useHead({
         to 15 seconds.
       </p>
       <div class="overflow-x-auto">
-        <table class="w-full" v-if="!error">
+        <table class="w-full">
           <thead>
             <tr class="text-left text-zinc-400 text-sm">
               <th class="pb-4">ID</th>
@@ -182,20 +191,9 @@ useHead({
             </tr>
           </tbody>
         </table>
-        <div
-          v-else
-          class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center"
-        >
-          <p class="text-red-400">
-            Whoops, something broke! This is most likely because the HCB server
-            is overloaded or was too slow to respond. Try reloading the page or
-            waiting a bit. Error: {{ error }}
-          </p>
-        </div>
       </div>
     </div>
 
-    <!-- Bottom Pagination -->
     <div class="flex items-center justify-between bg-zinc-900 p-4 rounded-lg">
       <button
         @click="changePage(currentPage - 1)"

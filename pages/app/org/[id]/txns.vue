@@ -30,7 +30,7 @@ async function load(page = 1, append = false) {
       }
     );
 
-    if (!response.ok) throw new Error("Failed to load transactions");
+    if (!response.ok) throw new Error("Failed to load transactions.");
 
     const data = await response.json();
 
@@ -47,15 +47,17 @@ async function load(page = 1, append = false) {
     currentPage.value = page;
   } catch (e) {
     error.value =
-      e instanceof Error ? e.message : "Failed to load transactions";
-    console.error(error.value);
+      e instanceof Error
+        ? e.message
+        : "An unknown error occurred while loading transactions.";
+    console.error("Error loading transactions:", error.value);
   } finally {
     loading.value = false;
     loading2.value = false;
   }
 }
 
-async function o() {
+async function loadOrganization() {
   try {
     const response = await fetch(
       buildApiUrl(`api/v3/organizations/${orgId.value}`),
@@ -65,30 +67,32 @@ async function o() {
       }
     );
 
-    if (!response.ok) throw new Error("Organization not found");
+    if (!response.ok) throw new Error("Failed to load organization data.");
 
     orgData.value = await response.json();
   } catch (e) {
     error.value =
-      e instanceof Error ? e.message : "Failed to load organization";
-    console.error(error.value);
+      e instanceof Error
+        ? e.message
+        : "An unknown error occurred while loading the organization.";
+    console.error("Error loading organization:", error.value);
   }
 }
 
-function m() {
+function loadMoreTransactions() {
   if (loading2.value || !hasMore.value) return;
   load(currentPage.value + 1, true);
 }
 
 const mt = ref(null);
 onMounted(() => {
-  o();
+  loadOrganization();
   load();
 
   const observer = new IntersectionObserver(
     (entries) => {
       if (entries[0].isIntersecting && !loading2.value && hasMore.value) {
-        m();
+        loadMoreTransactions();
       }
     },
     { threshold: 0.5 }
@@ -161,14 +165,11 @@ watch(orgData, (metadata) => {
       </svg>
       <p class="mt-4 text-white animate-pulse">Loading transactions...</p>
     </div>
-    <div
-      v-else-if="error"
-      class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center"
-    >
-      <p class="text-red-400">
-        {{ error }}
-      </p>
+
+    <div v-else-if="error">
+      <ErrorBanner :message="error" />
     </div>
+
     <div v-else>
       <div class="text-center mb-4">
         <div class="flex items-center justify-center">
