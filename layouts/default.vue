@@ -1,6 +1,6 @@
 <script setup>
 const runtimeConfig = useRuntimeConfig();
-import { getApiDomain } from "~/utils/apiConfig";
+import { getApiDomain, handleQuery } from "~/utils/apiConfig";
 import { supabase } from "~/utils/supabase";
 import * as math from "~/utils/math.js";
 
@@ -45,6 +45,7 @@ const current = computed(() => {
 
 const fot = ref(false);
 onMounted(() => {
+  handleQuery();
   fetch();
   const observer = new IntersectionObserver(
     ([entry]) => {

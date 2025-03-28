@@ -41,7 +41,7 @@ const error = ref<string | null>(null);
 const isMain = getApiDomain().includes("hcb.hackclub.com");
 const maxActs = 25;
 
-const fetch = async (isInitialLoad = false) => {
+const fetchActivities = async (isInitialLoad = false) => {
   if (isInitialLoad) {
     loading.value = true;
   } else {
@@ -54,27 +54,40 @@ const fetch = async (isInitialLoad = false) => {
     let newActs = [];
 
     if (isMain) {
-      console.log("getting from cache");
-      const { data: data, error: fetchError } = await supabase
+      console.log("Fetching activities from cache...");
+      const { data, error: fetchError } = await supabase
         .from("hcb.hackclub.com-acts")
         .select("*")
         .order("Created At", { ascending: false })
         .limit(maxActs);
 
-      if (fetchError) throw new Error(fetchError.message);
-      if (!data) throw new Error("no activities found");
+      if (fetchError) {
+        console.error("Supabase fetch error:", fetchError);
+        throw new Error(fetchError.message);
+      }
+      if (!data) {
+        console.error("No activities found in cache.");
+        throw new Error("No activities found in cache.");
+      }
       newActs = data.map(t);
     } else {
-      console.log("cache miss, getting from API");
-      const res = await fetch(
-        buildApiUrl(`api/v3/activities?page=1&per_page=${maxActs}`),
-        {
-          headers: { Accept: "application/json" },
-        }
-      );
+      console.log("Fetching activities from API...");
+      const response = await fetch(buildApiUrl(`api/v3/activities?page=1&per_page=${maxActs}`));
+      if (!response.ok) {
+        console.error(
+          "API response error:",
+          response.status,
+          response.statusText
+        );
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      }
 
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      newActs = await res.json();
+      try {
+        newActs = await response.json();
+      } catch (jsonError) {
+        console.error("Error parsing JSON response:", jsonError);
+        throw new Error("Failed to parse API response as JSON.");
+      }
     }
 
     if (isInitialLoad || acts.value.length === 0) {
@@ -91,21 +104,24 @@ const fetch = async (isInitialLoad = false) => {
       }
     }
   } catch (e) {
-    error.value = e instanceof Error ? e.message : "unknown error";
-    console.error("Error loading: ", error.value);
+    error.value = e instanceof Error ? e.message : "Unknown error occurred.";
+    console.error("Error loading activities:", e);
   } finally {
     loading.value = false;
     re.value = false;
   }
 };
 
-onMounted(async () => {
-  await fetch(true);
-  const r = setInterval(() => {
-    fetch(false);
+onMounted(() => {
+  fetchActivities(true);
+  const i = setInterval(() => {
+    if (!loading.value && !re.value) {
+      fetchActivities(false);
+    }
   }, 30000);
+
   onUnmounted(() => {
-    clearInterval(r);
+    clearInterval(i);
   });
 });
 </script>
