@@ -24,34 +24,52 @@ const pubMsg = computed(() => {
 onMounted(async () => {
   try {
     loading.value = true;
-    const response = await fetch(
-      buildApiUrl(`api/v3/organizations/${route.params.id}`),
-      {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      }
-    );
 
-    if (!response.ok) {
-      const { valid } = await fetch(
-        `https://api.saahild.com/api/hcb_revers/${route.params.id}/available`,
+    const isSwitch = route.params.id;
+    const isId = isSwitch.startsWith("org_");
+
+    if (isId) {
+      const response = await fetch(
+        buildApiUrl(`api/v3/organizations/${isSwitch}`),
         {
-          headers: {
-            "User-Agent": "HCBScan/1.0",
-          },
+          method: "GET",
+          headers: { Accept: "application/json" },
         }
-      ).then((r) => r.json());
-      if (!valid) {
-        throw new Error("This organization is private and cannot be viewed.");
-      } else {
+      );
+
+      if (!response.ok) {
         throw new Error("This organization does not exist.");
       }
+
+      orgData.value = await response.json();
+    } else {
+      const response = await fetch(
+        buildApiUrl(`api/v3/organizations/${isSwitch}`)
+      );
+
+      if (!response.ok) {
+        const { valid } = await fetch(
+          `https://api.saahild.com/api/hcb_revers/${isSwitch}/available`,
+          {
+            headers: {
+              "User-Agent": "HCBScan/1.0",
+            },
+          }
+        ).then((r) => r.json());
+
+        if (!valid) {
+          throw new Error("This organization is private and cannot be viewed.");
+        } else {
+          throw new Error("This organization does not exist.");
+        }
+      }
+
+      orgData.value = await response.json();
     }
-    orgData.value = await response.json();
 
     const transactionsResponse = await fetch(
       buildApiUrl(
-        `api/v3/organizations/${route.params.id}/transactions?per_page=25`
+        `api/v3/organizations/${isisSwitch}/transactions?per_page=25`
       ),
       {
         method: "GET",
