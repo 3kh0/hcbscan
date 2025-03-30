@@ -1,5 +1,5 @@
-import { apiClient } from "./apiConfig.js";
-import { supabaseAdmin } from "./supabase/supabase-admin.js";
+import { apiClient } from "../apiConfig.js";
+import { supabaseAdmin } from "../supabase/supabase-admin.js";
 
 function time() {
   return new Date().toLocaleTimeString("en-US", {
