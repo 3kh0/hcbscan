@@ -68,9 +68,7 @@ onMounted(async () => {
     }
 
     const transactionsResponse = await fetch(
-      buildApiUrl(
-        `api/v3/organizations/${isisSwitch}/transactions?per_page=25`
-      ),
+      buildApiUrl(`api/v3/organizations/${isSwitch}/transactions?per_page=25`),
       {
         method: "GET",
         headers: { Accept: "application/json" },
