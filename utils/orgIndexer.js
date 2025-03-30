@@ -1,7 +1,7 @@
 // tool to manually grab all orgs and their balances from the api
 // and then sync them to the supabase table using service role
 import { apiClient } from "./apiConfig.js";
-import { supabaseAdmin } from "./supabase-admin.js";
+import { supabaseAdmin } from "./supabase/supabase-admin.js";
 import fs from "fs";
 import path from "path";
 

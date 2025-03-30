@@ -8,7 +8,7 @@ const stats = reactive({
 });
 
 import { buildApiUrl } from "~/utils/apiConfig";
-import { supabase } from "~/utils/supabase";
+import { supabase } from "~/utils/supabase/supabase";
 import RecentActivites from "~/components/recentActivites.vue";
 import SearchBar from "~/components/searchBar.vue";
 

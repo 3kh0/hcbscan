@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { buildApiUrl, getApiDomain } from "~/utils/apiConfig";
-import { supabase } from "~/utils/supabase";
+import { supabase } from "~/utils/supabase/supabase";
 
 interface Activity {
   "Activity ID": string;

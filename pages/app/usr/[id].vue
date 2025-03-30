@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { supabase } from "~/utils/supabase";
+import { supabase } from "~/utils/supabase/supabase";
 
 const route = useRoute();
 const userId = route.params.id;

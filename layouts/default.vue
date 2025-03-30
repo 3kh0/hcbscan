@@ -1,7 +1,7 @@
 <script setup>
 const runtimeConfig = useRuntimeConfig();
 import { getApiDomain, handleQuery } from "~/utils/apiConfig";
-import { supabase } from "~/utils/supabase";
+import { supabase } from "~/utils/supabase/supabase";
 import * as math from "~/utils/math.js";
 
 const status = ref([]);

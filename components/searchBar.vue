@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { buildApiUrl } from "~/utils/apiConfig";
-import { supabase } from "~/utils/supabase";
+import { supabase } from "~/utils/supabase/supabase";
 import { debounce } from "lodash";
 import { onClickOutside } from "@vueuse/core";
 
@@ -394,8 +394,11 @@ watch(query, (newQuery) => {
                   :class="{
                     'bg-green-500/10 border border-green-500/20 text-green-400':
                       new Date() - new Date(org.Added) <= 30 * 60 * 1000,
+                    'bg-orange-500/10 border border-orange-500/20 text-orange-400':
+                      new Date() - new Date(org.Added) > 30 * 60 * 1000 &&
+                      new Date() - new Date(org.Added) <= 24 * 60 * 60 * 1000,
                     'bg-red-500/10 border border-red-500/20 text-red-400':
-                      new Date() - new Date(org.Added) > 30 * 60 * 1000,
+                      new Date() - new Date(org.Added) > 24 * 60 * 60 * 1000,
                   }"
                 >
                   Updated: {{ relativeTime(org.Added) }}
