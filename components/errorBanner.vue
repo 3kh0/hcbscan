@@ -42,7 +42,7 @@ import { Title } from "#components";
 const props = defineProps({
   title: {
     type: String,
-    required: true,
+    required: false,
   },
   message: {
     type: String,
