@@ -72,7 +72,7 @@ const fetchActivities = async (isInitialLoad = false) => {
       newActs = data.map(t);
     } else {
       console.log("Fetching activities from API...");
-      const response = await fetch(buildApiUrl(`api/v3/activities?page=1&per_page=${maxActs}`));
+      await fetch(buildApiUrl(`api/v3/activities?page=1&per_page=${maxActs}`));
       if (!response.ok) {
         console.error(
           "API response error:",

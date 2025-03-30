@@ -388,8 +388,21 @@ watch(query, (newQuery) => {
                   </span>
                 </div>
               </div>
+              <div>
+                <div
+                  class="inline-block px-2 py-0.5 text-xs font-mono rounded-full"
+                  :class="{
+                    'bg-green-500/10 border border-green-500/20 text-green-400':
+                      new Date() - new Date(org.Added) <= 30 * 60 * 1000,
+                    'bg-red-500/10 border border-red-500/20 text-red-400':
+                      new Date() - new Date(org.Added) > 30 * 60 * 1000,
+                  }"
+                >
+                  Updated: {{ relativeTime(org.Added) }}
+                </div>
+              </div>
               <div class="text-zinc-400 text-sm ml-4 text-right">
-                <div>Balance: {{ fixMoney(org.Balance) }}</div>
+                <div class="mt-1">Balance: {{ fixMoney(org.Balance) }}</div>
                 <div class="text-xs text-zinc-500 mt-1 font-mono">
                   {{ org["Organization ID"] }}
                 </div>
