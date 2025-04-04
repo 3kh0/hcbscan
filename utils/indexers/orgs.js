@@ -172,9 +172,17 @@ async function runSync() {
     try {
       const { execSync } = await import("child_process");
       console.log(`[${time()}] starting user indexer...`);
-      execSync("node utils/usrIndexer.js", { stdio: "inherit" });
+      execSync("node utils/indexers/users.js", { stdio: "inherit" });
     } catch (error) {
       console.error(`[${time()}] error in user indexer:`, error.message);
+    }
+
+    try {
+      const { execSync } = await import("child_process");
+      console.log(`[${time()}] starting historical indexer...`);
+      execSync("node utils/indexers/pastOrgs.js", { stdio: "inherit" });
+    } catch (error) {
+      console.error(`[${time()}] error in historical indexer:`, error.message);
     }
 
     return true;
