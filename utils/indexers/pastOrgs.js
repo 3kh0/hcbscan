@@ -7,19 +7,33 @@ function time() {
   });
 }
 
-async function fetchOrgsWithNullAdded() {
-  console.log(`[${time()}] what do we need to update today?`);
+async function update() {
+  const threezero = new Date();
+  threezero.setMinutes(threezero.getMinutes() - 30);
+  const threezeroISO = threezero.toISOString();
+
+  console.log(
+    `[${time()}] checking for nulls and entries older than ${threezeroISO}`
+  );
+
   const { data, error } = await supabaseAdmin
     .from("hcb.hackclub.com")
-    .select('"Organization ID"')
-    .is("Added", null);
+    .select('"Organization ID", Added')
+    .or(`Added.is.null,Added.lt.${threezeroISO}`);
 
   if (error) {
     console.error(`[${time()}] ah fuck it broke`, error.message);
     throw error;
   }
 
-  console.log(`[${time()}] found ${data.length} that need updating`);
+  const nullCount = data.filter((item) => item.Added === null).length;
+  const outdatedCount = data.length - nullCount;
+
+  console.log(
+    `[${time()}] found ${
+      data.length
+    } that need updating (${nullCount} nulls, ${outdatedCount} outdated)`
+  );
   return data;
 }
 
@@ -81,7 +95,7 @@ async function sync() {
     console.log(`[${time()}] starting updates`);
 
     // Step 1: Fetch organizations with null "Added" column
-    const orgsToUpdate = await fetchOrgsWithNullAdded();
+    const orgsToUpdate = await update();
 
     const updatedOrgs = [];
     for (const org of orgsToUpdate) {
