@@ -61,11 +61,11 @@ async function yoink(orgId) {
   }
 }
 
-async function syncUpdatedOrgs(updatedOrgs) {
-  console.log(`[${time()}] starting sync for ${updatedOrgs.length} rows`);
+async function syncupdated(updated) {
+  console.log(`[${time()}] starting sync for ${updated.length} rows`);
 
-  for (let i = 0; i < updatedOrgs.length; i += 100) {
-    const batch = updatedOrgs.slice(i, i + 100);
+  for (let i = 0; i < updated.length; i += 100) {
+    const batch = updated.slice(i, i + 100);
     const { data, error } = await supabaseAdmin
       .from("hcb.hackclub.com")
       .upsert(batch, {
@@ -81,8 +81,7 @@ async function syncUpdatedOrgs(updatedOrgs) {
       );
     }
 
-    // Respect Supabase API rate limits
-    if (i + 100 < updatedOrgs.length) {
+    if (i + 100 < updated.length) {
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
   }
@@ -94,20 +93,18 @@ async function sync() {
   try {
     console.log(`[${time()}] starting updates`);
 
-    // Step 1: Fetch organizations with null "Added" column
     const orgsToUpdate = await update();
 
-    const updatedOrgs = [];
+    const updated = [];
     for (const org of orgsToUpdate) {
       const updatedOrg = await yoink(org["Organization ID"]);
       if (updatedOrg) {
-        updatedOrgs.push(updatedOrg);
+        updated.push(updatedOrg);
       }
     }
 
-    // Step 3: Sync updated organizations back to the database
-    if (updatedOrgs.length > 0) {
-      await syncUpdatedOrgs(updatedOrgs);
+    if (updated.length > 0) {
+      await syncupdated(updated);
     } else {
       console.log(`[${time()}] none to update!`);
     }
