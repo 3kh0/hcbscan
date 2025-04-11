@@ -379,7 +379,7 @@ watch(orgData, (metadata) => {
             />
             <div>
               <p class="font-md">{{ user.full_name }}</p>
-              <p v-if="user.admin" class="text-sm text-red-400">Admin</p>
+              <p v-if="user.admin" class="text-sm text-red-400">⚡ Admin</p>
             </div>
           </div>
         </div>
