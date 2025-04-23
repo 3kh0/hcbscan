@@ -472,11 +472,18 @@ watch(orgData, (metadata) => {
             </tr>
             <tr>
               <td class="py-2 px-4 border-zinc-700 text-center" colspan="4">
-                <NuxtLink
-                  :to="`/app/org/${route.params.id}/txns`"
-                  class="text-blue-400"
-                  >View all transactions</NuxtLink
-                >
+                <div class="flex items-center justify-center gap-4">
+                  <NuxtLink
+                    :to="`/app/org/${route.params.id}/txns`"
+                    class="text-blue-400"
+                    >View all transactions</NuxtLink
+                  >
+                  <NuxtLink
+                    :to="`/app/org/${route.params.id}/invoices`"
+                    class="text-blue-400"
+                    >View all invoices</NuxtLink
+                  >
+                </div>
               </td>
             </tr>
           </tbody>
