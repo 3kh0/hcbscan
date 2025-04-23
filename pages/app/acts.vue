@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { buildApiUrl } from "~/utils/apiConfig";
+import { supabase } from "~/utils/supabase/supabase";
 
 interface Activity {
   id: string;
@@ -12,6 +12,7 @@ interface Activity {
   organization: {
     name: string;
     logo: string | null;
+    id: string;
   };
 }
 
@@ -27,17 +28,45 @@ const error = ref<string | null>(null);
 const gimmeData = async (page: number) => {
   loading.value = true;
   try {
-    const response = await fetch(
-      buildApiUrl(`api/v3/activities?page=${page}&per_page=${itemsPerPage}`),
-      {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      }
-    );
-    if (!response.ok) throw new Error("Failed to load activities.");
+    const from = (page - 1) * itemsPerPage;
+    const to = from + itemsPerPage - 1;
 
-    const data = await response.json();
-    acts.value = data;
+    const { data, error: fetchError } = await supabase
+      .from("hcb.hackclub.com-acts")
+      .select(
+        `
+        "Activity ID",
+        "Key",
+        "Created At",
+        "User ID",
+        "User Name",
+        "User Photo",
+        "Organization ID",
+        "Organization Name",
+        "Organization Logo"
+      `
+      )
+      .order("Created At", { ascending: false })
+      .range(from, to);
+
+    if (fetchError) throw new Error("Failed to load activities.");
+
+    acts.value = data.map((act) => ({
+      id: act["Activity ID"],
+      key: act["Key"],
+      created_at: act["Created At"],
+      user: act["User ID"]
+        ? {
+            full_name: act["User Name"],
+            photo: act["User Photo"],
+          }
+        : null,
+      organization: {
+        name: act["Organization Name"],
+        logo: act["Organization Logo"],
+        id: act["Organization ID"],
+      },
+    }));
   } catch (e) {
     error.value = e instanceof Error ? e.message : "An unknown error occurred.";
     console.error("Error loading activities:", error.value);
