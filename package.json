@@ -11,20 +11,20 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
-    "@tailwindcss/vite": "^4.1.2",
-    "@vueuse/core": "^13.0.0",
+    "@tailwindcss/vite": "^4.1.4",
+    "@vueuse/core": "^13.1.0",
     "axios": "^1.8.4",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "json2csv": "6.0.0-alpha.2",
     "lodash": "^4.17.21",
-    "marked": "^15.0.7",
+    "marked": "^15.0.9",
     "nuxt": "^3.16.2",
-    "tailwindcss": "^4.1.2",
+    "tailwindcss": "^4.1.4",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
-    "supabase": "^2.20.5"
+    "supabase": "^2.22.4"
   },
   "packageManager": "pnpm@10.7.0",
   "pnpm": {
