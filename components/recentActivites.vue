@@ -170,12 +170,12 @@
                     r="10"
                     stroke="currentColor"
                     stroke-width="4"
-                  ></circle>
+                  />
                   <path
                     class="opacity-75"
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+                  />
                 </svg>
                 <p class="mt-4 text-white animate-pulse">
                   Loading activities...
@@ -189,8 +189,8 @@
             </td>
           </tr>
           <tr
-            v-else
             v-for="activity in acts"
+            v-else
             :key="activity.id"
             class="text-sm"
           >
@@ -209,7 +209,7 @@
                   :src="activity.user.photo"
                   :alt="activity.user.full_name"
                   class="w-6 h-6 rounded-full"
-                />
+                >
                 <span>{{ activity.user.full_name }}</span>
               </div>
               <span v-else class="text-zinc-500">System</span>
@@ -225,7 +225,7 @@
                     :src="activity.organization.logo"
                     :alt="activity.organization.name"
                     class="w-6 h-6 rounded-full"
-                  />
+                  >
                   <span> {{ activity.organization.name }}</span>
                 </div>
               </NuxtLink>

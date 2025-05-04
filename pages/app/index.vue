@@ -1,4 +1,9 @@
 <script setup lang="ts">
+  import { buildApiUrl } from "~/utils/apiConfig";
+  import { supabase } from "~/utils/supabase/supabase";
+  import RecentActivites from "~/components/recentActivites.vue";
+  import SearchBar from "~/components/searchBar.vue";
+
   const stats = reactive({
     balance: "-",
     volume7d: "-",
@@ -6,11 +11,6 @@
     accounts: "-",
     c: 0,
   });
-
-  import { buildApiUrl } from "~/utils/apiConfig";
-  import { supabase } from "~/utils/supabase/supabase";
-  import RecentActivites from "~/components/recentActivites.vue";
-  import SearchBar from "~/components/searchBar.vue";
 
   const table = getApiDomain().replace(/^https?:\/\//, ""); // remove url junk
   const loading = ref(true);

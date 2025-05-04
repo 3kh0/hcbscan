@@ -170,8 +170,8 @@
         </p>
       </div>
       <button
-        @click="indexRequest"
         class="text-md px-2 py-1 bg-yellow-600/10 border border-yellow-500/20 rounded-lg text-yellow-500 hover:bg-yellow-500/20 transition duration-200"
+        @click="indexRequest"
       >
         Index Organization
       </button>

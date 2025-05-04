@@ -1,7 +1,6 @@
 import fs from "fs";
-import path from "path";
+import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
 import { supabaseAdmin } from "../supabase/supabase-admin.js";
 
 const __filename = fileURLToPath(import.meta.url);

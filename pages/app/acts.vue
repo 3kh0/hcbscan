@@ -159,12 +159,12 @@
                       r="10"
                       stroke="currentColor"
                       stroke-width="4"
-                    ></circle>
+                    />
                     <path
                       class="opacity-75"
                       fill="currentColor"
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
+                    />
                   </svg>
                   <p class="mt-4 text-white animate-pulse">
                     Loading activities...
@@ -173,8 +173,8 @@
               </td>
             </tr>
             <tr
-              v-else
               v-for="activity in acts"
+              v-else
               :key="activity.id"
               class="text-sm"
             >
@@ -192,7 +192,7 @@
                     :src="activity.user.photo"
                     :alt="activity.user.full_name"
                     class="w-6 h-6 rounded-full"
-                  />
+                  >
                   <span>{{ activity.user.full_name }}</span>
                 </div>
                 <span v-else class="text-zinc-500">System</span>
@@ -208,7 +208,7 @@
                       :src="activity.organization.logo"
                       :alt="activity.organization.name"
                       class="w-6 h-6 rounded-full"
-                    />
+                    >
                     <span> {{ activity.organization.name }}</span>
                   </div>
                 </NuxtLink>
@@ -226,9 +226,9 @@
 
     <div class="flex items-center justify-between bg-zinc-900 p-4 rounded-lg">
       <button
-        @click="changePage(currentPage - 1)"
         :disabled="currentPage <= 1"
         class="px-4 py-2 text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed bg-zinc-800 hover:bg-zinc-700"
+        @click="changePage(currentPage - 1)"
       >
         Previous
       </button>
@@ -240,16 +240,16 @@
         <button
           v-for="offset in 3"
           :key="offset"
-          @click="changePage(currentPage + offset)"
           class="px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700"
+          @click="changePage(currentPage + offset)"
         >
           +{{ offset }}
         </button>
       </div>
 
       <button
-        @click="changePage(currentPage + 1)"
         class="px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700"
+        @click="changePage(currentPage + 1)"
       >
         Next
       </button>

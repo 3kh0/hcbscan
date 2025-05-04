@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export function getApiDomain() {
-  if (process.server) return "https://hcb.hackclub.com";
+  if (import.meta.server) return "https://hcb.hackclub.com";
 
   return localStorage.getItem("hcb-domain") || "https://hcb.hackclub.com";
 }
@@ -36,7 +36,7 @@ export const apiClient = axios.create({
 });
 
 export function handleQuery() {
-  if (process.server) return;
+  if (import.meta.server) return;
 
   const d = new URLSearchParams(window.location.search);
   const a = d.get("custom_instance");

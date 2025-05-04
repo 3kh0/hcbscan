@@ -131,7 +131,7 @@
         </div>
       </div>
 
-      <div class="bg-zinc-900 rounded-lg my-4" v-if="txnData">
+      <div v-if="txnData" class="bg-zinc-900 rounded-lg my-4">
         <table class="w-full">
           <thead>
             <tr class="text-left">
@@ -198,7 +198,7 @@
         </table>
       </div>
 
-      <txnDetail :type="txnData.type" :id="txnData[txnData.type]?.id" />
+      <txnDetail :id="txnData[txnData.type]?.id" :type="txnData.type" />
     </div>
   </div>
 </template>

@@ -21,8 +21,8 @@
       <p class="text-zinc-400">{{ message }}</p>
       <div v-if="debugInfo" class="mt-4">
         <button
-          @click="toggleDebug"
           class="text-sm text-blue-400 hover:underline"
+          @click="toggleDebug"
         >
           {{ showDebug ? "Hide Debug Info" : "Show Debug Info" }}
         </button>

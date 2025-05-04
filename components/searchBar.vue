@@ -180,8 +180,8 @@
   <div class="mb-4">
     <div ref="searchCon" class="relative">
       <div
-        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
         v-if="!fetching"
+        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
       >
         <svg
           class="h-5 w-5 text-zinc-400"
@@ -197,8 +197,8 @@
         </svg>
       </div>
       <div
-        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
         v-else
+        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
       >
         <svg
           class="animate-spin h-5 w-5 text-white"
@@ -213,12 +213,12 @@
             r="10"
             stroke="currentColor"
             stroke-width="4"
-          ></circle>
+          />
           <path
             class="opacity-75"
             fill="currentColor"
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
+          />
         </svg>
       </div>
 
@@ -226,8 +226,8 @@
         class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
       >
         <span
-          class="px-2 py-0.5 text-xs rounded bg-zinc-700 text-zinc-400"
           v-show="!isFocused"
+          class="px-2 py-0.5 text-xs rounded bg-zinc-700 text-zinc-400"
         >
           /
         </span>
@@ -236,14 +236,14 @@
       <input
         id="search-input"
         v-model="query"
-        @focus="f"
-        @blur="b"
-        @keydown="k"
         type="text"
         class="block w-full bg-zinc-900 rounded-lg py-3 pl-10 pr-10 text-white placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
         placeholder="Search for organizations or users on HCB..."
         autocomplete="off"
-      />
+        @focus="f"
+        @blur="b"
+        @keydown="k"
+      >
       <div
         v-if="isFocused && !query"
         class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg overflow-hidden"
@@ -251,35 +251,35 @@
         <div class="border-b border-zinc-700">
           <div class="flex">
             <button
-              @click="setScope('all')"
               class="px-4 py-2 text-sm transition-colors"
               :class="
                 scope === 'all'
                   ? 'text-white border-b-2 border-blue-500'
                   : 'text-zinc-400 hover:text-white'
               "
+              @click="setScope('all')"
             >
               All
             </button>
             <button
-              @click="setScope('orgs')"
               class="px-4 py-2 text-sm transition-colors"
               :class="
                 scope === 'orgs'
                   ? 'text-white border-b-2 border-blue-500'
                   : 'text-zinc-400 hover:text-white'
               "
+              @click="setScope('orgs')"
             >
               Organizations
             </button>
             <button
-              @click="setScope('users')"
               class="px-4 py-2 text-sm transition-colors"
               :class="
                 scope === 'users'
                   ? 'text-white border-b-2 border-blue-500'
                   : 'text-zinc-400 hover:text-white'
               "
+              @click="setScope('users')"
             >
               Users
             </button>
@@ -289,8 +289,8 @@
         <div class="px-4 py-3 text-zinc-400">
           <p>Start typing to search. You can search for:</p>
           <ul
-            class="mt-1 text-sm list-disc pl-5 space-y-1"
             v-if="scope !== 'users'"
+            class="mt-1 text-sm list-disc pl-5 space-y-1"
           >
             <li>Organization name</li>
             <li>Category</li>
@@ -298,8 +298,8 @@
             <li>Organization ID</li>
           </ul>
           <ul
-            class="mt-1 text-sm list-disc pl-5 space-y-1"
             v-if="scope !== 'orgs'"
+            class="mt-1 text-sm list-disc pl-5 space-y-1"
           >
             <li>User name</li>
             <li>User ID</li>
@@ -333,6 +333,7 @@
       </transition>
 
       <transition
+        v-if="results.length > 0 && isFocused"
         name="dropdown"
         enter-active-class="transition ease-out duration-300"
         enter-from-class="opacity-0 transform -translate-y-2"
@@ -340,7 +341,6 @@
         leave-active-class="transition ease-in duration-150"
         leave-from-class="opacity-100 transform translate-y-0"
         leave-to-class="opacity-0 transform -translate-y-2"
-        v-if="results.length > 0 && isFocused"
       >
         <div
           class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10 max-h-80 overflow-y-auto"
@@ -448,7 +448,7 @@
                     :src="user.avatar"
                     alt="User Avatar"
                     class="h-10 w-10 rounded-full object-cover"
-                  />
+                  >
                   <div
                     v-else
                     class="h-10 w-10 bg-zinc-700 rounded-full flex items-center justify-center"
@@ -489,6 +489,7 @@
       </transition>
 
       <transition
+        v-else-if="!fetching && query && isFocused && results.length === 0"
         name="dropdown"
         enter-active-class="transition ease-out duration-200"
         enter-from-class="opacity-0 transform -translate-y-2"
@@ -496,7 +497,6 @@
         leave-active-class="transition ease-in duration-150"
         leave-from-class="opacity-100 transform translate-y-0"
         leave-to-class="opacity-0 transform -translate-y-2"
-        v-else-if="!fetching && query && isFocused && results.length === 0"
       >
         <div
           class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10"
