@@ -332,49 +332,49 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-  type: {
-    type: String,
-    required: true,
-  },
-  id: {
-    type: String,
-    required: true,
-  },
-});
+  const props = defineProps({
+    type: {
+      type: String,
+      required: true,
+    },
+    id: {
+      type: String,
+      required: true,
+    },
+  });
 
-const detail = ref<any | null>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
+  const detail = ref<any | null>(null);
+  const loading = ref(true);
+  const error = ref<string | null>(null);
 
-const getDetail = async () => {
-  loading.value = true;
-  try {
-    const response = await fetch(
-      buildApiUrl(`api/v3/${props.type}s/${props.id}`),
-      { headers: { Accept: "application/json" } }
-    );
-    if (!response.ok)
-      throw new Error(`I am unable to analyze this ${props.type}`);
-    detail.value = await response.json();
-    console.log(detail.value);
-    console.log(props.type);
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : props.type;
-    console.error(e);
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(getDetail);
-
-const date = (dateString: string) => {
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  const getDetail = async () => {
+    loading.value = true;
+    try {
+      const response = await fetch(
+        buildApiUrl(`api/v3/${props.type}s/${props.id}`),
+        { headers: { Accept: "application/json" } }
+      );
+      if (!response.ok)
+        throw new Error(`I am unable to analyze this ${props.type}`);
+      detail.value = await response.json();
+      console.log(detail.value);
+      console.log(props.type);
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : props.type;
+      console.error(e);
+    } finally {
+      loading.value = false;
+    }
   };
-  return new Date(dateString).toLocaleDateString(undefined, options);
-};
+
+  onMounted(getDetail);
+
+  const date = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 </script>

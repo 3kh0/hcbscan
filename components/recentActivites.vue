@@ -1,129 +1,133 @@
 <script setup lang="ts">
-import { buildApiUrl, getApiDomain } from "~/utils/apiConfig";
-import { supabase } from "~/utils/supabase/supabase";
+  import { buildApiUrl, getApiDomain } from "~/utils/apiConfig";
+  import { supabase } from "~/utils/supabase/supabase";
 
-interface Activity {
-  "Activity ID": string;
-  Key: string;
-  "Created At": string;
-  "User ID": string | null;
-  "User Name": string | null;
-  "User Photo": string | null;
-  "Organization ID": string | null;
-  "Organization Name": string | null;
-  "Organization Logo": string | null;
-}
-
-function t(dbActivity: Activity) {
-  return {
-    id: dbActivity["Activity ID"],
-    key: dbActivity["Key"],
-    created_at: dbActivity["Created At"],
-    user: dbActivity["User ID"]
-      ? {
-          id: dbActivity["User ID"],
-          full_name: dbActivity["User Name"],
-          photo: dbActivity["User Photo"],
-        }
-      : null,
-    organization: {
-      id: dbActivity["Organization ID"],
-      name: dbActivity["Organization Name"],
-      logo: dbActivity["Organization Logo"],
-    },
-  };
-}
-
-const acts = ref([]);
-const loading = ref(true);
-const re = ref(false);
-const error = ref<string | null>(null);
-const isMain = getApiDomain().includes("hcb.hackclub.com");
-const maxActs = 25;
-
-const fetchActivities = async (isInitialLoad = false) => {
-  if (isInitialLoad) {
-    loading.value = true;
-  } else {
-    re.value = true;
+  interface Activity {
+    "Activity ID": string;
+    Key: string;
+    "Created At": string;
+    "User ID": string | null;
+    "User Name": string | null;
+    "User Photo": string | null;
+    "Organization ID": string | null;
+    "Organization Name": string | null;
+    "Organization Logo": string | null;
   }
 
-  error.value = null;
+  function t(dbActivity: Activity) {
+    return {
+      id: dbActivity["Activity ID"],
+      key: dbActivity["Key"],
+      created_at: dbActivity["Created At"],
+      user: dbActivity["User ID"]
+        ? {
+            id: dbActivity["User ID"],
+            full_name: dbActivity["User Name"],
+            photo: dbActivity["User Photo"],
+          }
+        : null,
+      organization: {
+        id: dbActivity["Organization ID"],
+        name: dbActivity["Organization Name"],
+        logo: dbActivity["Organization Logo"],
+      },
+    };
+  }
 
-  try {
-    let newActs = [];
+  const acts = ref([]);
+  const loading = ref(true);
+  const re = ref(false);
+  const error = ref<string | null>(null);
+  const isMain = getApiDomain().includes("hcb.hackclub.com");
+  const maxActs = 25;
 
-    if (isMain) {
-      console.log("Fetching activities from cache...");
-      const { data, error: fetchError } = await supabase
-        .from("hcb.hackclub.com-acts")
-        .select("*")
-        .order("Created At", { ascending: false })
-        .limit(maxActs);
-
-      if (fetchError) {
-        console.error("Supabase fetch error:", fetchError);
-        throw new Error(fetchError.message);
-      }
-      if (!data) {
-        console.error("No activities found in cache.");
-        throw new Error("No activities found in cache.");
-      }
-      newActs = data.map(t);
+  const fetchActivities = async (isInitialLoad = false) => {
+    if (isInitialLoad) {
+      loading.value = true;
     } else {
-      console.log("Fetching activities from API...");
-      await fetch(buildApiUrl(`api/v3/activities?page=1&per_page=${maxActs}`));
-      if (!response.ok) {
-        console.error(
-          "API response error:",
-          response.status,
-          response.statusText
+      re.value = true;
+    }
+
+    error.value = null;
+
+    try {
+      let newActs = [];
+
+      if (isMain) {
+        console.log("Fetching activities from cache...");
+        const { data, error: fetchError } = await supabase
+          .from("hcb.hackclub.com-acts")
+          .select("*")
+          .order("Created At", { ascending: false })
+          .limit(maxActs);
+
+        if (fetchError) {
+          console.error("Supabase fetch error:", fetchError);
+          throw new Error(fetchError.message);
+        }
+        if (!data) {
+          console.error("No activities found in cache.");
+          throw new Error("No activities found in cache.");
+        }
+        newActs = data.map(t);
+      } else {
+        console.log("Fetching activities from API...");
+        await fetch(
+          buildApiUrl(`api/v3/activities?page=1&per_page=${maxActs}`)
         );
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
-      }
+        if (!response.ok) {
+          console.error(
+            "API response error:",
+            response.status,
+            response.statusText
+          );
+          throw new Error(
+            `API error: ${response.status} ${response.statusText}`
+          );
+        }
 
-      try {
-        newActs = await response.json();
-      } catch (jsonError) {
-        console.error("Error parsing JSON response:", jsonError);
-        throw new Error("Failed to parse API response as JSON.");
-      }
-    }
-
-    if (isInitialLoad || acts.value.length === 0) {
-      acts.value = newActs;
-    } else {
-      const currentIds = new Set(acts.value.map((act) => act.id));
-      const newItems = newActs.filter((act) => !currentIds.has(act.id));
-
-      if (newItems.length > 0) {
-        acts.value = [...newItems, ...acts.value];
-        if (acts.value.length > maxActs) {
-          acts.value = acts.value.slice(0, maxActs);
+        try {
+          newActs = await response.json();
+        } catch (jsonError) {
+          console.error("Error parsing JSON response:", jsonError);
+          throw new Error("Failed to parse API response as JSON.");
         }
       }
-    }
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : "Unknown error occurred.";
-    console.error("Error loading activities:", e);
-  } finally {
-    loading.value = false;
-    re.value = false;
-  }
-};
 
-onMounted(() => {
-  fetchActivities(true);
-  const i = setInterval(() => {
-    if (!loading.value && !re.value) {
-      fetchActivities(false);
-    }
-  }, 30000);
+      if (isInitialLoad || acts.value.length === 0) {
+        acts.value = newActs;
+      } else {
+        const currentIds = new Set(acts.value.map((act) => act.id));
+        const newItems = newActs.filter((act) => !currentIds.has(act.id));
 
-  onUnmounted(() => {
-    clearInterval(i);
+        if (newItems.length > 0) {
+          acts.value = [...newItems, ...acts.value];
+          if (acts.value.length > maxActs) {
+            acts.value = acts.value.slice(0, maxActs);
+          }
+        }
+      }
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : "Unknown error occurred.";
+      console.error("Error loading activities:", e);
+    } finally {
+      loading.value = false;
+      re.value = false;
+    }
+  };
+
+  onMounted(() => {
+    fetchActivities(true);
+    const i = setInterval(() => {
+      if (!loading.value && !re.value) {
+        fetchActivities(false);
+      }
+    }, 30000);
+
+    onUnmounted(() => {
+      clearInterval(i);
+    });
   });
-});
 </script>
 
 <template>

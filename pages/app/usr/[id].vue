@@ -1,64 +1,65 @@
 <script setup lang="ts">
-import { supabase } from "~/utils/supabase/supabase";
+  import { supabase } from "~/utils/supabase/supabase";
 
-const route = useRoute();
-const userId = route.params.id;
-const udata = ref<any>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
+  const route = useRoute();
+  const userId = route.params.id;
+  const udata = ref<any>(null);
+  const loading = ref(true);
+  const error = ref<string | null>(null);
 
-onMounted(async () => {
-  try {
-    loading.value = true;
-    const { data, error: uerror } = await supabase
-      .from("hcb.hackclub.com-users")
-      .select("*")
-      .eq("id", userId);
+  onMounted(async () => {
+    try {
+      loading.value = true;
+      const { data, error: uerror } = await supabase
+        .from("hcb.hackclub.com-users")
+        .select("*")
+        .eq("id", userId);
 
-    if (uerror) {
-      throw new Error("Failed to fetch user data.");
+      if (uerror) {
+        throw new Error("Failed to fetch user data.");
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error(`User ${userId} not found.`);
+      }
+
+      udata.value = data[0];
+    } catch (e) {
+      error.value =
+        e instanceof Error ? e.message : "An unknown error occurred.";
+      console.error("Error loading user:", error.value);
+    } finally {
+      loading.value = false;
     }
+  });
 
-    if (!data || data.length === 0) {
-      throw new Error(`User ${userId} not found.`);
+  useHead({
+    title: udata.value?.name
+      ? `${udata.value.name} - HCBScan`
+      : "User Profile - HCBScan",
+    meta: [
+      {
+        name: "description",
+        content: "View user details and associated organizations on HCBScan",
+      },
+    ],
+  });
+
+  watch(udata, (newudata) => {
+    if (newudata) {
+      useHead({
+        title: `${newudata.name} - HCBScan`,
+        meta: [
+          {
+            name: "description",
+            content: `User profile for ${newudata.name} with ${
+              newudata.orgs?.length || 0
+            } organizations`,
+          },
+        ],
+      });
     }
-
-    udata.value = data[0];
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : "An unknown error occurred.";
-    console.error("Error loading user:", error.value);
-  } finally {
-    loading.value = false;
-  }
-});
-
-useHead({
-  title: udata.value?.name
-    ? `${udata.value.name} - HCBScan`
-    : "User Profile - HCBScan",
-  meta: [
-    {
-      name: "description",
-      content: "View user details and associated organizations on HCBScan",
-    },
-  ],
-});
-
-watch(udata, (newudata) => {
-  if (newudata) {
-    useHead({
-      title: `${newudata.name} - HCBScan`,
-      meta: [
-        {
-          name: "description",
-          content: `User profile for ${newudata.name} with ${
-            newudata.orgs?.length || 0
-          } organizations`,
-        },
-      ],
-    });
-  }
-});
+  });
 </script>
 
 <template>

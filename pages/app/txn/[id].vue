@@ -1,57 +1,58 @@
 <script setup lang="ts">
-import { buildApiUrl } from "~/utils/apiConfig";
+  import { buildApiUrl } from "~/utils/apiConfig";
 
-const route = useRoute();
-const txnData = ref<Transaction | null>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
+  const route = useRoute();
+  const txnData = ref<Transaction | null>(null);
+  const loading = ref(true);
+  const error = ref<string | null>(null);
 
-const getTxn = async () => {
-  try {
-    loading.value = true;
-    const response = await fetch(
-      buildApiUrl(`api/v3/transactions/${route.params.id}`),
-      { headers: { Accept: "application/json" } }
-    );
+  const getTxn = async () => {
+    try {
+      loading.value = true;
+      const response = await fetch(
+        buildApiUrl(`api/v3/transactions/${route.params.id}`),
+        { headers: { Accept: "application/json" } }
+      );
 
-    if (!response.ok) throw new Error("Transaction not found");
+      if (!response.ok) throw new Error("Transaction not found");
 
-    txnData.value = await response.json();
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : "Failed to load transaction";
-    console.error("Error loading transaction:", error.value);
-  } finally {
-    loading.value = false;
-  }
-};
+      txnData.value = await response.json();
+    } catch (e) {
+      error.value =
+        e instanceof Error ? e.message : "Failed to load transaction";
+      console.error("Error loading transaction:", error.value);
+    } finally {
+      loading.value = false;
+    }
+  };
 
-onMounted(getTxn);
+  onMounted(getTxn);
 
-useHead({
-  title: "Viewing transaction - HCBScan",
-  meta: [
-    {
-      name: "description",
-      content: "View the details of a specific transaction on HCBScan",
-    },
-  ],
-});
+  useHead({
+    title: "Viewing transaction - HCBScan",
+    meta: [
+      {
+        name: "description",
+        content: "View the details of a specific transaction on HCBScan",
+      },
+    ],
+  });
 
-watch(txnData, (metadata) => {
-  if (metadata) {
-    useHead({
-      title: `${metadata.id} - HCBScan`,
-      meta: [
-        {
-          name: "description",
-          content: `Transaction ${metadata.id} of type ${
-            metadata.type
-          } for ${fixMoney(metadata.amount_cents)}`,
-        },
-      ],
-    });
-  }
-});
+  watch(txnData, (metadata) => {
+    if (metadata) {
+      useHead({
+        title: `${metadata.id} - HCBScan`,
+        meta: [
+          {
+            name: "description",
+            content: `Transaction ${metadata.id} of type ${
+              metadata.type
+            } for ${fixMoney(metadata.amount_cents)}`,
+          },
+        ],
+      });
+    }
+  });
 </script>
 
 <template>

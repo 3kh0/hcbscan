@@ -1,40 +1,40 @@
 <script setup lang="ts">
-import { supabase } from "~/utils/supabase/supabase";
+  import { supabase } from "~/utils/supabase/supabase";
 
-interface Activity {
-  id: string;
-  key: string;
-  created_at: string;
-  user: {
-    full_name: string;
-    photo: string;
-  } | null;
-  organization: {
-    name: string;
-    logo: string | null;
+  interface Activity {
     id: string;
-  };
-}
+    key: string;
+    created_at: string;
+    user: {
+      full_name: string;
+      photo: string;
+    } | null;
+    organization: {
+      name: string;
+      logo: string | null;
+      id: string;
+    };
+  }
 
-const route = useRoute();
-const router = useRouter();
+  const route = useRoute();
+  const router = useRouter();
 
-const currentPage = ref(Number(route.query.page) || 1);
-const itemsPerPage = 50; // setting this higher can break stuff due to how long it takes to load
-const acts = ref<Activity[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
+  const currentPage = ref(Number(route.query.page) || 1);
+  const itemsPerPage = 50; // setting this higher can break stuff due to how long it takes to load
+  const acts = ref<Activity[]>([]);
+  const loading = ref(true);
+  const error = ref<string | null>(null);
 
-const gimmeData = async (page: number) => {
-  loading.value = true;
-  try {
-    const from = (page - 1) * itemsPerPage;
-    const to = from + itemsPerPage - 1;
+  const gimmeData = async (page: number) => {
+    loading.value = true;
+    try {
+      const from = (page - 1) * itemsPerPage;
+      const to = from + itemsPerPage - 1;
 
-    const { data, error: fetchError } = await supabase
-      .from("hcb.hackclub.com-acts")
-      .select(
-        `
+      const { data, error: fetchError } = await supabase
+        .from("hcb.hackclub.com-acts")
+        .select(
+          `
         "Activity ID",
         "Key",
         "Created At",
@@ -45,72 +45,73 @@ const gimmeData = async (page: number) => {
         "Organization Name",
         "Organization Logo"
       `
-      )
-      .order("Created At", { ascending: false })
-      .range(from, to);
+        )
+        .order("Created At", { ascending: false })
+        .range(from, to);
 
-    if (fetchError) throw new Error("Failed to load activities.");
+      if (fetchError) throw new Error("Failed to load activities.");
 
-    acts.value = data.map((act) => ({
-      id: act["Activity ID"],
-      key: act["Key"],
-      created_at: act["Created At"],
-      user: act["User ID"]
-        ? {
-            full_name: act["User Name"],
-            photo: act["User Photo"],
-          }
-        : null,
-      organization: {
-        name: act["Organization Name"],
-        logo: act["Organization Logo"],
-        id: act["Organization ID"],
-      },
-    }));
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : "An unknown error occurred.";
-    console.error("Error loading activities:", error.value);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const changePage = async (page: number) => {
-  try {
-    await router.push({ query: { page: page.toString() } });
-    await gimmeData(page);
-    currentPage.value = page;
-    window.scrollTo(0, 0);
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : "Failed to change page.";
-    console.error("Error changing page:", error.value);
-  }
-};
-
-watch(
-  () => route.query.page,
-  (newPage) => {
-    const page = Number(newPage) || 1;
-    if (page !== currentPage.value) {
-      gimmeData(page);
-      currentPage.value = page;
+      acts.value = data.map((act) => ({
+        id: act["Activity ID"],
+        key: act["Key"],
+        created_at: act["Created At"],
+        user: act["User ID"]
+          ? {
+              full_name: act["User Name"],
+              photo: act["User Photo"],
+            }
+          : null,
+        organization: {
+          name: act["Organization Name"],
+          logo: act["Organization Logo"],
+          id: act["Organization ID"],
+        },
+      }));
+    } catch (e) {
+      error.value =
+        e instanceof Error ? e.message : "An unknown error occurred.";
+      console.error("Error loading activities:", error.value);
+    } finally {
+      loading.value = false;
     }
-  }
-);
+  };
 
-onMounted(() => {
-  gimmeData(currentPage.value);
-});
+  const changePage = async (page: number) => {
+    try {
+      await router.push({ query: { page: page.toString() } });
+      await gimmeData(page);
+      currentPage.value = page;
+      window.scrollTo(0, 0);
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : "Failed to change page.";
+      console.error("Error changing page:", error.value);
+    }
+  };
 
-useHead({
-  title: "Viewing recent activities - HCBScan",
-  meta: [
-    {
-      name: "description",
-      content: "View all the recent activities and browse them using HCBScan",
-    },
-  ],
-});
+  watch(
+    () => route.query.page,
+    (newPage) => {
+      const page = Number(newPage) || 1;
+      if (page !== currentPage.value) {
+        gimmeData(page);
+        currentPage.value = page;
+      }
+    }
+  );
+
+  onMounted(() => {
+    gimmeData(currentPage.value);
+  });
+
+  useHead({
+    title: "Viewing recent activities - HCBScan",
+    meta: [
+      {
+        name: "description",
+        content: "View all the recent activities and browse them using HCBScan",
+      },
+    ],
+  });
 </script>
 
 <template>

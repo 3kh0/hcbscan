@@ -37,26 +37,26 @@
 </template>
 
 <script setup lang="ts">
-import { Title } from "#components";
+  import { Title } from "#components";
 
-const props = defineProps({
-  title: {
-    type: String,
-    required: false,
-  },
-  message: {
-    type: String,
-    required: true,
-  },
-  debugInfo: {
-    type: String,
-    required: false,
-  },
-});
+  const props = defineProps({
+    title: {
+      type: String,
+      required: false,
+    },
+    message: {
+      type: String,
+      required: true,
+    },
+    debugInfo: {
+      type: String,
+      required: false,
+    },
+  });
 
-const showDebug = ref(false);
+  const showDebug = ref(false);
 
-const toggleDebug = () => {
-  showDebug.value = !showDebug.value;
-};
+  const toggleDebug = () => {
+    showDebug.value = !showDebug.value;
+  };
 </script>

@@ -1,180 +1,180 @@
 <script setup lang="ts">
-import { buildApiUrl } from "~/utils/apiConfig";
-import { supabase } from "~/utils/supabase/supabase";
-import { debounce } from "lodash";
-import { onClickOutside } from "@vueuse/core";
+  import { buildApiUrl } from "~/utils/apiConfig";
+  import { supabase } from "~/utils/supabase/supabase";
+  import { debounce } from "lodash";
+  import { onClickOutside } from "@vueuse/core";
 
-const error = ref<string | null>(null);
-const query = ref("");
-const orgResults = ref([]);
-const userResults = ref([]);
-const fetching = ref(false);
-const isFocused = ref(false);
-const selected = ref(-1);
-const searchCon = ref(null);
-const scope = ref("all");
-const results = computed(() => {
-  if (scope.value === "orgs") return orgResults.value;
-  if (scope.value === "users") return userResults.value;
-  return [
-    ...orgResults.value.map((org) => ({ ...org, type: "org" })),
-    ...userResults.value.map((user) => ({ ...user, type: "user" })),
-  ];
-});
+  const error = ref<string | null>(null);
+  const query = ref("");
+  const orgResults = ref([]);
+  const userResults = ref([]);
+  const fetching = ref(false);
+  const isFocused = ref(false);
+  const selected = ref(-1);
+  const searchCon = ref(null);
+  const scope = ref("all");
+  const results = computed(() => {
+    if (scope.value === "orgs") return orgResults.value;
+    if (scope.value === "users") return userResults.value;
+    return [
+      ...orgResults.value.map((org) => ({ ...org, type: "org" })),
+      ...userResults.value.map((user) => ({ ...user, type: "user" })),
+    ];
+  });
 
-const search = debounce(async (query: string) => {
-  if (!query.trim()) {
-    fetching.value = false;
+  const search = debounce(async (query: string) => {
+    if (!query.trim()) {
+      fetching.value = false;
+      orgResults.value = [];
+      userResults.value = [];
+      selected.value = -1;
+      return;
+    }
+
+    fetching.value = true;
+
+    try {
+      if (scope.value === "all" || scope.value === "orgs") {
+        const { data: orgData, error: orgError } = await supabase
+          .from(getApiDomain().replace(/^https?:\/\//, ""))
+          .select("*")
+          .or(
+            `Name.ilike.%${query}%,Slug.ilike.%${query}%,Organization ID.ilike.%${query}%`
+          )
+          .limit(15);
+
+        if (orgError) {
+          console.error("org fail", orgError);
+        } else {
+          orgResults.value = orgData || [];
+        }
+      }
+
+      if (scope.value === "all" || scope.value === "users") {
+        const { data: userData, error: userError } = await supabase
+          .from(`${getApiDomain().replace(/^https?:\/\//, "")}-users`)
+          .select("*")
+          .or(`name.ilike.%${query}%,id.ilike.%${query}%`)
+          .limit(15);
+
+        if (userError) {
+          console.error("user fail", userError);
+        } else {
+          userResults.value = userData || [];
+        }
+      }
+
+      selected.value = results.value.length > 0 ? 0 : -1;
+    } catch (err) {
+      console.error("Search error:", err);
+    } finally {
+      fetching.value = false;
+    }
+  }, 300);
+
+  const k = (event) => {
+    if (results.value.length === 0) return;
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+        selected.value = (selected.value + 1) % results.value.length;
+        goResult();
+        break;
+      case "ArrowUp":
+        event.preventDefault();
+        selected.value =
+          selected.value <= 0 ? results.value.length - 1 : selected.value - 1;
+        goResult();
+        break;
+      case "Tab":
+        event.preventDefault();
+        if (event.shiftKey) {
+          selected.value =
+            selected.value <= 0 ? results.value.length - 1 : selected.value - 1;
+        } else {
+          selected.value = (selected.value + 1) % results.value.length;
+        }
+        goResult();
+        break;
+      case "Enter":
+        event.preventDefault();
+        if (selected.value >= 0) {
+          sendResult(results.value[selected.value]);
+        }
+        break;
+      case "Escape":
+        event.preventDefault();
+        isFocused.value = false;
+        break;
+    }
+  };
+
+  const sendResult = (result) => {
+    const router = useRouter();
+    if (result.type === "user" || result.id) {
+      router.push(`/app/usr/${result.id}`);
+    } else {
+      router.push(`/app/org/${result["Organization ID"]}`);
+    }
+
+    query.value = "";
     orgResults.value = [];
     userResults.value = [];
     selected.value = -1;
-    return;
-  }
-
-  fetching.value = true;
-
-  try {
-    if (scope.value === "all" || scope.value === "orgs") {
-      const { data: orgData, error: orgError } = await supabase
-        .from(getApiDomain().replace(/^https?:\/\//, ""))
-        .select("*")
-        .or(
-          `Name.ilike.%${query}%,Slug.ilike.%${query}%,Organization ID.ilike.%${query}%`
-        )
-        .limit(15);
-
-      if (orgError) {
-        console.error("org fail", orgError);
-      } else {
-        orgResults.value = orgData || [];
-      }
-    }
-
-    if (scope.value === "all" || scope.value === "users") {
-      const { data: userData, error: userError } = await supabase
-        .from(`${getApiDomain().replace(/^https?:\/\//, "")}-users`)
-        .select("*")
-        .or(`name.ilike.%${query}%,id.ilike.%${query}%`)
-        .limit(15);
-
-      if (userError) {
-        console.error("user fail", userError);
-      } else {
-        userResults.value = userData || [];
-      }
-    }
-
-    selected.value = results.value.length > 0 ? 0 : -1;
-  } catch (err) {
-    console.error("Search error:", err);
-  } finally {
-    fetching.value = false;
-  }
-}, 300);
-
-const k = (event) => {
-  if (results.value.length === 0) return;
-  switch (event.key) {
-    case "ArrowDown":
-      event.preventDefault();
-      selected.value = (selected.value + 1) % results.value.length;
-      goResult();
-      break;
-    case "ArrowUp":
-      event.preventDefault();
-      selected.value =
-        selected.value <= 0 ? results.value.length - 1 : selected.value - 1;
-      goResult();
-      break;
-    case "Tab":
-      event.preventDefault();
-      if (event.shiftKey) {
-        selected.value =
-          selected.value <= 0 ? results.value.length - 1 : selected.value - 1;
-      } else {
-        selected.value = (selected.value + 1) % results.value.length;
-      }
-      goResult();
-      break;
-    case "Enter":
-      event.preventDefault();
-      if (selected.value >= 0) {
-        sendResult(results.value[selected.value]);
-      }
-      break;
-    case "Escape":
-      event.preventDefault();
-      isFocused.value = false;
-      break;
-  }
-};
-
-const sendResult = (result) => {
-  const router = useRouter();
-  if (result.type === "user" || result.id) {
-    router.push(`/app/usr/${result.id}`);
-  } else {
-    router.push(`/app/org/${result["Organization ID"]}`);
-  }
-
-  query.value = "";
-  orgResults.value = [];
-  userResults.value = [];
-  selected.value = -1;
-  isFocused.value = false;
-};
-
-const goResult = () => {
-  nextTick(() => {
-    const selectedElement = document.getElementById(
-      `search-result-${selected.value}`
-    );
-    if (selectedElement) {
-      selectedElement.scrollIntoView({ block: "nearest" });
-    }
-  });
-};
-
-const setScope = (type) => {
-  scope.value = type;
-  if (query.value) {
-    search(query.value);
-  }
-};
-
-const f = () => {
-  isFocused.value = true;
-};
-
-const b = () => {
-  setTimeout(() => {
     isFocused.value = false;
-  }, 150);
-};
+  };
 
-onMounted(() => {
-  onClickOutside(searchCon.value, () => {
-    isFocused.value = false;
-  });
+  const goResult = () => {
+    nextTick(() => {
+      const selectedElement = document.getElementById(
+        `search-result-${selected.value}`
+      );
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: "nearest" });
+      }
+    });
+  };
 
-  const slash = (event) => {
-    if (event.key === "/" && document.activeElement?.tagName !== "INPUT") {
-      event.preventDefault();
-      document.getElementById("search-input")?.focus();
+  const setScope = (type) => {
+    scope.value = type;
+    if (query.value) {
+      search(query.value);
     }
   };
-  window.addEventListener("keydown", slash);
-  onUnmounted(() => {
-    window.removeEventListener("keydown", slash);
-  });
-});
 
-watch(query, (newQuery) => {
-  if (newQuery.trim()) {
-    fetching.value = true;
-  }
-  search(newQuery);
-});
+  const f = () => {
+    isFocused.value = true;
+  };
+
+  const b = () => {
+    setTimeout(() => {
+      isFocused.value = false;
+    }, 150);
+  };
+
+  onMounted(() => {
+    onClickOutside(searchCon.value, () => {
+      isFocused.value = false;
+    });
+
+    const slash = (event) => {
+      if (event.key === "/" && document.activeElement?.tagName !== "INPUT") {
+        event.preventDefault();
+        document.getElementById("search-input")?.focus();
+      }
+    };
+    window.addEventListener("keydown", slash);
+    onUnmounted(() => {
+      window.removeEventListener("keydown", slash);
+    });
+  });
+
+  watch(query, (newQuery) => {
+    if (newQuery.trim()) {
+      fetching.value = true;
+    }
+    search(newQuery);
+  });
 </script>
 <template>
   <div class="mb-4">
@@ -422,8 +422,8 @@ watch(query, (newQuery) => {
               v-for="(user, index) in scope === 'all'
                 ? userResults
                 : scope === 'users'
-                ? results
-                : []"
+                  ? results
+                  : []"
               :id="`search-result-${
                 scope === 'all' ? orgResults.length + index : index
               }`"
@@ -517,14 +517,14 @@ watch(query, (newQuery) => {
   </div>
 </template>
 <style scoped>
-.list-move {
-  transition: transform 0.3s ease;
-}
-.dropdown-enter-active,
-.dropdown-leave-active,
-.list-enter-active,
-.list-leave-active {
-  position: absolute;
-  width: 100%;
-}
+  .list-move {
+    transition: transform 0.3s ease;
+  }
+  .dropdown-enter-active,
+  .dropdown-leave-active,
+  .list-enter-active,
+  .list-leave-active {
+    position: absolute;
+    width: 100%;
+  }
 </style>

@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .js,.ts,.vue"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
@@ -25,6 +27,9 @@
     "vue-router": "latest"
   },
   "devDependencies": {
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "prettier": "^3.5.3",
     "supabase": "^2.22.6"
   },
   "packageManager": "pnpm@10.7.0",

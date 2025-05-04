@@ -1,7 +1,9 @@
 // the echo versioning system
 import { execSync } from "child_process";
 const cmSha = execSync("git rev-parse --short HEAD").toString();
-const cmDate = new Date(parseInt(execSync("git log -1 --format=%ct").toString().trim()) * 1000).toISOString();
+const cmDate = new Date(
+  parseInt(execSync("git log -1 --format=%ct").toString().trim()) * 1000
+).toISOString();
 
 import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({

@@ -1,157 +1,161 @@
 <script setup lang="ts">
-import { marked } from "marked";
-import { useRoute } from "vue-router";
-import { supabase } from "~/utils/supabase/supabase";
+  import { marked } from "marked";
+  import { useRoute } from "vue-router";
+  import { supabase } from "~/utils/supabase/supabase";
 
-const route = useRoute();
-const orgId = ref(route.params.id as string);
-const orgData = ref<any>(null);
-const transactions = ref<any[]>([]);
-const loading = ref(true);
-const txnsLoading = ref(true);
-const error = ref<string | null>(null);
-const isIndexed = ref(true);
-const askIndex = ref(false);
+  const route = useRoute();
+  const orgId = ref(route.params.id as string);
+  const orgData = ref<any>(null);
+  const transactions = ref<any[]>([]);
+  const loading = ref(true);
+  const txnsLoading = ref(true);
+  const error = ref<string | null>(null);
+  const isIndexed = ref(true);
+  const askIndex = ref(false);
 
-const pubMsg = computed(() => {
-  if (!orgData.value?.public_message) return "";
-  const pubMsg = orgData.value.public_message
-    .replace(/\]\s*\n\s*\(/g, "](")
-    .replace(/\[(.*?)\]\s*\((.*?)\)/g, (_, text, url) => {
-      if (url.includes(text)) return `[${text}](${url})`;
-      return `[${text}](${url})`;
-    })
-    .replace(/\[(.*?)\]\s*\((.*?)\)/g, (_, text, url) => `[${text}](${url})`);
-  return marked.parse(pubMsg);
-});
+  const pubMsg = computed(() => {
+    if (!orgData.value?.public_message) return "";
+    const pubMsg = orgData.value.public_message
+      .replace(/\]\s*\n\s*\(/g, "](")
+      .replace(/\[(.*?)\]\s*\((.*?)\)/g, (_, text, url) => {
+        if (url.includes(text)) return `[${text}](${url})`;
+        return `[${text}](${url})`;
+      })
+      .replace(/\[(.*?)\]\s*\((.*?)\)/g, (_, text, url) => `[${text}](${url})`);
+    return marked.parse(pubMsg);
+  });
 
-const checkIndex = async () => {
-  const { data, error } = await supabase
-    .from("hcb.hackclub.com")
-    .select('"Organization ID"')
-    .eq('"Organization ID"', orgId.value)
-    .single();
+  const checkIndex = async () => {
+    const { data, error } = await supabase
+      .from("hcb.hackclub.com")
+      .select('"Organization ID"')
+      .eq('"Organization ID"', orgId.value)
+      .single();
 
-  if (error || !data) {
-    isIndexed.value = false;
-    askIndex.value = true;
-  }
-};
-
-const indexRequest = async () => {
-  try {
-    const { data, error } = await supabase.functions.invoke("add-org", {
-      body: { id: orgId.value },
-    });
-
-    if (error) {
-      console.error(error.message);
-      alert("Failed to send index request.");
-    } else {
-      alert("Sent index request successfully.");
-      isIndexed.value = true;
-      askIndex.value = false;
+    if (error || !data) {
+      isIndexed.value = false;
+      askIndex.value = true;
     }
-  } catch (e) {
-    console.error(e);
-  }
-};
+  };
 
-onMounted(async () => {
-  await checkIndex();
-  try {
-    loading.value = true;
+  const indexRequest = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("add-org", {
+        body: { id: orgId.value },
+      });
 
-    const isSwitch = route.params.id;
-    const isId = isSwitch.startsWith("org_");
+      if (error) {
+        console.error(error.message);
+        alert("Failed to send index request.");
+      } else {
+        alert("Sent index request successfully.");
+        isIndexed.value = true;
+        askIndex.value = false;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
-    if (isId) {
-      const response = await fetch(
-        buildApiUrl(`api/v3/organizations/${isSwitch}`),
+  onMounted(async () => {
+    await checkIndex();
+    try {
+      loading.value = true;
+
+      const isSwitch = route.params.id;
+      const isId = isSwitch.startsWith("org_");
+
+      if (isId) {
+        const response = await fetch(
+          buildApiUrl(`api/v3/organizations/${isSwitch}`),
+          {
+            method: "GET",
+            headers: { Accept: "application/json" },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("This organization does not exist.");
+        }
+
+        orgData.value = await response.json();
+      } else {
+        const response = await fetch(
+          buildApiUrl(`api/v3/organizations/${isSwitch}`)
+        );
+
+        if (!response.ok) {
+          const { valid } = await fetch(
+            `https://api.saahild.com/api/hcb_revers/${isSwitch}/available`,
+            {
+              headers: {
+                "User-Agent": "HCBScan/1.0",
+              },
+            }
+          ).then((r) => r.json());
+
+          if (!valid) {
+            throw new Error(
+              "This organization is private and cannot be viewed."
+            );
+          } else {
+            throw new Error("This organization does not exist.");
+          }
+        }
+
+        orgData.value = await response.json();
+      }
+
+      const transactionsResponse = await fetch(
+        buildApiUrl(
+          `api/v3/organizations/${isSwitch}/transactions?per_page=25`
+        ),
         {
           method: "GET",
           headers: { Accept: "application/json" },
         }
       );
 
-      if (!response.ok) {
-        throw new Error("This organization does not exist.");
+      if (!transactionsResponse.ok) {
+        throw new Error("Failed to fetch transactions.");
       }
 
-      orgData.value = await response.json();
-    } else {
-      const response = await fetch(
-        buildApiUrl(`api/v3/organizations/${isSwitch}`)
-      );
-
-      if (!response.ok) {
-        const { valid } = await fetch(
-          `https://api.saahild.com/api/hcb_revers/${isSwitch}/available`,
-          {
-            headers: {
-              "User-Agent": "HCBScan/1.0",
-            },
-          }
-        ).then((r) => r.json());
-
-        if (!valid) {
-          throw new Error("This organization is private and cannot be viewed.");
-        } else {
-          throw new Error("This organization does not exist.");
-        }
-      }
-
-      orgData.value = await response.json();
+      transactions.value = await transactionsResponse.json();
+      txnsLoading.value = false;
+    } catch (e) {
+      error.value =
+        e instanceof Error ? e.message : "Failed to load organization data.";
+      console.error("Error:", error.value);
+    } finally {
+      loading.value = false;
     }
+  });
 
-    const transactionsResponse = await fetch(
-      buildApiUrl(`api/v3/organizations/${isSwitch}/transactions?per_page=25`),
+  useHead({
+    title: "Viewing organization - HCBScan",
+    meta: [
       {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      }
-    );
+        name: "description",
+        content: "View the details of a specific organization on HCBScan",
+      },
+    ],
+  });
 
-    if (!transactionsResponse.ok) {
-      throw new Error("Failed to fetch transactions.");
+  watch(orgData, (metadata) => {
+    if (metadata) {
+      useHead({
+        title: `${metadata.name} - HCBScan`,
+        meta: [
+          {
+            name: "description",
+            content: `Organization ${metadata.name} with ${fixMoney(
+              metadata.balances?.balance_cents
+            )} raised`,
+          },
+        ],
+      });
     }
-
-    transactions.value = await transactionsResponse.json();
-    txnsLoading.value = false;
-  } catch (e) {
-    error.value =
-      e instanceof Error ? e.message : "Failed to load organization data.";
-    console.error("Error:", error.value);
-  } finally {
-    loading.value = false;
-  }
-});
-
-useHead({
-  title: "Viewing organization - HCBScan",
-  meta: [
-    {
-      name: "description",
-      content: "View the details of a specific organization on HCBScan",
-    },
-  ],
-});
-
-watch(orgData, (metadata) => {
-  if (metadata) {
-    useHead({
-      title: `${metadata.name} - HCBScan`,
-      meta: [
-        {
-          name: "description",
-          content: `Organization ${metadata.name} with ${fixMoney(
-            metadata.balances?.balance_cents
-          )} raised`,
-        },
-      ],
-    });
-  }
-});
+  });
 </script>
 
 <template>
@@ -561,13 +565,13 @@ watch(orgData, (metadata) => {
 </template>
 
 <style scoped>
-.pub :deep(a) {
-  color: rgb(96, 165, 250);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
+  .pub :deep(a) {
+    color: rgb(96, 165, 250);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 
-.pub :deep(a:hover) {
-  color: rgb(147, 197, 253);
-}
+  .pub :deep(a:hover) {
+    color: rgb(147, 197, 253);
+  }
 </style>

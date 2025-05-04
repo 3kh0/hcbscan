@@ -1,94 +1,96 @@
 <script setup lang="ts">
-const stats = reactive({
-  balance: "-",
-  volume7d: "-",
-  volumePast: "-",
-  accounts: "-",
-  c: 0,
-});
-
-import { buildApiUrl } from "~/utils/apiConfig";
-import { supabase } from "~/utils/supabase/supabase";
-import RecentActivites from "~/components/recentActivites.vue";
-import SearchBar from "~/components/searchBar.vue";
-
-const table = getApiDomain().replace(/^https?:\/\//, ""); // remove url junk
-const loading = ref(true);
-const error = ref<string | null>(null);
-
-const c = (a: number, b: number) => {
-  return ((a - b) / b) * 100;
-};
-
-const fetch = async () => {
-  loading.value = true;
-  try {
-    // org count
-    const { count, error: countError } = await supabase
-      .from(table)
-      .select("*", { count: "exact", head: true });
-    if (countError)
-      throw new Error(
-        `Failed to fetch organization count: ${countError.message}`
-      );
-    stats.accounts = count || "-";
-
-    // total value
-    const { data: balanceData, error: balanceError } = await supabase.rpc(
-      "sum_balance",
-      {
-        table_name: table,
-      }
-    );
-    if (balanceError)
-      throw new Error(`Failed to fetch total balance: ${balanceError.message}`);
-    stats.balance = balanceData ? fixMoney(balanceData) : "-";
-
-    const { data: volume, error: volumeError } = await supabase.rpc(
-      "count_volume"
-    );
-    if (volumeError)
-      throw new Error(`Failed to fetch 7-day volume: ${volumeError.message}`);
-    stats.volume7d = volume || "-";
-
-    const { data: volumePast, error: volumePastError } = await supabase.rpc(
-      "count_volume_previous"
-    );
-    if (volumePastError)
-      throw new Error(
-        `Failed to fetch previous volume: ${volumePastError.message}`
-      );
-    stats.volumePast = volumePast || "-";
-
-    if (volume && volumePast) {
-      stats.c = c(volume, volumePast);
-    }
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : "An unknown error occurred.";
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(() => {
-  fetch();
-  const a = setInterval(fetch, 30000);
-
-  onBeforeUnmount(() => {
-    clearInterval(a);
+  const stats = reactive({
+    balance: "-",
+    volume7d: "-",
+    volumePast: "-",
+    accounts: "-",
+    c: 0,
   });
-});
 
-useHead({
-  title: "HCBScan",
-  meta: [
-    {
-      name: "description",
-      content:
-        "The HCB Explorer -  The first public explorer for HCB transactions and organizations. ",
-    },
-  ],
-});
+  import { buildApiUrl } from "~/utils/apiConfig";
+  import { supabase } from "~/utils/supabase/supabase";
+  import RecentActivites from "~/components/recentActivites.vue";
+  import SearchBar from "~/components/searchBar.vue";
+
+  const table = getApiDomain().replace(/^https?:\/\//, ""); // remove url junk
+  const loading = ref(true);
+  const error = ref<string | null>(null);
+
+  const c = (a: number, b: number) => {
+    return ((a - b) / b) * 100;
+  };
+
+  const fetch = async () => {
+    loading.value = true;
+    try {
+      // org count
+      const { count, error: countError } = await supabase
+        .from(table)
+        .select("*", { count: "exact", head: true });
+      if (countError)
+        throw new Error(
+          `Failed to fetch organization count: ${countError.message}`
+        );
+      stats.accounts = count || "-";
+
+      // total value
+      const { data: balanceData, error: balanceError } = await supabase.rpc(
+        "sum_balance",
+        {
+          table_name: table,
+        }
+      );
+      if (balanceError)
+        throw new Error(
+          `Failed to fetch total balance: ${balanceError.message}`
+        );
+      stats.balance = balanceData ? fixMoney(balanceData) : "-";
+
+      const { data: volume, error: volumeError } =
+        await supabase.rpc("count_volume");
+      if (volumeError)
+        throw new Error(`Failed to fetch 7-day volume: ${volumeError.message}`);
+      stats.volume7d = volume || "-";
+
+      const { data: volumePast, error: volumePastError } = await supabase.rpc(
+        "count_volume_previous"
+      );
+      if (volumePastError)
+        throw new Error(
+          `Failed to fetch previous volume: ${volumePastError.message}`
+        );
+      stats.volumePast = volumePast || "-";
+
+      if (volume && volumePast) {
+        stats.c = c(volume, volumePast);
+      }
+    } catch (e) {
+      error.value =
+        e instanceof Error ? e.message : "An unknown error occurred.";
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  onMounted(() => {
+    fetch();
+    const a = setInterval(fetch, 30000);
+
+    onBeforeUnmount(() => {
+      clearInterval(a);
+    });
+  });
+
+  useHead({
+    title: "HCBScan",
+    meta: [
+      {
+        name: "description",
+        content:
+          "The HCB Explorer -  The first public explorer for HCB transactions and organizations. ",
+      },
+    ],
+  });
 </script>
 
 <template>

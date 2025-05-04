@@ -1,140 +1,140 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
+  import { useRoute } from "vue-router";
 
-const route = useRoute();
-const orgId = computed(() => route.params.id as string);
-const orgData = ref<any>(null);
-const transactions = ref<any[]>([]);
-const loading = ref(true);
-const loading2 = ref(false);
-const error = ref<string | null>(null);
-const hasMore = ref(true);
-const currentPage = ref(1);
-const perPage = 25;
+  const route = useRoute();
+  const orgId = computed(() => route.params.id as string);
+  const orgData = ref<any>(null);
+  const transactions = ref<any[]>([]);
+  const loading = ref(true);
+  const loading2 = ref(false);
+  const error = ref<string | null>(null);
+  const hasMore = ref(true);
+  const currentPage = ref(1);
+  const perPage = 25;
 
-async function load(page = 1, append = false) {
-  try {
-    if (page === 1) {
-      loading.value = true;
-    } else {
-      loading2.value = true;
-    }
-
-    const response = await fetch(
-      buildApiUrl(
-        `api/v3/organizations/${orgId.value}/transactions?per_page=${perPage}&page=${page}`
-      ),
-      {
-        method: "GET",
-        headers: { Accept: "application/json" },
+  async function load(page = 1, append = false) {
+    try {
+      if (page === 1) {
+        loading.value = true;
+      } else {
+        loading2.value = true;
       }
-    );
 
-    if (!response.ok) throw new Error("Failed to load transactions.");
-
-    const data = await response.json();
-
-    if (data.length < perPage) {
-      hasMore.value = false;
-    }
-
-    if (append) {
-      transactions.value = [...transactions.value, ...data];
-    } else {
-      transactions.value = data;
-    }
-
-    currentPage.value = page;
-  } catch (e) {
-    error.value =
-      e instanceof Error
-        ? e.message
-        : "An unknown error occurred while loading transactions.";
-    console.error("Error loading transactions:", error.value);
-  } finally {
-    loading.value = false;
-    loading2.value = false;
-  }
-}
-
-async function loadOrganization() {
-  try {
-    const response = await fetch(
-      buildApiUrl(`api/v3/organizations/${orgId.value}`),
-      {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      }
-    );
-
-    if (!response.ok) throw new Error("Failed to load organization data.");
-
-    orgData.value = await response.json();
-  } catch (e) {
-    error.value =
-      e instanceof Error
-        ? e.message
-        : "An unknown error occurred while loading the organization.";
-    console.error("Error loading organization:", error.value);
-  }
-}
-
-function loadMoreTransactions() {
-  if (loading2.value || !hasMore.value) return;
-  load(currentPage.value + 1, true);
-}
-
-const mt = ref(null);
-onMounted(() => {
-  loadOrganization();
-  load();
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      if (entries[0].isIntersecting && !loading2.value && hasMore.value) {
-        loadMoreTransactions();
-      }
-    },
-    { threshold: 0.5 }
-  );
-
-  watch(mt, (el) => {
-    if (el) {
-      observer.observe(el);
-    }
-  });
-
-  onBeforeUnmount(() => {
-    if (mt.value) {
-      observer.unobserve(mt.value);
-    }
-    observer.disconnect();
-  });
-});
-
-useHead({
-  title: "Organization Transactions - HCBScan",
-  meta: [
-    {
-      name: "description",
-      content: "View all transactions for an organization on HCBScan",
-    },
-  ],
-});
-
-watch(orgData, (metadata) => {
-  if (metadata) {
-    useHead({
-      title: `${metadata.name} Transactions - HCBScan`,
-      meta: [
+      const response = await fetch(
+        buildApiUrl(
+          `api/v3/organizations/${orgId.value}/transactions?per_page=${perPage}&page=${page}`
+        ),
         {
-          name: "description",
-          content: `All transactions for ${metadata.name} on HCBScan`,
-        },
-      ],
-    });
+          method: "GET",
+          headers: { Accept: "application/json" },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to load transactions.");
+
+      const data = await response.json();
+
+      if (data.length < perPage) {
+        hasMore.value = false;
+      }
+
+      if (append) {
+        transactions.value = [...transactions.value, ...data];
+      } else {
+        transactions.value = data;
+      }
+
+      currentPage.value = page;
+    } catch (e) {
+      error.value =
+        e instanceof Error
+          ? e.message
+          : "An unknown error occurred while loading transactions.";
+      console.error("Error loading transactions:", error.value);
+    } finally {
+      loading.value = false;
+      loading2.value = false;
+    }
   }
-});
+
+  async function loadOrganization() {
+    try {
+      const response = await fetch(
+        buildApiUrl(`api/v3/organizations/${orgId.value}`),
+        {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to load organization data.");
+
+      orgData.value = await response.json();
+    } catch (e) {
+      error.value =
+        e instanceof Error
+          ? e.message
+          : "An unknown error occurred while loading the organization.";
+      console.error("Error loading organization:", error.value);
+    }
+  }
+
+  function loadMoreTransactions() {
+    if (loading2.value || !hasMore.value) return;
+    load(currentPage.value + 1, true);
+  }
+
+  const mt = ref(null);
+  onMounted(() => {
+    loadOrganization();
+    load();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading2.value && hasMore.value) {
+          loadMoreTransactions();
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    watch(mt, (el) => {
+      if (el) {
+        observer.observe(el);
+      }
+    });
+
+    onBeforeUnmount(() => {
+      if (mt.value) {
+        observer.unobserve(mt.value);
+      }
+      observer.disconnect();
+    });
+  });
+
+  useHead({
+    title: "Organization Transactions - HCBScan",
+    meta: [
+      {
+        name: "description",
+        content: "View all transactions for an organization on HCBScan",
+      },
+    ],
+  });
+
+  watch(orgData, (metadata) => {
+    if (metadata) {
+      useHead({
+        title: `${metadata.name} Transactions - HCBScan`,
+        meta: [
+          {
+            name: "description",
+            content: `All transactions for ${metadata.name} on HCBScan`,
+          },
+        ],
+      });
+    }
+  });
 </script>
 
 <template>
@@ -298,7 +298,7 @@ watch(orgData, (metadata) => {
 </template>
 
 <style scoped>
-table tr:last-child td {
-  border-bottom: none;
-}
+  table tr:last-child td {
+    border-bottom: none;
+  }
 </style>

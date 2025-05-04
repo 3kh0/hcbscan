@@ -1,64 +1,64 @@
 <script setup>
-const runtimeConfig = useRuntimeConfig();
-import { getApiDomain, handleQuery } from "~/utils/apiConfig";
-import { supabase } from "~/utils/supabase/supabase";
-import * as math from "~/utils/math.js";
+  const runtimeConfig = useRuntimeConfig();
+  import { getApiDomain, handleQuery } from "~/utils/apiConfig";
+  import { supabase } from "~/utils/supabase/supabase";
+  import * as math from "~/utils/math.js";
 
-const status = ref([]);
-let loading = ref(true);
+  const status = ref([]);
+  let loading = ref(true);
 
-const fetch = async () => {
-  loading.value = true;
-  const { data, error } = await supabase
-    .from("status-check")
-    .select("*")
-    .in("item", [1, 2, 3]);
-  if (error) {
-    console.error(error);
-    return;
-  }
-  loading.value = false;
-  status.value = data;
-};
+  const fetch = async () => {
+    loading.value = true;
+    const { data, error } = await supabase
+      .from("status-check")
+      .select("*")
+      .in("item", [1, 2, 3]);
+    if (error) {
+      console.error(error);
+      return;
+    }
+    loading.value = false;
+    status.value = data;
+  };
 
-const heart = (itemId) => {
-  const item = status.value.find((item) => item.item === itemId);
-  return item ? item.online : false;
-};
+  const heart = (itemId) => {
+    const item = status.value.find((item) => item.item === itemId);
+    return item ? item.online : false;
+  };
 
-const isCustom = computed(() => {
-  const domain = getApiDomain();
-  return domain && !domain.includes("hcb.hackclub.com");
-});
-
-const current = computed(() => {
-  try {
+  const isCustom = computed(() => {
     const domain = getApiDomain();
-    if (!domain) return "hcb.hackclub.com";
+    return domain && !domain.includes("hcb.hackclub.com");
+  });
 
-    const url = new URL(domain);
-    return url.hostname;
-  } catch (e) {
-    return getApiDomain() || "hcb.hackclub.com";
-  }
-});
+  const current = computed(() => {
+    try {
+      const domain = getApiDomain();
+      if (!domain) return "hcb.hackclub.com";
 
-const fot = ref(false);
-onMounted(() => {
-  handleQuery();
-  fetch();
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      fot.value = entry.isIntersecting;
-    },
-    { threshold: 0.2 }
-  );
+      const url = new URL(domain);
+      return url.hostname;
+    } catch (e) {
+      return getApiDomain() || "hcb.hackclub.com";
+    }
+  });
 
-  const footer = document.querySelector("#footer");
-  if (footer) {
-    observer.observe(footer);
-  }
-});
+  const fot = ref(false);
+  onMounted(() => {
+    handleQuery();
+    fetch();
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        fot.value = entry.isIntersecting;
+      },
+      { threshold: 0.2 }
+    );
+
+    const footer = document.querySelector("#footer");
+    if (footer) {
+      observer.observe(footer);
+    }
+  });
 </script>
 
 <template>

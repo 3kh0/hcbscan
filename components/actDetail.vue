@@ -127,32 +127,35 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-});
+  const props = defineProps({
+    id: {
+      type: String,
+      required: true,
+    },
+  });
 
-const detail = ref<any | null>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
+  const detail = ref<any | null>(null);
+  const loading = ref(true);
+  const error = ref<string | null>(null);
 
-const getDetail = async () => {
-  loading.value = true;
-  try {
-    const response = await fetch(buildApiUrl(`api/v3/activities/${props.id}`), {
-      headers: { Accept: "application/json" },
-    });
-    if (!response.ok) throw new Error("Activity not found");
-    detail.value = await response.json();
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : "Failed to load activity";
-    console.error(e);
-  } finally {
-    loading.value = false;
-  }
-};
+  const getDetail = async () => {
+    loading.value = true;
+    try {
+      const response = await fetch(
+        buildApiUrl(`api/v3/activities/${props.id}`),
+        {
+          headers: { Accept: "application/json" },
+        }
+      );
+      if (!response.ok) throw new Error("Activity not found");
+      detail.value = await response.json();
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : "Failed to load activity";
+      console.error(e);
+    } finally {
+      loading.value = false;
+    }
+  };
 
-onMounted(getDetail);
+  onMounted(getDetail);
 </script>

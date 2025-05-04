@@ -1,42 +1,42 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { getApiDomain, setApiDomain } from "~/utils/apiConfig";
+  import { ref, onMounted } from "vue";
+  import { getApiDomain, setApiDomain } from "~/utils/apiConfig";
 
-const apiDomain = ref("");
-const isOpen = ref(false);
-const showSuccessMessage = ref(false);
-const fadeIn = ref(false);
+  const apiDomain = ref("");
+  const isOpen = ref(false);
+  const showSuccessMessage = ref(false);
+  const fadeIn = ref(false);
 
-onMounted(() => {
-  apiDomain.value = getApiDomain();
-});
+  onMounted(() => {
+    apiDomain.value = getApiDomain();
+  });
 
-function open() {
-  isOpen.value = true;
-  setTimeout(() => {
-    fadeIn.value = true;
-  }, 50);
-}
+  function open() {
+    isOpen.value = true;
+    setTimeout(() => {
+      fadeIn.value = true;
+    }, 50);
+  }
 
-function close() {
-  fadeIn.value = false;
-  setTimeout(() => {
-    isOpen.value = false;
-  }, 300);
-}
+  function close() {
+    fadeIn.value = false;
+    setTimeout(() => {
+      isOpen.value = false;
+    }, 300);
+  }
 
-function save() {
-  setApiDomain(apiDomain.value);
+  function save() {
+    setApiDomain(apiDomain.value);
 
-  showSuccessMessage.value = true;
-  location.reload();
-}
+    showSuccessMessage.value = true;
+    location.reload();
+  }
 
-function reset() {
-  setApiDomain("");
-  showSuccessMessage.value = true;
-  location.reload();
-}
+  function reset() {
+    setApiDomain("");
+    showSuccessMessage.value = true;
+    location.reload();
+  }
 </script>
 
 <template>
@@ -127,7 +127,7 @@ function reset() {
 </template>
 
 <style scoped>
-.transform {
-  will-change: transform, opacity;
-}
+  .transform {
+    will-change: transform, opacity;
+  }
 </style>
