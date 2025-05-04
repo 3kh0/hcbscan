@@ -4,7 +4,6 @@
   import { supabase } from "~/utils/supabase/supabase";
 
   const route = useRoute();
-  const orgId = ref(route.params.id as string);
   const orgData = ref<any>(null);
   const transactions = ref<any[]>([]);
   const loading = ref(true);
@@ -25,11 +24,11 @@
     return marked.parse(pubMsg);
   });
 
-  const checkIndex = async () => {
+  const checkIndex = async (id: string) => {
     const { data, error } = await supabase
       .from("hcb.hackclub.com")
       .select('"Organization ID"')
-      .eq('"Organization ID"', orgId.value)
+      .eq('"Organization ID"', id)
       .single();
 
     if (error || !data) {
@@ -41,7 +40,7 @@
   const indexRequest = async () => {
     try {
       const { data, error } = await supabase.functions.invoke("add-org", {
-        body: { id: orgId.value },
+        body: { id: orgData.value.id },
       });
 
       if (error) {
@@ -58,57 +57,28 @@
   };
 
   onMounted(async () => {
-    await checkIndex();
     try {
       loading.value = true;
 
       const isSwitch = route.params.id;
-      const isId = isSwitch.startsWith("org_");
-
-      if (isId) {
-        const response = await fetch(
-          buildApiUrl(`api/v3/organizations/${isSwitch}`),
-          {
-            method: "GET",
-            headers: { Accept: "application/json" },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("This organization does not exist.");
+      const response = await fetch(
+        buildApiUrl(`api/v3/organizations/${isSwitch}`),
+        {
+          method: "GET",
+          headers: { Accept: "application/json" },
         }
+      );
 
-        orgData.value = await response.json();
-      } else {
-        const response = await fetch(
-          buildApiUrl(`api/v3/organizations/${isSwitch}`)
-        );
-
-        if (!response.ok) {
-          const { valid } = await fetch(
-            `https://api.saahild.com/api/hcb_revers/${isSwitch}/available`,
-            {
-              headers: {
-                "User-Agent": "HCBScan/1.0",
-              },
-            }
-          ).then((r) => r.json());
-
-          if (!valid) {
-            throw new Error(
-              "This organization is private and cannot be viewed."
-            );
-          } else {
-            throw new Error("This organization does not exist.");
-          }
-        }
-
-        orgData.value = await response.json();
+      if (!response.ok) {
+        throw new Error("This organization does not exist.");
       }
+
+      orgData.value = await response.json();
+      await checkIndex(orgData.value.id);
 
       const transactionsResponse = await fetch(
         buildApiUrl(
-          `api/v3/organizations/${isSwitch}/transactions?per_page=25`
+          `api/v3/organizations/${orgData.value.id}/transactions?per_page=25`
         ),
         {
           method: "GET",
