@@ -3,9 +3,6 @@ import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { supabaseAdmin } from "../supabase/supabase-admin.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 // CONFIG OPTIONS
 const HCB_DOMAIN = "hcb.hackclub.com";
 const USER_TABLE = `${HCB_DOMAIN}-users`;
@@ -18,7 +15,8 @@ function time() {
 
 async function process() {
   try {
-    const usrPath = path.join(__dirname, "..", "users.json");
+    const root = path.resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+    const usrPath = path.join(root, "users.json");
     const usrData = JSON.parse(fs.readFileSync(usrPath, "utf8"));
 
     console.log(`[${time()}] loaded ${usrData.length} users`);
