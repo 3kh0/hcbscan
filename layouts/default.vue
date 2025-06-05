@@ -163,7 +163,7 @@
             <p class="text-zinc-500 dark:text-zinc-400">
               HCBScan is an open-source explorer for HCB that allows you to
               search for organizations, view transactions, and explore public
-              financial data across HCB. We only use publicily available data
+              financial data across HCB. We only use publicly available data
               provided by the
               <a
                 href="https://hcb.hackclub.com/docs/api/v3"
