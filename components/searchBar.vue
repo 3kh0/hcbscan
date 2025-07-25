@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import { buildApiUrl } from "~/utils/apiConfig";
+  import { getApiDomain } from "~/utils/apiConfig";
   import { supabase } from "~/utils/supabase/supabase";
-  import { debounce } from "lodash";
+  import _ from "lodash";
   import { onClickOutside } from "@vueuse/core";
 
   const error = ref<string | null>(null);
@@ -22,7 +22,7 @@
     ];
   });
 
-  const search = debounce(async (query: string) => {
+  const search = _.debounce(async (query) => {
     if (!query.trim()) {
       fetching.value = false;
       orgResults.value = [];
