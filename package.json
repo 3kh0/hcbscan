@@ -12,29 +12,29 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.8",
-    "@tailwindcss/vite": "^4.1.7",
-    "@vueuse/core": "^13.2.0",
-    "axios": "^1.9.0",
-    "dotenv": "^16.5.0",
-    "esbuild": "^0.25.4",
+    "@supabase/supabase-js": "^2.52.1",
+    "@tailwindcss/vite": "^4.1.11",
+    "@vueuse/core": "^13.5.0",
+    "axios": "^1.11.0",
+    "dotenv": "^16.6.1",
+    "esbuild": "^0.25.8",
     "json2csv": "6.0.0-alpha.2",
     "lodash": "^4.17.21",
     "marked": "^15.0.12",
-    "nuxt": "^3.17.4",
-    "tailwindcss": "^4.1.7",
+    "nuxt": "^3.17.7",
+    "tailwindcss": "^4.1.11",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "^1.4.1",
-    "eslint": "^9.27.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.4.0",
-    "prettier": "^3.5.3",
-    "supabase": "^2.23.4"
+    "@nuxt/eslint-config": "^1.7.1",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
+    "prettier": "^3.6.2",
+    "supabase": "^2.31.8"
   },
-  "packageManager": "pnpm@10.7.0",
+  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@parcel/watcher",
