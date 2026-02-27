@@ -34,7 +34,7 @@ export default defineNuxtConfig({
   nitro: {
     experimental: { tasks: true },
     scheduledTasks: {
-      "0 */6 * * *": ["index-orgs"],
+      "0 */3 * * *": ["index-past-orgs"],
       "*/30 * * * * *": ["index-acts"],
     },
   },
