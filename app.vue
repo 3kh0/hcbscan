@@ -1,8 +1,6 @@
 <script setup lang="ts">
   useHead({
     link: [
-      // maybe this helps with speeding things up
-      { rel: "preconnect", href: "https://gmtafnkeeufkevbeoazv.supabase.co" },
       { rel: "preconnect", href: "https://bank-hackclub.s3.amazonaws.com" },
       { rel: "preconnect", href: "https://i2.wp.com" },
       { rel: "preconnect", href: "https://hcb.hackclub.com" },

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import { buildApiUrl } from "~/utils/apiConfig";
-  import { supabase } from "~/utils/supabase/supabase";
   import RecentActivites from "~/components/recentActivites.vue";
   import SearchBar from "~/components/searchBar.vue";
 
@@ -12,7 +10,6 @@
     c: 0,
   });
 
-  const table = getApiDomain().replace(/^https?:\/\//, ""); // remove url junk
   const loading = ref(true);
   const error = ref<string | null>(null);
 
@@ -20,49 +17,18 @@
     return ((a - b) / b) * 100;
   };
 
-  const fetch = async () => {
+  const fetchStats = async () => {
     loading.value = true;
     try {
-      // org count
-      const { count, error: countError } = await supabase
-        .from(table)
-        .select("*", { count: "exact", head: true });
-      if (countError)
-        throw new Error(
-          `Failed to fetch organization count: ${countError.message}`
-        );
-      stats.accounts = count || "-";
+      const data = await $fetch("/api/stats");
 
-      // total value
-      const { data: balanceData, error: balanceError } = await supabase.rpc(
-        "sum_balance",
-        {
-          table_name: table,
-        }
-      );
-      if (balanceError)
-        throw new Error(
-          `Failed to fetch total balance: ${balanceError.message}`
-        );
-      stats.balance = balanceData ? fixMoney(balanceData) : "-";
+      stats.accounts = data.accounts ?? "-";
+      stats.balance = data.balance ? fixMoney(data.balance) : "-";
+      stats.volume7d = data.volume7d ?? "-";
+      stats.volumePast = data.volumePrevious ?? "-";
 
-      const { data: volume, error: volumeError } =
-        await supabase.rpc("count_volume");
-      if (volumeError)
-        throw new Error(`Failed to fetch 7-day volume: ${volumeError.message}`);
-      stats.volume7d = volume || "-";
-
-      const { data: volumePast, error: volumePastError } = await supabase.rpc(
-        "count_volume_previous"
-      );
-      if (volumePastError)
-        throw new Error(
-          `Failed to fetch previous volume: ${volumePastError.message}`
-        );
-      stats.volumePast = volumePast || "-";
-
-      if (volume && volumePast) {
-        stats.c = c(volume, volumePast);
+      if (data.volume7d && data.volumePrevious) {
+        stats.c = c(data.volume7d, data.volumePrevious);
       }
     } catch (e) {
       error.value =
@@ -73,8 +39,8 @@
   };
 
   onMounted(() => {
-    fetch();
-    const a = setInterval(fetch, 30000);
+    fetchStats();
+    const a = setInterval(fetchStats, 30000);
 
     onBeforeUnmount(() => {
       clearInterval(a);

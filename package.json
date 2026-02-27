@@ -12,7 +12,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.98.0",
     "@tailwindcss/vite": "^4.2.1",
     "@vueuse/core": "^13.9.0",
     "axios": "^1.13.5",
@@ -22,6 +21,7 @@
     "lodash": "^4.17.23",
     "marked": "^15.0.12",
     "nuxt": "^3.21.1",
+    "pg": "^8.19.0",
     "tailwindcss": "^4.2.1",
     "vue": "latest",
     "vue-router": "latest"
@@ -31,8 +31,7 @@
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
-    "prettier": "^3.8.1",
-    "supabase": "^2.76.15"
+    "prettier": "^3.8.1"
   },
   "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017",
   "pnpm": {
@@ -40,7 +39,6 @@
       "@parcel/watcher",
       "@tailwindcss/oxide",
       "esbuild",
-      "supabase",
       "unrs-resolver"
     ]
   }

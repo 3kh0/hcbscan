@@ -1,7 +1,4 @@
 <script setup lang="ts">
-  import { buildApiUrl, getApiDomain } from "~/utils/apiConfig";
-  import { supabase } from "~/utils/supabase/supabase";
-
   interface Activity {
     "Activity ID": string;
     Key: string;
@@ -38,7 +35,6 @@
   const loading = ref(true);
   const re = ref(false);
   const error = ref<string | null>(null);
-  const isMain = getApiDomain().includes("hcb.hackclub.com");
   const maxActs = 25;
 
   const fetchActivities = async (isInitialLoad = false) => {
@@ -51,48 +47,15 @@
     error.value = null;
 
     try {
-      let newActs = [];
+      const data = await $fetch("/api/activities", {
+        params: { limit: maxActs },
+      });
 
-      if (isMain) {
-        console.log("Fetching activities from cache...");
-        const { data, error: fetchError } = await supabase
-          .from("hcb.hackclub.com-acts")
-          .select("*")
-          .order("Created At", { ascending: false })
-          .limit(maxActs);
-
-        if (fetchError) {
-          console.error("Supabase fetch error:", fetchError);
-          throw new Error(fetchError.message);
-        }
-        if (!data) {
-          console.error("No activities found in cache.");
-          throw new Error("No activities found in cache.");
-        }
-        newActs = data.map(t);
-      } else {
-        console.log("Fetching activities from API...");
-        await fetch(
-          buildApiUrl(`api/v3/activities?page=1&per_page=${maxActs}`)
-        );
-        if (!response.ok) {
-          console.error(
-            "API response error:",
-            response.status,
-            response.statusText
-          );
-          throw new Error(
-            `API error: ${response.status} ${response.statusText}`
-          );
-        }
-
-        try {
-          newActs = await response.json();
-        } catch (jsonError) {
-          console.error("Error parsing JSON response:", jsonError);
-          throw new Error("Failed to parse API response as JSON.");
-        }
+      if (!data || !Array.isArray(data)) {
+        throw new Error("No activities found.");
       }
+
+      const newActs = data.map(t);
 
       if (isInitialLoad || acts.value.length === 0) {
         acts.value = newActs;

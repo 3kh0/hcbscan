@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import { getApiDomain } from "~/utils/apiConfig";
-  import { supabase } from "~/utils/supabase/supabase";
   import _ from "lodash";
   import { onClickOutside } from "@vueuse/core";
 
@@ -34,36 +32,12 @@
     fetching.value = true;
 
     try {
-      if (scope.value === "all" || scope.value === "orgs") {
-        const { data: orgData, error: orgError } = await supabase
-          .from(getApiDomain().replace(/^https?:\/\//, ""))
-          .select("*")
-          .or(
-            `Name.ilike.%${query}%,Slug.ilike.%${query}%,Organization ID.ilike.%${query}%`
-          )
-          .limit(15);
+      const data = await $fetch("/api/search", {
+        params: { q: query, scope: scope.value, limit: 15 },
+      });
 
-        if (orgError) {
-          console.error("org fail", orgError);
-        } else {
-          orgResults.value = orgData || [];
-        }
-      }
-
-      if (scope.value === "all" || scope.value === "users") {
-        const { data: userData, error: userError } = await supabase
-          .from(`${getApiDomain().replace(/^https?:\/\//, "")}-users`)
-          .select("*")
-          .or(`name.ilike.%${query}%,id.ilike.%${query}%`)
-          .limit(15);
-
-        if (userError) {
-          console.error("user fail", userError);
-        } else {
-          userResults.value = userData || [];
-        }
-      }
-
+      orgResults.value = data.orgs || [];
+      userResults.value = data.users || [];
       selected.value = results.value.length > 0 ? 0 : -1;
     } catch (err) {
       console.error("Search error:", err);
