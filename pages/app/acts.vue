@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import { supabase } from "~/utils/supabase/supabase";
-
   interface Activity {
     id: string;
     key: string;
@@ -28,28 +26,9 @@
   const gimmeData = async (page: number) => {
     loading.value = true;
     try {
-      const from = (page - 1) * itemsPerPage;
-      const to = from + itemsPerPage - 1;
-
-      const { data, error: fetchError } = await supabase
-        .from("hcb.hackclub.com-acts")
-        .select(
-          `
-        "Activity ID",
-        "Key",
-        "Created At",
-        "User ID",
-        "User Name",
-        "User Photo",
-        "Organization ID",
-        "Organization Name",
-        "Organization Logo"
-      `
-        )
-        .order("Created At", { ascending: false })
-        .range(from, to);
-
-      if (fetchError) throw new Error("Failed to load activities.");
+      const data = await $fetch("/api/activities", {
+        params: { page, limit: itemsPerPage },
+      });
 
       acts.value = data.map((act) => ({
         id: act["Activity ID"],

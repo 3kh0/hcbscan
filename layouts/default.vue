@@ -1,24 +1,20 @@
 <script setup>
   import { getApiDomain, handleQuery } from "~/utils/apiConfig";
-  import { supabase } from "~/utils/supabase/supabase";
   import * as math from "~/utils/math.js";
   const runtimeConfig = useRuntimeConfig();
 
   const status = ref([]);
   let loading = ref(true);
 
-  const fetch = async () => {
+  const fetchStatus = async () => {
     loading.value = true;
-    const { data, error } = await supabase
-      .from("status-check")
-      .select("*")
-      .in("item", [1, 2, 3]);
-    if (error) {
-      console.error(error);
-      return;
+    try {
+      status.value = await $fetch("/api/status");
+    } catch (e) {
+      console.error(e);
+    } finally {
+      loading.value = false;
     }
-    loading.value = false;
-    status.value = data;
   };
 
   const heart = (itemId) => {
@@ -46,7 +42,7 @@
   const fot = ref(false);
   onMounted(() => {
     handleQuery();
-    fetch();
+    fetchStatus();
     const observer = new IntersectionObserver(
       ([entry]) => {
         fot.value = entry.isIntersecting;

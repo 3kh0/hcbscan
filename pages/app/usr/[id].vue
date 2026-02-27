@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import { supabase } from "~/utils/supabase/supabase";
-
   const route = useRoute();
   const userId = route.params.id;
   const udata = ref<any>(null);
@@ -10,23 +8,14 @@
   onMounted(async () => {
     try {
       loading.value = true;
-      const { data, error: uerror } = await supabase
-        .from("hcb.hackclub.com-users")
-        .select("*")
-        .eq("id", userId);
-
-      if (uerror) {
-        throw new Error("Failed to fetch user data.");
+      udata.value = await $fetch(`/api/users/${userId}`);
+    } catch (e: any) {
+      if (e?.statusCode === 404) {
+        error.value = `User ${userId} not found.`;
+      } else {
+        error.value =
+          e instanceof Error ? e.message : "An unknown error occurred.";
       }
-
-      if (!data || data.length === 0) {
-        throw new Error(`User ${userId} not found.`);
-      }
-
-      udata.value = data[0];
-    } catch (e) {
-      error.value =
-        e instanceof Error ? e.message : "An unknown error occurred.";
       console.error("Error loading user:", error.value);
     } finally {
       loading.value = false;

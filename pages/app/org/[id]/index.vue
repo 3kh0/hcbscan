@@ -1,7 +1,6 @@
 <script setup lang="ts">
   import { marked } from "marked";
   import { useRoute } from "vue-router";
-  import { supabase } from "~/utils/supabase/supabase";
 
   const route = useRoute();
   const orgData = ref<any>(null);
@@ -25,13 +24,13 @@
   });
 
   const checkIndex = async (id: string) => {
-    const { data, error } = await supabase
-      .from("hcb.hackclub.com")
-      .select('"Organization ID"')
-      .eq('"Organization ID"', id)
-      .single();
-
-    if (error || !data) {
+    try {
+      const data = await $fetch(`/api/orgs/${id}/indexed`);
+      if (!data.indexed) {
+        isIndexed.value = false;
+        askIndex.value = true;
+      }
+    } catch {
       isIndexed.value = false;
       askIndex.value = true;
     }
@@ -39,20 +38,16 @@
 
   const indexRequest = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke("add-org", {
+      await $fetch("/api/index-org", {
+        method: "POST",
         body: { id: orgData.value.id },
       });
-
-      if (error) {
-        console.error(error.message);
-        alert("Failed to send index request.");
-      } else {
-        alert("Sent index request successfully.");
-        isIndexed.value = true;
-        askIndex.value = false;
-      }
+      alert("Sent index request successfully.");
+      isIndexed.value = true;
+      askIndex.value = false;
     } catch (e) {
       console.error(e);
+      alert("Failed to send index request.");
     }
   };
 
