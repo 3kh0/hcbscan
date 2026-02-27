@@ -2,49 +2,17 @@
   import RecentActivites from "~/components/recentActivites.vue";
   import SearchBar from "~/components/searchBar.vue";
 
-  const stats = reactive({
-    balance: "-",
-    volume7d: "-",
-    volumePast: "-",
-    accounts: "-",
-    c: 0,
-  });
+  const { data, error } = await useFetch("/api/stats");
 
-  const loading = ref(true);
-  const error = ref<string | null>(null);
-
-  const c = (a: number, b: number) => {
-    return ((a - b) / b) * 100;
-  };
-
-  const fetchStats = async () => {
-    loading.value = true;
-    try {
-      const data = await $fetch("/api/stats");
-
-      stats.accounts = data.accounts ?? "-";
-      stats.balance = data.balance ? fixMoney(data.balance) : "-";
-      stats.volume7d = data.volume7d ?? "-";
-      stats.volumePast = data.volumePrevious ?? "-";
-
-      if (data.volume7d && data.volumePrevious) {
-        stats.c = c(data.volume7d, data.volumePrevious);
-      }
-    } catch (e) {
-      error.value =
-        e instanceof Error ? e.message : "An unknown error occurred.";
-    } finally {
-      loading.value = false;
+  const change = computed(() => {
+    if (data.value?.volume7d && data.value?.volumePrevious) {
+      return (
+        ((data.value.volume7d - data.value.volumePrevious) /
+          data.value.volumePrevious) *
+        100
+      );
     }
-  };
-
-  onMounted(() => {
-    fetchStats();
-    const a = setInterval(fetchStats, 30000);
-
-    onBeforeUnmount(() => {
-      clearInterval(a);
-    });
+    return 0;
   });
 
   useHead({
@@ -65,50 +33,38 @@
     <SearchBar />
 
     <div v-if="error" class="mb-4">
-      <ErrorBanner :message="error" />
+      <ErrorBanner :message="error.message" />
     </div>
 
     <!-- stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       <div class="bg-zinc-900 p-4 rounded-lg">
         <p class="text-sm text-zinc-400 mb-1">Total Balance</p>
-        <div v-if="loading" class="animate-pulse">
-          <div class="h-8 bg-zinc-800 rounded w-2/4"></div>
-        </div>
-        <p v-else class="text-2xl font-bold">{{ stats.balance }}</p>
+        <p class="text-2xl font-bold">
+          {{ data?.balance ? fixMoney(data.balance) : "-" }}
+        </p>
       </div>
       <div class="bg-zinc-900 p-4 rounded-lg">
         <div class="flex items-center gap-2">
           <p class="text-sm text-zinc-400 mb-1">Activities (7 days)</p>
-          <div v-if="loading" class="animate-pulse">
-            <div
-              class="text-xs mb-1 font-medium bg-zinc-800 text-zinc-800 rounded h-4 w-24"
-            ></div>
-          </div>
           <div
-            v-else-if="!loading && stats.c !== 0"
-            :class="stats.c > 0 ? 'text-green-500' : 'text-rose-500'"
+            v-if="change !== 0"
+            :class="change > 0 ? 'text-green-500' : 'text-rose-500'"
             class="text-xs mb-1 font-medium"
           >
-            {{ stats.c > 0 ? "+" : "" }}{{ stats.c.toFixed(0) }}%
-            {{ stats.c > 0 ? "up" : "down" }} from
-            {{ stats.volumePast.toLocaleString() }}
+            {{ change > 0 ? "+" : "" }}{{ change.toFixed(0) }}%
+            {{ change > 0 ? "up" : "down" }} from
+            {{ (data?.volumePrevious ?? "-").toLocaleString() }}
           </div>
         </div>
-        <div v-if="loading" class="animate-pulse">
-          <div class="h-8 bg-zinc-800 rounded w-1/2"></div>
-        </div>
-        <p v-else class="text-2xl font-bold">
-          {{ stats.volume7d.toLocaleString() }}
+        <p class="text-2xl font-bold">
+          {{ (data?.volume7d ?? "-").toLocaleString() }}
         </p>
       </div>
       <div class="bg-zinc-900 p-4 rounded-lg">
         <p class="text-sm text-zinc-400 mb-1">Indexed Organizations</p>
-        <div v-if="loading" class="animate-pulse">
-          <div class="h-8 bg-zinc-800 rounded w-1/2"></div>
-        </div>
-        <p v-else class="text-2xl font-bold">
-          {{ stats.accounts.toLocaleString() }}
+        <p class="text-2xl font-bold">
+          {{ (data?.accounts ?? "-").toLocaleString() }}
         </p>
       </div>
     </div>
