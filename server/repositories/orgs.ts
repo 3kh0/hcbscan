@@ -44,7 +44,7 @@ export async function bulkUpsertOrgs(
          VALUES ($1, $2, $3, $4, $5, $6)
          ON CONFLICT ("Organization ID") DO UPDATE SET
            "Name" = $2, "Slug" = $3, "Category" = $4, "Balance" = $5,
-           "Added" = CASE WHEN "hcb.hackclub.com"."Added" IS NULL THEN NULL ELSE $6 END`,
+           "Added" = $6`,
         [org.id, org.name, org.slug, org.category, org.balance, now]
       );
     }

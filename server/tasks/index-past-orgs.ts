@@ -1,6 +1,7 @@
 import { fetchOrg } from "../utils/hcb";
-import { getOrgsNeedingRefresh } from "../repositories/orgs";
-import { query } from "../utils/db";
+import { getOrgsNeedingRefresh, bulkUpsertOrgs } from "../repositories/orgs";
+
+const BATCH_SIZE = 10;
 
 export default defineTask({
   meta: {
@@ -11,42 +12,37 @@ export default defineTask({
   async run() {
     console.log("[index-past-orgs] starting...");
 
-    const stale = await getOrgsNeedingRefresh();
-    console.log(`[index-past-orgs] found ${stale.length} orgs needing refresh`);
+    let totalUpdated = 0;
 
-    if (stale.length === 0) {
-      console.log("[index-past-orgs] nothing to update");
-      return { result: "No orgs needed refresh" };
-    }
+    while (true) {
+      const stale = await getOrgsNeedingRefresh();
+      if (stale.length === 0) break;
 
-    let updated = 0;
-    for (const row of stale) {
-      const orgId = row["Organization ID"];
-      const orgData = await fetchOrg(orgId);
-      if (!orgData) {
-        console.error(`[index-past-orgs] failed to fetch org ${orgId}`);
-        continue;
-      }
+      console.log(`[index-past-orgs] ${stale.length} orgs still need refresh`);
 
-      const now = new Date().toISOString();
-      await query(
-        `INSERT INTO "hcb.hackclub.com" ("Organization ID", "Name", "Slug", "Category", "Balance", "Added")
-         VALUES ($1, $2, $3, $4, $5, $6)
-         ON CONFLICT ("Organization ID") DO UPDATE SET
-           "Name" = $2, "Slug" = $3, "Category" = $4, "Balance" = $5, "Added" = $6`,
-        [
-          orgData.id,
-          orgData.name,
-          orgData.slug,
-          orgData.category || null,
-          orgData.balances?.balance_cents || 0,
-          now,
-        ]
+      const batch = stale.slice(0, BATCH_SIZE);
+      const results = await Promise.all(
+        batch.map((row) => fetchOrg(row["Organization ID"])),
       );
-      updated++;
+
+      const orgs = results
+        .filter((org) => org !== null)
+        .map((org) => ({
+          id: org.id,
+          name: org.name,
+          slug: org.slug,
+          category: org.category || null,
+          balance: org.balances?.balance_cents || 0,
+        }));
+
+      if (orgs.length > 0) {
+        await bulkUpsertOrgs(orgs);
+        totalUpdated += orgs.length;
+        console.log(`[index-past-orgs] upserted batch of ${orgs.length}`);
+      }
     }
 
-    console.log(`[index-past-orgs] refreshed ${updated} orgs`);
-    return { result: `Refreshed ${updated} orgs` };
+    console.log(`[index-past-orgs] refreshed ${totalUpdated} orgs total`);
+    return { result: `Refreshed ${totalUpdated} orgs` };
   },
 });
