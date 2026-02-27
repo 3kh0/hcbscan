@@ -1,14 +1,6 @@
 <script setup lang="ts">
   useHead({
-    link: [
-      // maybe this helps with speeding things up
-      { rel: "preconnect", href: "https://gmtafnkeeufkevbeoazv.supabase.co" },
-      { rel: "preconnect", href: "https://bank-hackclub.s3.amazonaws.com" },
-      { rel: "preconnect", href: "https://i2.wp.com" },
-      { rel: "preconnect", href: "https://hcb.hackclub.com" },
-      { rel: "preconnect", href: "https://gravatar.com" },
-      { rel: "preconnect", href: "https://data.3kh0.net" },
-    ],
+    title: "HCBScan — Maintenance",
     script: [
       {
         src: "https://data.3kh0.net/script.js",
@@ -19,9 +11,19 @@
   });
 </script>
 <template>
-  <div class="min-h-screen bg-zinc-950 text-white p-8">
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
+  <div
+    class="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-8 overflow-auto"
+  >
+    <div class="text-center max-w-lg">
+      <h1 class="text-4xl font-bold mb-4">Under Maintenance</h1>
+      <p class="text-zinc-400 text-lg mb-2">
+        HCBScan is currently offline for database upgrades. We'll be back shortly. Thanks for your patience!
+      </p>
+      <img
+        src="https://cdn.hackclub.com/019c9ceb-fb79-712e-bc3a-0d1e0109b4a8/2026_02_26_0zr_Kleki.png"
+        alt="Maintenance"
+        class="mx-auto mt-6 w-48 opacity-80"
+      />
+    </div>
   </div>
 </template>
