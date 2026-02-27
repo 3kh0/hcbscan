@@ -4,10 +4,10 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const id = String(body?.id || "").trim();
 
-  if (!id || !/^\d+$/.test(id)) {
+  if (!id) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Invalid organization ID. Must be a numeric string.",
+      statusMessage: "Organization ID is required.",
     });
   }
 
