@@ -1,4 +1,14 @@
 services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://app_rw:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
+    depends_on:
+      db:
+        condition: service_healthy
+
   db:
     image: postgres:18
     restart: unless-stopped
