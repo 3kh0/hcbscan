@@ -22,6 +22,7 @@
     "lodash": "^4.17.23",
     "marked": "^15.0.12",
     "nuxt": "^3.21.1",
+    "pg": "^8.19.0",
     "tailwindcss": "^4.2.1",
     "vue": "latest",
     "vue-router": "latest"
