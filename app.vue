@@ -22,7 +22,7 @@
       <img
         src="https://cdn.hackclub.com/019c9ceb-fb79-712e-bc3a-0d1e0109b4a8/2026_02_26_0zr_Kleki.png"
         alt="Maintenance"
-        class="mx-auto mt-6 w-48 opacity-80"
+        class="mx-auto mt-6 w-64 opacity-80"
       />
     </div>
   </div>
