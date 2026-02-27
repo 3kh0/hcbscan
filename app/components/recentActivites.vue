@@ -41,8 +41,8 @@
 </script>
 
 <template>
-  <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-    <div class="flex justify-between items-center px-5 py-4 border-b border-zinc-800">
+  <div class="bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl shadow-lg shadow-black/20 overflow-hidden">
+    <div class="flex justify-between items-center px-5 py-4 border-b border-white/[0.06]">
       <div>
         <h2 class="text-base font-semibold tracking-tight">Recent Activities</h2>
         <p class="text-xs text-zinc-500 mt-0.5">Latest actions across all of HCB</p>
@@ -51,7 +51,7 @@
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead>
-          <tr class="text-left border-b border-zinc-800">
+          <tr class="text-left border-b border-white/[0.06]">
             <th class="px-5 py-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">ID</th>
             <th class="px-5 py-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">Action</th>
             <th class="px-5 py-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">User</th>
@@ -59,7 +59,7 @@
             <th class="px-5 py-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">Time</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-zinc-800">
+        <tbody class="divide-y divide-white/[0.06]">
           <tr v-if="error" class="text-sm">
             <td colspan="5" class="px-5 py-4 text-center text-red-400">
               Error loading activities: {{ error.message }}
@@ -116,7 +116,7 @@
         </tbody>
       </table>
     </div>
-    <div class="px-5 py-3 border-t border-zinc-800">
+    <div class="px-5 py-3 border-t border-white/[0.06]">
       <NuxtLink to="/app/acts" class="text-xs text-zinc-400 hover:text-white transition-colors flex items-center gap-1">
         View all activities
         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">

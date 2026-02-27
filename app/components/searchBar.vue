@@ -203,7 +203,7 @@
       >
         <span
           v-show="!isFocused"
-          class="px-1.5 py-0.5 text-xs rounded border border-zinc-700 bg-zinc-800 text-zinc-400 font-mono"
+          class="px-1.5 py-0.5 text-xs rounded border border-white/[0.08] bg-white/[0.05] text-zinc-400 font-mono"
         >
           /
         </span>
@@ -213,7 +213,7 @@
         id="search-input"
         v-model="query"
         type="text"
-        class="block w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-10 text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all duration-200"
+        class="block w-full bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-2xl py-3 pl-10 pr-10 text-white placeholder-zinc-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/30 shadow-lg shadow-black/20 transition-all duration-200"
         placeholder="Search organizations or users..."
         autocomplete="off"
         @focus="f"
@@ -224,9 +224,9 @@
       <!-- Empty focus state — scope tabs + hints -->
       <div
         v-if="isFocused && !query"
-        class="absolute z-10 w-full mt-1.5 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl shadow-black/50 overflow-hidden"
+        class="absolute z-10 w-full mt-1.5 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl shadow-lg shadow-black/20 overflow-hidden"
       >
-        <div class="border-b border-zinc-800">
+        <div class="border-b border-white/[0.06]">
           <div class="flex px-1 pt-1">
             <button
               class="px-3 py-2 text-sm rounded-t transition-colors"
@@ -305,7 +305,7 @@
       >
         <div
           v-if="fetching && isFocused"
-          class="absolute z-10 w-full mt-1.5 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl shadow-black/50"
+          class="absolute z-10 w-full mt-1.5 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl shadow-lg shadow-black/20"
         >
           <div class="px-4 py-3 text-sm text-zinc-400 animate-pulse">Searching...</div>
         </div>
@@ -323,7 +323,7 @@
         leave-to-class="opacity-0 transform -translate-y-2"
       >
         <div
-          class="absolute w-full mt-1.5 bg-zinc-900/95 backdrop-blur-md border border-zinc-800 rounded-xl shadow-2xl shadow-black/60 z-10 max-h-80 overflow-y-auto"
+          class="absolute w-full mt-1.5 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl shadow-lg shadow-black/20 z-10 max-h-80 overflow-y-auto"
         >
           <transition-group
             name="list"
@@ -338,7 +338,7 @@
             <div
               v-if="scope === 'all' && orgResults.length > 0"
               key="org-header"
-              class="px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-zinc-500 bg-zinc-900 sticky top-0 border-b border-zinc-800"
+              class="px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-zinc-500 bg-zinc-950/80 backdrop-blur-sm sticky top-0 border-b border-white/[0.06]"
             >
               Organizations
             </div>
@@ -389,7 +389,7 @@
             <div
               v-if="scope === 'all' && userResults.length > 0"
               key="user-header"
-              class="px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-zinc-500 bg-zinc-900 sticky top-0 border-b border-zinc-800"
+              class="px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-zinc-500 bg-zinc-950/80 backdrop-blur-sm sticky top-0 border-b border-white/[0.06]"
             >
               Users
             </div>
@@ -471,7 +471,7 @@
         leave-to-class="opacity-0 transform -translate-y-2"
       >
         <div
-          class="absolute w-full mt-1.5 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl shadow-black/50 z-10"
+          class="absolute w-full mt-1.5 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl shadow-lg shadow-black/20 z-10"
         >
           <div class="px-4 py-4 flex items-start gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-zinc-500 mt-0.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">

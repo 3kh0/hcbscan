@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-red-500/5 border border-red-500/20 rounded-xl p-5 text-center"
+    class="bg-red-500/3 backdrop-blur-sm border border-red-500/8 rounded-2xl shadow-lg shadow-black/20 p-5 text-center"
   >
     <div class="flex flex-col items-center">
       <svg

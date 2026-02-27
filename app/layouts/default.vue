@@ -41,7 +41,7 @@
 <template>
   <div>
     <!-- Sticky nav bar -->
-    <header class="sticky top-0 z-50 backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800/80">
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/[0.03] border-b border-white/[0.06]">
       <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <NuxtLink
           to="/app"
@@ -61,7 +61,7 @@
           href="https://hcb.hackclub.com/"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-sm px-3 py-1.5 rounded-full border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 transition-all duration-200 hidden sm:flex items-center gap-1.5"
+          class="text-sm px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all duration-200 hidden sm:flex items-center gap-1.5"
         >
           Visit HCB
           <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
@@ -79,7 +79,7 @@
 
     <footer
       id="footer"
-      class="mt-8 border-t border-zinc-800"
+      class="mt-8 border-t border-white/[0.06]"
     >
       <div class="max-w-7xl mx-auto px-4 pt-10 pb-10">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -241,9 +241,9 @@
                 </div>
               </template>
 
-              <div class="pt-3 mt-1 border-t border-zinc-800">
+              <div class="pt-3 mt-1 border-t border-white/[0.06]">
                 <div class="flex items-center gap-2 text-xs text-zinc-500">
-                  <span class="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-400">{{ runtimeConfig.public.sha }}</span>
+                  <span class="font-mono bg-white/[0.05] border border-white/[0.06] px-1.5 py-0.5 rounded text-zinc-400">{{ runtimeConfig.public.sha }}</span>
                   <span>·</span>
                   <span>Built {{ relativeTime(runtimeConfig.public.date) }}</span>
                 </div>
@@ -251,7 +251,7 @@
             </div>
           </div>
         </div>
-        <div class="mt-8 pt-6 border-t border-zinc-800 text-center">
+        <div class="mt-8 pt-6 border-t border-white/[0.06] text-center">
           <p class="text-xs text-zinc-600 max-w-2xl mx-auto leading-relaxed">
             HCBScan is not affiliated, fiscally sponsored, or endorsed by HCB.
             We only use publicly available data. We will never ask for your login details.
