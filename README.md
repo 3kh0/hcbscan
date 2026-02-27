@@ -58,7 +58,7 @@ hcbscan/
 ### Prerequisites
 
 - Node.js
-- pnpm
+- Bun
 - A browser made within the past decade
 
 ### Installation
@@ -68,8 +68,8 @@ hcbscan/
 ```bash
 git clone https://github.com/3kh0/hcbscan.git
 cd hcbscan
-pnpm install
-pnpm dev
+bun install
+bun dev
 ```
 
 2. Open your browser and go to `http://localhost:3000`
