@@ -39,84 +39,78 @@
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto">
-    <div class="flex items-center justify-between mb-6">
-      <NuxtLink
-        to="/app"
-        class="flex items-center hover:opacity-80 transition-opacity"
-      >
-        <img
-          src="~/assets/img/hcbscan.png"
-          class="w-16 h-16 transform transition-transform duration-200 hover:scale-110 hover:op"
-        />
-        <div class="ml-4">
-          <h1 class="font-bold text-4xl">HCBScan</h1>
-          <p class="text-zinc-400">The HCB Explorer (beta)</p>
-        </div>
-      </NuxtLink>
-
-      <div class="sm:flex flex-col items-end hidden">
-        <a
-          href="https://hcb.hackclub.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex flex-col items-center hover:opacity-80 transition-opacity"
-        >
-          <p class="text-xl font-bold">This is not HCB</p>
-          <p class="text-zinc-400 mt-1">Click here to visit HCB</p>
-        </a>
-      </div>
-
-      <div class="sm:hidden flex-col items-center hidden">
-        <a
-          href="https://hcb.hackclub.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex flex-col items-center hover:opacity-80 transition-opacity"
+  <div>
+    <!-- Sticky nav bar -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800/80">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <NuxtLink
+          to="/app"
+          class="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
           <img
-            src="~/assets/img/bank.png"
-            class="w-16 h-16 transform transition-transform duration-200 hover:scale-110"
+            src="~/assets/img/hcbscan.png"
+            class="w-9 h-9 transform transition-transform duration-200 hover:scale-110"
           />
+          <div>
+            <span class="font-bold text-xl tracking-tight">HCBScan</span>
+            <span class="ml-2 text-xs text-zinc-500 hidden sm:inline">beta</span>
+          </div>
+        </NuxtLink>
+
+        <a
+          href="https://hcb.hackclub.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-sm px-3 py-1.5 rounded-full border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 transition-all duration-200 hidden sm:flex items-center gap-1.5"
+        >
+          Visit HCB
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+          </svg>
         </a>
       </div>
+    </header>
+
+    <!-- Page content -->
+    <div class="max-w-7xl mx-auto px-4 pt-8 pb-4">
+      <slot />
     </div>
 
-    <slot />
     <footer
       id="footer"
-      class="mt-12 pb-8 border-t border-zinc-200 dark:border-zinc-800"
+      class="mt-8 border-t border-zinc-800"
     >
-      <div class="max-w-7xl mx-auto px-4 pt-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="space-y-4">
-            <h3 class="text-xl font-bold">HCBScan</h3>
-            <p class="text-zinc-500 dark:text-zinc-400">
+      <div class="max-w-7xl mx-auto px-4 pt-10 pb-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div class="space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-widest text-zinc-500">About</h3>
+            <p class="text-sm text-zinc-400 leading-relaxed">
               HCBScan is an open-source explorer for HCB that allows you to
               search for organizations, view transactions, and explore public
               financial data across HCB. We only use publicly available data
               provided by the
               <a
                 href="https://hcb.hackclub.com/docs/api/v3"
-                class="text-green-600 hover:text-green-500 transition-colors duration-200"
+                class="text-green-400 hover:text-green-300 transition-colors duration-200"
                 target="_blank"
                 >HCB API</a
-              >. We do not have control over the data provided by the API.
+              >.
             </p>
           </div>
-          <div class="space-y-4">
-            <h3 class="text-xl font-bold">Links</h3>
+          <div class="space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Links</h3>
             <ul class="space-y-2">
               <li>
                 <a
                   href="https://hcb.hackclub.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-zinc-500 hover:text-green-500 flex items-center transition-colors duration-200"
+                  class="text-sm text-zinc-400 hover:text-white flex items-center gap-2 transition-colors duration-200"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-2"
+                    class="h-3.5 w-3.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -136,11 +130,11 @@
                   href="https://github.com/3kh0/hcbscan/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-zinc-500 hover:text-green-500 flex items-center transition-colors duration-200"
+                  class="text-sm text-zinc-400 hover:text-white flex items-center gap-2 transition-colors duration-200"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-2"
+                    class="h-3.5 w-3.5"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -156,11 +150,11 @@
                   href="https://3kh0.net"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-zinc-500 hover:text-green-500 flex items-center transition-colors duration-200"
+                  class="text-sm text-zinc-400 hover:text-white flex items-center gap-2 transition-colors duration-200"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-2"
+                    class="h-3.5 w-3.5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -178,111 +172,89 @@
             </ul>
           </div>
           <div>
-            <h3 class="text-xl font-bold">Status</h3>
-            <div class="space-y-2">
+            <h3 class="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-3">Status</h3>
+            <div class="space-y-2.5">
               <template v-if="loading">
                 <div
                   v-for="i in 3"
                   :key="i"
-                  class="flex items-center animate-pulse"
+                  class="flex items-center gap-2 animate-pulse"
                 >
-                  <div class="relative mr-2">
-                    <div
-                      class="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-700"
-                    ></div>
-                  </div>
-                  <div
-                    class="h-4 bg-zinc-200 dark:bg-zinc-700 rounded w-40"
-                  ></div>
-                  <div
-                    class="ml-2 h-4 bg-zinc-200 dark:bg-zinc-700 rounded w-16"
-                  ></div>
+                  <div class="w-2 h-2 rounded-full bg-zinc-700"></div>
+                  <div class="h-3.5 bg-zinc-800 rounded w-36"></div>
+                  <div class="h-3.5 bg-zinc-800 rounded w-14"></div>
                 </div>
               </template>
               <template v-else>
-                <div class="flex items-center">
-                  <div class="relative mr-2">
+                <div class="flex items-center gap-2">
+                  <div class="relative">
                     <div
-                      class="w-3 h-3 rounded-full"
+                      class="w-2 h-2 rounded-full"
                       :class="[heart(1) ? 'bg-green-500' : 'bg-red-500']"
                     ></div>
                     <div
                       v-if="heart(1)"
-                      class="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping opacity-75"
+                      class="absolute inset-0 w-2 h-2 rounded-full bg-green-500 animate-ping opacity-75"
                     ></div>
                   </div>
-                  <span class="text-zinc-500">Organization Indexer: </span>
+                  <span class="text-sm text-zinc-400">Organization Indexer</span>
                   <span
-                    class="ml-1 font-medium"
-                    :class="[heart(1) ? 'text-green-500' : 'text-red-500']"
-                  >
-                    {{ heart(1) ? "Online" : "Offline" }}
-                  </span>
+                    class="text-xs font-medium"
+                    :class="[heart(1) ? 'text-green-400' : 'text-red-400']"
+                  >{{ heart(1) ? "Online" : "Offline" }}</span>
                 </div>
 
-                <div class="flex items-center">
-                  <div class="relative mr-2">
+                <div class="flex items-center gap-2">
+                  <div class="relative">
                     <div
-                      class="w-3 h-3 rounded-full"
+                      class="w-2 h-2 rounded-full"
                       :class="[heart(2) ? 'bg-green-500' : 'bg-red-500']"
                     ></div>
                     <div
                       v-if="heart(2)"
-                      class="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping opacity-75"
+                      class="absolute inset-0 w-2 h-2 rounded-full bg-green-500 animate-ping opacity-75"
                     ></div>
                   </div>
-                  <span class="text-zinc-500">Activity Indexer: </span>
+                  <span class="text-sm text-zinc-400">Activity Indexer</span>
                   <span
-                    class="ml-1 font-medium"
-                    :class="[heart(2) ? 'text-green-500' : 'text-red-500']"
-                  >
-                    {{ heart(2) ? "Online" : "Offline" }}
-                  </span>
+                    class="text-xs font-medium"
+                    :class="[heart(2) ? 'text-green-400' : 'text-red-400']"
+                  >{{ heart(2) ? "Online" : "Offline" }}</span>
                 </div>
 
-                <div class="flex items-center">
-                  <div class="relative mr-2">
+                <div class="flex items-center gap-2">
+                  <div class="relative">
                     <div
-                      class="w-3 h-3 rounded-full"
+                      class="w-2 h-2 rounded-full"
                       :class="[heart(3) ? 'bg-green-500' : 'bg-red-500']"
                     ></div>
                     <div
                       v-if="heart(3)"
-                      class="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping opacity-75"
+                      class="absolute inset-0 w-2 h-2 rounded-full bg-green-500 animate-ping opacity-75"
                     ></div>
                   </div>
-                  <span class="text-zinc-500">Backup Indexers: </span>
+                  <span class="text-sm text-zinc-400">Backup Indexers</span>
                   <span
-                    class="ml-1 font-medium"
-                    :class="[heart(3) ? 'text-green-500' : 'text-red-500']"
-                  >
-                    {{ heart(3) ? "Online" : "Offline" }}
-                  </span>
+                    class="text-xs font-medium"
+                    :class="[heart(3) ? 'text-green-400' : 'text-red-400']"
+                  >{{ heart(3) ? "Online" : "Offline" }}</span>
                 </div>
               </template>
 
-              <div
-                class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800"
-              >
-                <div class="flex items-center text-sm text-zinc-400">
-                  <span class="font-mono">{{ runtimeConfig.public.sha }}</span>
-                  <span class="mx-2">•</span>
-                  <span
-                    >Last built:
-                    {{ relativeTime(runtimeConfig.public.date) }}</span
-                  >
+              <div class="pt-3 mt-1 border-t border-zinc-800">
+                <div class="flex items-center gap-2 text-xs text-zinc-500">
+                  <span class="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-400">{{ runtimeConfig.public.sha }}</span>
+                  <span>·</span>
+                  <span>Built {{ relativeTime(runtimeConfig.public.date) }}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div
-          class="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-800 text-center text-sm text-zinc-400 mx-auto"
-        >
-          <p class="max-w-3xl mx-auto">
+        <div class="mt-8 pt-6 border-t border-zinc-800 text-center">
+          <p class="text-xs text-zinc-600 max-w-2xl mx-auto leading-relaxed">
             HCBScan is not affiliated, fiscally sponsored, or endorsed by HCB.
-            We only got a "oh shit, this is so cool" from the HCB team so take
-            that for what it is worth. We will never ask for your login details.
+            We only use publicly available data. We will never ask for your login details.
           </p>
         </div>
       </div>

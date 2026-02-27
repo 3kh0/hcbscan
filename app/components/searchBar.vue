@@ -151,14 +151,15 @@
   });
 </script>
 <template>
-  <div class="mb-4">
+  <div class="mb-6">
     <div ref="searchCon" class="relative">
+      <!-- Search icon / spinner -->
       <div
         v-if="!fetching"
-        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"
       >
         <svg
-          class="h-5 w-5 text-zinc-400"
+          class="h-4.5 w-4.5 text-zinc-500"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
@@ -172,10 +173,10 @@
       </div>
       <div
         v-else
-        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"
       >
         <svg
-          class="animate-spin h-5 w-5 text-white"
+          class="animate-spin h-4.5 w-4.5 text-green-400"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -196,12 +197,13 @@
         </svg>
       </div>
 
+      <!-- Slash shortcut hint -->
       <div
         class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
       >
         <span
           v-show="!isFocused"
-          class="px-2 py-0.5 text-xs rounded bg-zinc-700 text-zinc-400"
+          class="px-1.5 py-0.5 text-xs rounded border border-zinc-700 bg-zinc-800 text-zinc-400 font-mono"
         >
           /
         </span>
@@ -211,24 +213,26 @@
         id="search-input"
         v-model="query"
         type="text"
-        class="block w-full bg-zinc-900 rounded-lg py-3 pl-10 pr-10 text-white placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-        placeholder="Search for organizations or users on HCB..."
+        class="block w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-10 text-white placeholder-zinc-500 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all duration-200"
+        placeholder="Search organizations or users..."
         autocomplete="off"
         @focus="f"
         @blur="b"
         @keydown="k"
       >
+
+      <!-- Empty focus state — scope tabs + hints -->
       <div
         v-if="isFocused && !query"
-        class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg overflow-hidden"
+        class="absolute z-10 w-full mt-1.5 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl shadow-black/50 overflow-hidden"
       >
-        <div class="border-b border-zinc-700">
-          <div class="flex">
+        <div class="border-b border-zinc-800">
+          <div class="flex px-1 pt-1">
             <button
-              class="px-4 py-2 text-sm transition-colors"
+              class="px-3 py-2 text-sm rounded-t transition-colors"
               :class="
                 scope === 'all'
-                  ? 'text-white border-b-2 border-blue-500'
+                  ? 'text-white border-b-2 border-green-500'
                   : 'text-zinc-400 hover:text-white'
               "
               @click="setScope('all')"
@@ -236,10 +240,10 @@
               All
             </button>
             <button
-              class="px-4 py-2 text-sm transition-colors"
+              class="px-3 py-2 text-sm rounded-t transition-colors"
               :class="
                 scope === 'orgs'
-                  ? 'text-white border-b-2 border-blue-500'
+                  ? 'text-white border-b-2 border-green-500'
                   : 'text-zinc-400 hover:text-white'
               "
               @click="setScope('orgs')"
@@ -247,10 +251,10 @@
               Organizations
             </button>
             <button
-              class="px-4 py-2 text-sm transition-colors"
+              class="px-3 py-2 text-sm rounded-t transition-colors"
               :class="
                 scope === 'users'
-                  ? 'text-white border-b-2 border-blue-500'
+                  ? 'text-white border-b-2 border-green-500'
                   : 'text-zinc-400 hover:text-white'
               "
               @click="setScope('users')"
@@ -261,34 +265,35 @@
         </div>
 
         <div class="px-4 py-3 text-zinc-400">
-          <p>Start typing to search. You can search for:</p>
+          <p class="text-sm">Start typing to search. You can search for:</p>
           <ul
             v-if="scope !== 'users'"
-            class="mt-1 text-sm list-disc pl-5 space-y-1"
+            class="mt-1.5 text-sm text-zinc-500 list-disc pl-5 space-y-0.5"
           >
-            <li>Organization name</li>
-            <li>Category</li>
-            <li>URL slug</li>
-            <li>Organization ID</li>
+            <li>Organization name or URL slug</li>
+            <li>Category or Organization ID</li>
           </ul>
           <ul
             v-if="scope !== 'orgs'"
-            class="mt-1 text-sm list-disc pl-5 space-y-1"
+            class="mt-1.5 text-sm text-zinc-500 list-disc pl-5 space-y-0.5"
           >
-            <li>User name</li>
-            <li>User ID</li>
+            <li>User name or User ID</li>
           </ul>
-          <p class="mt-2 text-xs text-zinc-500">
-            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">↑/↓</span>
-            to navigate •
-            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">Tab</span>
-            to cycle •
-            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">Enter</span>
-            to select
+          <p class="mt-3 text-xs text-zinc-600 flex items-center gap-1.5 flex-wrap">
+            <span class="bg-zinc-800 border border-zinc-700 text-zinc-300 px-1.5 py-0.5 rounded font-mono text-xs">↑</span>
+            <span class="bg-zinc-800 border border-zinc-700 text-zinc-300 px-1.5 py-0.5 rounded font-mono text-xs">↓</span>
+            navigate ·
+            <span class="bg-zinc-800 border border-zinc-700 text-zinc-300 px-1.5 py-0.5 rounded font-mono text-xs">Tab</span>
+            cycle ·
+            <span class="bg-zinc-800 border border-zinc-700 text-zinc-300 px-1.5 py-0.5 rounded font-mono text-xs">Enter</span>
+            select ·
+            <span class="bg-zinc-800 border border-zinc-700 text-zinc-300 px-1.5 py-0.5 rounded font-mono text-xs">Esc</span>
+            close
           </p>
         </div>
       </div>
 
+      <!-- Searching indicator -->
       <transition
         name="dropdown"
         enter-active-class="transition ease-out duration-200"
@@ -300,12 +305,13 @@
       >
         <div
           v-if="fetching && isFocused"
-          class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg"
+          class="absolute z-10 w-full mt-1.5 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl shadow-black/50"
         >
-          <div class="px-4 py-2 text-zinc-400 animate-pulse">Searching...</div>
+          <div class="px-4 py-3 text-sm text-zinc-400 animate-pulse">Searching...</div>
         </div>
       </transition>
 
+      <!-- Results dropdown -->
       <transition
         v-if="results.length > 0 && isFocused"
         name="dropdown"
@@ -317,7 +323,7 @@
         leave-to-class="opacity-0 transform -translate-y-2"
       >
         <div
-          class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10 max-h-80 overflow-y-auto"
+          class="absolute w-full mt-1.5 bg-zinc-900/95 backdrop-blur-md border border-zinc-800 rounded-xl shadow-2xl shadow-black/60 z-10 max-h-80 overflow-y-auto"
         >
           <transition-group
             name="list"
@@ -332,7 +338,7 @@
             <div
               v-if="scope === 'all' && orgResults.length > 0"
               key="org-header"
-              class="px-4 py-2 text-xs font-semibold text-zinc-500 bg-zinc-800 sticky top-0"
+              class="px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-zinc-500 bg-zinc-900 sticky top-0 border-b border-zinc-800"
             >
               Organizations
             </div>
@@ -341,54 +347,49 @@
               :id="`search-result-${scope === 'all' ? index : index}`"
               :key="'org_' + org['Organization ID']"
               :class="[
-                'px-4 py-3 cursor-pointer flex justify-between items-center transition duration-200 ease-in-out',
+                'px-4 py-3 cursor-pointer flex justify-between items-center transition-colors duration-150',
                 selected === (scope === 'all' ? index : index)
-                  ? 'bg-blue-900/40 border-l-2 border-blue-500'
-                  : 'hover:bg-zinc-700 border-l-2 border-transparent',
+                  ? 'bg-green-900/25 border-l-2 border-green-500'
+                  : 'hover:bg-zinc-800/60 border-l-2 border-transparent',
               ]"
               :style="{ transitionDelay: `${index * 25}ms` }"
               @mouseenter="selected = scope === 'all' ? index : index"
               @click="sendResult({ ...org, type: 'org' })"
             >
-              <div class="flex-grow">
-                <div class="text-white font-semibold">{{ org.Name }}</div>
-                <div class="flex items-center mt-1">
-                  <span class="text-zinc-400 text-sm">{{ org.Slug }}</span>
+              <div class="flex-grow min-w-0">
+                <div class="text-white font-medium text-sm">{{ org.Name }}</div>
+                <div class="flex items-center mt-0.5 gap-1.5">
+                  <span class="text-zinc-500 text-xs font-mono">{{ org.Slug }}</span>
                   <span
                     v-if="org.Category"
-                    class="ml-2 px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
+                    class="px-1.5 py-0.5 text-xs rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400"
                   >
                     {{ org.Category }}
                   </span>
                 </div>
               </div>
-              <div>
+              <div class="flex flex-col items-end ml-4 shrink-0">
                 <div
-                  class="inline-block px-2 py-0.5 text-xs font-mono rounded-full"
+                  class="inline-block px-1.5 py-0.5 text-xs font-mono rounded-full"
                   :class="{
                     'bg-green-500/10 border border-green-500/20 text-green-400':
                       new Date() - new Date(org.Added) <= 30 * 60 * 1000,
                     'bg-orange-500/10 border border-orange-500/20 text-orange-400':
                       new Date() - new Date(org.Added) > 30 * 60 * 1000 &&
                       new Date() - new Date(org.Added) <= 24 * 60 * 60 * 1000,
-                    'bg-red-500/10 border border-red-500/20 text-red-400':
+                    'bg-zinc-800 border border-zinc-700 text-zinc-500':
                       new Date() - new Date(org.Added) > 24 * 60 * 60 * 1000,
                   }"
                 >
-                  Updated: {{ relativeTime(org.Added) }}
+                  {{ relativeTime(org.Added) }}
                 </div>
-              </div>
-              <div class="text-zinc-400 text-sm ml-4 text-right">
-                <div class="mt-1">Balance: {{ fixMoney(org.Balance) }}</div>
-                <div class="text-xs text-zinc-500 mt-1 font-mono">
-                  {{ org["Organization ID"] }}
-                </div>
+                <div class="text-zinc-400 text-xs mt-1 tabular-nums">{{ fixMoney(org.Balance) }}</div>
               </div>
             </div>
             <div
               v-if="scope === 'all' && userResults.length > 0"
               key="user-header"
-              class="px-4 py-2 text-xs font-semibold text-zinc-500 bg-zinc-800 sticky top-0"
+              class="px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-zinc-500 bg-zinc-900 sticky top-0 border-b border-zinc-800"
             >
               Users
             </div>
@@ -403,11 +404,11 @@
               }`"
               :key="'user_' + user.id"
               :class="[
-                'px-4 py-3 cursor-pointer flex justify-between items-center transition duration-200 ease-in-out',
+                'px-4 py-3 cursor-pointer flex justify-between items-center transition-colors duration-150',
                 selected ===
                 (scope === 'all' ? orgResults.length + index : index)
-                  ? 'bg-blue-900/40 border-l-2 border-blue-500'
-                  : 'hover:bg-zinc-700 border-l-2 border-transparent',
+                  ? 'bg-green-900/25 border-l-2 border-green-500'
+                  : 'hover:bg-zinc-800/60 border-l-2 border-transparent',
               ]"
               :style="{ transitionDelay: `${index * 25}ms` }"
               @mouseenter="
@@ -415,21 +416,21 @@
               "
               @click="sendResult({ ...user, type: 'user' })"
             >
-              <div class="flex items-center">
-                <div class="mr-3">
+              <div class="flex items-center gap-3">
+                <div>
                   <img
                     v-if="user.avatar"
                     :src="user.avatar"
                     alt="User Avatar"
-                    class="h-10 w-10 rounded-full object-cover"
+                    class="h-9 w-9 rounded-full object-cover ring-1 ring-white/10"
                   >
                   <div
                     v-else
-                    class="h-10 w-10 bg-zinc-700 rounded-full flex items-center justify-center"
+                    class="h-9 w-9 bg-zinc-800 rounded-full flex items-center justify-center ring-1 ring-white/10"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-6 w-6 text-zinc-400"
+                      class="h-5 w-5 text-zinc-500"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -444,15 +445,11 @@
                   </div>
                 </div>
                 <div>
-                  <div class="text-white font-semibold">{{ user.name }}</div>
-                  <div class="flex items-center mt-1">
-                    <span class="text-xs text-blue-400 font-mono">{{
-                      user.id
-                    }}</span>
-                    <span
-                      class="ml-2 px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
-                    >
-                      {{ user.orgs?.length || 0 }} organizations
+                  <div class="text-white font-medium text-sm">{{ user.name }}</div>
+                  <div class="flex items-center mt-0.5 gap-1.5">
+                    <span class="text-xs text-green-400 font-mono">{{ user.id }}</span>
+                    <span class="px-1.5 py-0.5 text-xs rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400">
+                      {{ user.orgs?.length || 0 }} orgs
                     </span>
                   </div>
                 </div>
@@ -462,6 +459,7 @@
         </div>
       </transition>
 
+      <!-- No results state -->
       <transition
         v-else-if="!fetching && query && isFocused && results.length === 0"
         name="dropdown"
@@ -473,17 +471,20 @@
         leave-to-class="opacity-0 transform -translate-y-2"
       >
         <div
-          class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10"
+          class="absolute w-full mt-1.5 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl shadow-black/50 z-10"
         >
-          <div class="px-4 py-3 text-red-400">
-            <p>
-              We looked everywhere but we can't find anything with the query
-              <span class="font-semibold">{{ query }}</span>
-            </p>
-            <p class="text-sm text-zinc-400 mt-1">
-              This could be because the item is not indexed yet, it does not
-              exist, or you made a typo looking for something else.
-            </p>
+          <div class="px-4 py-4 flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-zinc-500 mt-0.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+            <div>
+              <p class="text-sm text-zinc-300">
+                No results for <span class="font-medium text-white">"{{ query }}"</span>
+              </p>
+              <p class="text-xs text-zinc-500 mt-1">
+                The item may not be indexed yet, or try a different search term.
+              </p>
+            </div>
           </div>
         </div>
       </transition>

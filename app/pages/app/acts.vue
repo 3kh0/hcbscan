@@ -99,34 +99,30 @@
       <ErrorBanner :message="error" />
     </div>
 
-    <div v-else class="bg-zinc-900 rounded-lg p-6">
-      <h2 class="text-xl font-semibold mb-4">Activities list</h2>
-      <p class="text-sm text-zinc-400 mb-4">
-        Only showing recent activities from HCB organizations that are in
-        Transparency Mode and have opted in to public listing. Due to the amount
-        of data, only 50 activities are shown per page and loading can take up
-        to 15 seconds.
-      </p>
+    <div v-else class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-zinc-800">
+        <h2 class="text-base font-semibold tracking-tight">Activities</h2>
+        <p class="text-xs text-zinc-500 mt-0.5">
+          Showing organizations in Transparency Mode. Up to 50 per page.
+        </p>
+      </div>
       <div class="overflow-x-auto">
         <table class="w-full">
           <thead>
-            <tr class="text-left text-zinc-400 text-sm">
-              <th class="pb-4">ID</th>
-              <th class="pb-4">Action</th>
-              <th class="pb-4">User</th>
-              <th class="pb-4">Organization</th>
-              <th class="pb-4">Time</th>
+            <tr class="border-b border-zinc-800">
+              <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-widest text-zinc-500">ID</th>
+              <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-widest text-zinc-500">Action</th>
+              <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-widest text-zinc-500">User</th>
+              <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-widest text-zinc-500">Organization</th>
+              <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-widest text-zinc-500">Time</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-zinc-700">
+          <tbody class="divide-y divide-zinc-800">
             <tr v-if="loading" class="text-sm">
-              <td colspan="5" class="py-4 text-center text-zinc-400">
-                <div
-                  v-if="loading"
-                  class="flex flex-col items-center justify-center py-12"
-                >
+              <td colspan="5" class="px-5 py-4 text-center">
+                <div class="flex flex-col items-center justify-center py-10">
                   <svg
-                    class="animate-spin h-8 w-8 text-white"
+                    class="animate-spin h-6 w-6 text-green-400"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -145,9 +141,7 @@
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  <p class="mt-4 text-white animate-pulse">
-                    Loading activities...
-                  </p>
+                  <p class="mt-3 text-sm text-zinc-400">Loading activities...</p>
                 </div>
               </td>
             </tr>
@@ -155,44 +149,44 @@
               v-for="activity in acts"
               v-else
               :key="activity.id"
-              class="text-sm"
+              class="text-sm hover:bg-zinc-800/50 transition-colors duration-100"
             >
-              <td class="py-4">
+              <td class="px-5 py-3.5">
                 <NuxtLink
                   :to="`/app/act/${activity.id}`"
-                  class="text-blue-400 hover:underline font-mono"
+                  class="text-green-400 hover:text-green-300 font-mono text-xs transition-colors"
                   >{{ activity.id }}</NuxtLink
                 >
               </td>
-              <td class="py-4">{{ activity.key }}</td>
-              <td class="py-4">
+              <td class="px-5 py-3.5 text-zinc-300">{{ activity.key }}</td>
+              <td class="px-5 py-3.5">
                 <div v-if="activity.user" class="flex items-center gap-2">
                   <img
                     :src="activity.user.photo"
                     :alt="activity.user.full_name"
-                    class="w-6 h-6 rounded-full"
+                    class="w-5 h-5 rounded-full ring-1 ring-white/10"
                   >
-                  <span>{{ activity.user.full_name }}</span>
+                  <span class="text-zinc-300">{{ activity.user.full_name }}</span>
                 </div>
-                <span v-else class="text-zinc-500">System</span>
+                <span v-else class="text-zinc-600 text-xs">System</span>
               </td>
-              <td class="py-4">
+              <td class="px-5 py-3.5">
                 <NuxtLink
                   :to="`/app/org/${activity.organization.id}`"
-                  class="text-blue-400 hover:underline"
+                  class="text-green-400 hover:text-green-300 transition-colors"
                 >
                   <div class="flex items-center gap-2">
                     <img
                       v-if="activity.organization.logo"
                       :src="activity.organization.logo"
                       :alt="activity.organization.name"
-                      class="w-6 h-6 rounded-full"
+                      class="w-5 h-5 rounded-full ring-1 ring-white/10"
                     >
-                    <span> {{ activity.organization.name }}</span>
+                    <span>{{ activity.organization.name }}</span>
                   </div>
                 </NuxtLink>
               </td>
-              <td class="py-4 text-zinc-400">
+              <td class="px-5 py-3.5 text-zinc-500 text-xs">
                 <span :title="date(activity.created_at)">
                   {{ relativeTime(activity.created_at) }}
                 </span>
@@ -203,34 +197,31 @@
       </div>
     </div>
 
-    <div class="flex items-center justify-between bg-zinc-900 p-4 rounded-lg">
+    <!-- Pagination -->
+    <div class="flex items-center justify-between bg-zinc-900 border border-zinc-800 px-5 py-3 rounded-xl">
       <button
         :disabled="currentPage <= 1"
-        class="px-4 py-2 text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed bg-zinc-800 hover:bg-zinc-700"
+        class="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg disabled:opacity-30 disabled:cursor-not-allowed text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all duration-150"
         @click="changePage(currentPage - 1)"
       >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
         Previous
       </button>
 
-      <div class="flex items-center gap-2">
-        <span class="px-4 py-2 bg-zinc-800 rounded-lg"
-          >Page {{ currentPage }}</span
-        >
-        <button
-          v-for="offset in 3"
-          :key="offset"
-          class="px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700"
-          @click="changePage(currentPage + offset)"
-        >
-          +{{ offset }}
-        </button>
-      </div>
+      <span class="text-sm text-zinc-500 font-mono">
+        Page <span class="text-white font-medium">{{ currentPage }}</span>
+      </span>
 
       <button
-        class="px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700"
+        class="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all duration-150"
         @click="changePage(currentPage + 1)"
       >
         Next
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+        </svg>
       </button>
     </div>
   </div>
