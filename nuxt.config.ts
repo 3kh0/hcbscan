@@ -35,4 +35,11 @@ export default defineNuxtConfig({
       date: cmDate,
     },
   },
+  nitro: {
+    experimental: { tasks: true },
+    scheduledTasks: {
+      "0 */6 * * *": ["index-orgs"],
+      "*/5 * * * *": ["index-acts"],
+    },
+  },
 });
