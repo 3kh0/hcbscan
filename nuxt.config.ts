@@ -14,14 +14,13 @@ export default defineNuxtConfig({
       title: "HCBScan - The HCB Explorer",
       meta: [
         {
-          hid: "description",
           name: "description",
           content: "HCBScan - The HCB Explorer",
         },
       ],
     },
   },
-  compatibilityDate: "2024-11-01",
+  compatibilityDate: "2026-02-27",
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
   vite: { plugins: [tailwindcss()] },

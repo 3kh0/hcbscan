@@ -1,4 +1,4 @@
-import { apiClient } from "../apiConfig.js";
+import { apiClient } from "../../app/utils/apiConfig.js";
 import { supabaseAdmin } from "../supabase/supabase-admin.js";
 
 function time() {

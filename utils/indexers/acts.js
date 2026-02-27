@@ -1,5 +1,5 @@
 // Tool to fetch recent activities from the HCB API and save them to the database
-import { apiClient } from "../apiConfig.js";
+import { apiClient } from "../../app/utils/apiConfig.js";
 import { supabaseAdmin } from "../supabase/supabase-admin.js";
 
 // CONFIG OPTIONS
