@@ -74,6 +74,8 @@
           v-if="udata.avatar"
           :src="udata.avatar"
           alt="User Avatar"
+          width="64"
+          height="64"
           class="h-16 w-16 rounded-lg mr-4 object-cover"
         />
         <div
@@ -127,6 +129,8 @@
                   v-if="org.logo"
                   :src="org.logo"
                   :alt="org.name"
+                  width="40"
+                  height="40"
                   class="h-10 w-10 rounded-lg object-cover"
                 />
                 <div
@@ -234,6 +238,8 @@
                           v-if="act['Organization Logo']"
                           :src="act['Organization Logo']"
                           :alt="act['Organization Name']"
+                          width="24"
+                          height="24"
                           class="w-6 h-6 rounded-full"
                         />
                         <span>{{ act["Organization Name"] }}</span>

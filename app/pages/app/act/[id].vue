@@ -97,6 +97,8 @@
             v-if="activityData.organization.logo"
             :src="activityData.organization.logo"
             :alt="activityData.organization.name"
+            width="48"
+            height="48"
             class="w-12 h-12 rounded-lg object-cover"
           />
           <div>
@@ -122,6 +124,8 @@
           <NuxtImg
             :src="activityData.user.photo"
             :alt="activityData.user.full_name"
+            width="40"
+            height="40"
             class="w-10 h-10 rounded-full"
           />
           <div>

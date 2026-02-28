@@ -178,6 +178,8 @@
                     <NuxtImg
                       :src="activity.user.photo"
                       :alt="activity.user.full_name"
+                      width="24"
+                      height="24"
                       class="w-6 h-6 rounded-full"
                     />
                     <span>{{ activity.user.full_name }}</span>
@@ -195,6 +197,8 @@
                       v-if="activity.organization.logo"
                       :src="activity.organization.logo"
                       :alt="activity.organization.name"
+                      width="24"
+                      height="24"
                       class="w-6 h-6 rounded-full"
                     />
                     <span> {{ activity.organization.name }}</span>

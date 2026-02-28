@@ -183,6 +183,8 @@
               v-if="orgData?.logo"
               :src="orgData?.logo"
               alt="Logo"
+              width="48"
+              height="48"
               class="h-12 w-12 mr-4 object-cover rounded-lg"
             />
           </a>

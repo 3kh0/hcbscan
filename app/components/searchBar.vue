@@ -449,6 +449,8 @@
                     v-if="user.avatar"
                     :src="user.avatar"
                     alt="User Avatar"
+                    width="40"
+                    height="40"
                     class="h-10 w-10 rounded-full object-cover"
                   />
                   <div

@@ -75,6 +75,8 @@
               <NuxtImg
                 :src="detail.user.photo"
                 alt="User Photo"
+                width="24"
+                height="24"
                 class="w-6 h-6 rounded-lg mr-2"
               />
               <span>{{ detail.user.full_name }}</span>
