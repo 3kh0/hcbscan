@@ -398,10 +398,11 @@
         <div v-if="orgData?.users?.length > 0" class="mb-6">
           <h2 class="text-xl font-semibold mb-2">Users</h2>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div
+            <NuxtLink
               v-for="user in orgData?.users"
               :key="user.id"
-              class="bg-zinc-900 p-4 rounded-lg flex items-center"
+              :to="`/app/usr/${user.id}`"
+              class="bg-zinc-900 p-4 rounded-lg flex items-center text-blue-400 hover:underline"
             >
               <img
                 :src="`${user.photo}`"
@@ -414,7 +415,7 @@
                 <p class="font-md">{{ user.full_name }}</p>
                 <p v-if="user.admin" class="text-sm text-red-400">⚡ Admin</p>
               </div>
-            </div>
+            </NuxtLink>
           </div>
         </div>
         <div v-else class="bg-zinc-900 p-4 rounded-lg">

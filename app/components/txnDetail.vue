@@ -68,14 +68,17 @@
           </div>
           <div class="flex items-center">
             <span class="text-zinc-400 w-1/3">Card Owner</span>
-            <div class="flex items-center w-2/3">
+            <NuxtLink
+              :to="`/app/usr/${detail.user.id}`"
+              class="flex items-center w-2/3 text-blue-400 hover:underline"
+            >
               <img
                 :src="detail.user.photo"
                 alt="User Photo"
                 class="w-6 h-6 rounded-lg mr-2"
               >
-              <span class="text-white">{{ detail.user.full_name }}</span>
-            </div>
+              <span>{{ detail.user.full_name }}</span>
+            </NuxtLink>
           </div>
           <div class="flex items-center">
             <span class="text-zinc-400 w-1/3">Organization</span>

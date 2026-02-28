@@ -4,6 +4,7 @@
     key: string;
     created_at: string;
     user: {
+      id: string;
       full_name: string;
       photo: string;
     } | null;
@@ -36,6 +37,7 @@
         created_at: act["Created At"],
         user: act["User ID"]
           ? {
+              id: act["User ID"],
               full_name: act["User Name"],
               photo: act["User Photo"],
             }
@@ -166,14 +168,20 @@
               </td>
               <td class="py-4">{{ activity.key }}</td>
               <td class="py-4">
-                <div v-if="activity.user" class="flex items-center gap-2">
-                  <img
-                    :src="activity.user.photo"
-                    :alt="activity.user.full_name"
-                    class="w-6 h-6 rounded-full"
-                  >
-                  <span>{{ activity.user.full_name }}</span>
-                </div>
+                <NuxtLink
+                  v-if="activity.user"
+                  :to="`/app/usr/${activity.user.id}`"
+                  class="text-blue-400 hover:underline"
+                >
+                  <div class="flex items-center gap-2">
+                    <img
+                      :src="activity.user.photo"
+                      :alt="activity.user.full_name"
+                      class="w-6 h-6 rounded-full"
+                    >
+                    <span>{{ activity.user.full_name }}</span>
+                  </div>
+                </NuxtLink>
                 <span v-else class="text-zinc-500">System</span>
               </td>
               <td class="py-4">
