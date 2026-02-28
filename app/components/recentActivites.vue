@@ -32,11 +32,35 @@
   }
 
   const maxActs = 25;
+  const refreshing = ref(false);
 
-  const { data: acts, error } = await useFetch("/api/activities", {
+  const {
+    data: acts,
+    error,
+    refresh,
+  } = await useFetch("/api/activities", {
     params: { limit: maxActs },
     transform: (data: Activity[]) => (data ?? []).map(t),
     default: () => [],
+  });
+
+  let interval: ReturnType<typeof setInterval> | undefined;
+
+  onMounted(() => {
+    interval = setInterval(async () => {
+      if (!refreshing.value) {
+        refreshing.value = true;
+        try {
+          await refresh();
+        } finally {
+          refreshing.value = false;
+        }
+      }
+    }, 30000);
+  });
+
+  onUnmounted(() => {
+    if (interval) clearInterval(interval);
   });
 </script>
 
@@ -44,9 +68,13 @@
   <div class="bg-zinc-900 rounded-lg p-6">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold">Recent Activities</h2>
+      <span v-if="refreshing" class="text-xs text-blue-400 animate-pulse"
+        >Refreshing...</span
+      >
     </div>
     <p class="text-sm text-zinc-400 mb-4">
-      Here are the most recent activities in all of HCB.
+      Here are the most recent activities in all of HCB, auto refreshing every
+      30 seconds.
     </p>
     <div class="overflow-x-auto">
       <table class="w-full">
