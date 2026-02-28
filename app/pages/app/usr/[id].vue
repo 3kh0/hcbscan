@@ -1,14 +1,46 @@
 <script setup lang="ts">
+  interface UserActivity {
+    "Activity ID": string;
+    Key: string;
+    "Created At": string;
+    "User ID": string | null;
+    "User Name": string | null;
+    "User Photo": string | null;
+    "Organization ID": string | null;
+    "Organization Name": string | null;
+    "Organization Logo": string | null;
+  }
+
   const route = useRoute();
   const userId = route.params.id;
   const udata = ref<any>(null);
   const loading = ref(true);
   const error = ref<string | null>(null);
+  const userActs = ref<UserActivity[]>([]);
+  const actsLoading = ref(false);
+  const actsPage = ref(1);
+  const hasMoreActs = ref(true);
+
+  const loadActivities = async (page: number) => {
+    actsLoading.value = true;
+    try {
+      const data = await $fetch(`/api/users/${userId}/activities`, {
+        params: { page, limit: 25 },
+      });
+      userActs.value = data as UserActivity[];
+      hasMoreActs.value = (data as UserActivity[]).length === 25;
+    } catch (e) {
+      console.error("Error loading user activities:", e);
+    } finally {
+      actsLoading.value = false;
+    }
+  };
 
   onMounted(async () => {
     try {
       loading.value = true;
       udata.value = await $fetch(`/api/users/${userId}`);
+      await loadActivities(1);
     } catch (e: any) {
       if (e?.statusCode === 404) {
         error.value = `User ${userId} not found.`;
@@ -21,6 +53,11 @@
       loading.value = false;
     }
   });
+
+  const changeActsPage = async (page: number) => {
+    actsPage.value = page;
+    await loadActivities(page);
+  };
 
   useHead({
     title: udata.value?.name
@@ -177,14 +214,110 @@
         </p>
       </div>
 
-      <div
-        class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mb-6"
-      >
-        <h3 class="font-bold text-yellow-400 mb-2">Debug Information</h3>
-        <pre
-          class="text-xs text-zinc-400 overflow-auto p-2 bg-zinc-900 rounded"
-          >{{ JSON.stringify(udata, null, 2) }}</pre
-        >
+      <!-- User Activities -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-semibold">Recent Activities</h2>
+        <div class="bg-zinc-900 rounded-lg p-6">
+          <div v-if="actsLoading" class="flex justify-center py-8">
+            <svg
+              class="animate-spin h-8 w-8 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+          </div>
+          <div v-else-if="userActs.length === 0" class="text-center py-4">
+            <p class="text-zinc-400">
+              No activities found for this user.
+            </p>
+          </div>
+          <div v-else class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="text-left text-zinc-400 text-sm">
+                  <th class="pb-4">ID</th>
+                  <th class="pb-4">Action</th>
+                  <th class="pb-4">Organization</th>
+                  <th class="pb-4">Time</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-700">
+                <tr
+                  v-for="act in userActs"
+                  :key="act['Activity ID']"
+                  class="text-sm"
+                >
+                  <td class="py-4">
+                    <NuxtLink
+                      :to="`/app/act/${act['Activity ID']}`"
+                      class="text-blue-400 hover:underline font-mono"
+                    >
+                      {{ act["Activity ID"] }}
+                    </NuxtLink>
+                  </td>
+                  <td class="py-4">{{ act["Key"] }}</td>
+                  <td class="py-4">
+                    <NuxtLink
+                      v-if="act['Organization ID']"
+                      :to="`/app/org/${act['Organization ID']}`"
+                      class="text-blue-400 hover:underline"
+                    >
+                      <div class="flex items-center gap-2">
+                        <img
+                          v-if="act['Organization Logo']"
+                          :src="act['Organization Logo']"
+                          :alt="act['Organization Name']"
+                          class="w-6 h-6 rounded-full"
+                        >
+                        <span>{{ act["Organization Name"] }}</span>
+                      </div>
+                    </NuxtLink>
+                    <span v-else class="text-zinc-500">—</span>
+                  </td>
+                  <td class="py-4 text-zinc-400">
+                    <span :title="date(act['Created At'])">
+                      {{ relativeTime(act["Created At"]) }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div
+            v-if="userActs.length > 0"
+            class="flex items-center justify-between mt-4 pt-4 border-t border-zinc-700"
+          >
+            <button
+              :disabled="actsPage <= 1"
+              class="px-4 py-2 text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed bg-zinc-800 hover:bg-zinc-700"
+              @click="changeActsPage(actsPage - 1)"
+            >
+              Previous
+            </button>
+            <span class="text-sm text-zinc-400">Page {{ actsPage }}</span>
+            <button
+              :disabled="!hasMoreActs"
+              class="px-4 py-2 text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed bg-zinc-800 hover:bg-zinc-700"
+              @click="changeActsPage(actsPage + 1)"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

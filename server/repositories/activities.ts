@@ -10,6 +10,17 @@ export async function getActivities(limit: number, offset: number = 0) {
   return result.rows;
 }
 
+export async function getActivitiesByUserId(userId: string, limit: number = 50, offset: number = 0) {
+  const result = await query(
+    `SELECT * FROM "hcb.hackclub.com-acts"
+     WHERE "User ID" = $1
+     ORDER BY "Created At" DESC
+     LIMIT $2 OFFSET $3`,
+    [userId, limit, offset]
+  );
+  return result.rows;
+}
+
 export async function bulkUpsertActivities(
   activities: Array<{
     id: string;

@@ -6,6 +6,7 @@
   const query = ref("");
   const orgResults = ref([]);
   const userResults = ref([]);
+  const actResults = ref([]);
   const fetching = ref(false);
   const isFocused = ref(false);
   const selected = ref(-1);
@@ -14,9 +15,11 @@
   const results = computed(() => {
     if (scope.value === "orgs") return orgResults.value;
     if (scope.value === "users") return userResults.value;
+    if (scope.value === "activities") return actResults.value;
     return [
       ...orgResults.value.map((org) => ({ ...org, type: "org" })),
       ...userResults.value.map((user) => ({ ...user, type: "user" })),
+      ...actResults.value.map((act) => ({ ...act, type: "activity" })),
     ];
   });
 
@@ -25,6 +28,7 @@
       fetching.value = false;
       orgResults.value = [];
       userResults.value = [];
+      actResults.value = [];
       selected.value = -1;
       return;
     }
@@ -38,6 +42,7 @@
 
       orgResults.value = data.orgs || [];
       userResults.value = data.users || [];
+      actResults.value = data.activities || [];
       selected.value = results.value.length > 0 ? 0 : -1;
     } catch (err) {
       console.error("Search error:", err);
@@ -85,7 +90,9 @@
 
   const sendResult = (result) => {
     const router = useRouter();
-    if (result.type === "user" || result.id) {
+    if (result.type === "activity") {
+      router.push(`/app/act/${result["Activity ID"]}`);
+    } else if (result.type === "user" || result.id) {
       router.push(`/app/usr/${result.id}`);
     } else {
       router.push(`/app/org/${result["Organization ID"]}`);
@@ -94,6 +101,7 @@
     query.value = "";
     orgResults.value = [];
     userResults.value = [];
+    actResults.value = [];
     selected.value = -1;
     isFocused.value = false;
   };
@@ -212,7 +220,7 @@
         v-model="query"
         type="text"
         class="block w-full bg-zinc-900 rounded-lg py-3 pl-10 pr-10 text-white placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-        placeholder="Search for organizations or users on HCB..."
+        placeholder="Search for organizations, users, or activities on HCB..."
         autocomplete="off"
         @focus="f"
         @blur="b"
@@ -257,13 +265,24 @@
             >
               Users
             </button>
+            <button
+              class="px-4 py-2 text-sm transition-colors"
+              :class="
+                scope === 'activities'
+                  ? 'text-white border-b-2 border-blue-500'
+                  : 'text-zinc-400 hover:text-white'
+              "
+              @click="setScope('activities')"
+            >
+              Activities
+            </button>
           </div>
         </div>
 
         <div class="px-4 py-3 text-zinc-400">
           <p>Start typing to search. You can search for:</p>
           <ul
-            v-if="scope !== 'users'"
+            v-if="scope !== 'users' && scope !== 'activities'"
             class="mt-1 text-sm list-disc pl-5 space-y-1"
           >
             <li>Organization name</li>
@@ -272,11 +291,20 @@
             <li>Organization ID</li>
           </ul>
           <ul
-            v-if="scope !== 'orgs'"
+            v-if="scope !== 'orgs' && scope !== 'activities'"
             class="mt-1 text-sm list-disc pl-5 space-y-1"
           >
             <li>User name</li>
             <li>User ID</li>
+          </ul>
+          <ul
+            v-if="scope !== 'orgs' && scope !== 'users'"
+            class="mt-1 text-sm list-disc pl-5 space-y-1"
+          >
+            <li>Activity ID</li>
+            <li>Action type</li>
+            <li>User name</li>
+            <li>Organization name</li>
           </ul>
           <p class="mt-2 text-xs text-zinc-500">
             <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">↑/↓</span>
@@ -456,6 +484,91 @@
                     </span>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div
+              v-if="scope === 'all' && actResults.length > 0"
+              key="act-header"
+              class="px-4 py-2 text-xs font-semibold text-zinc-500 bg-zinc-800 sticky top-0"
+            >
+              Activities
+            </div>
+            <div
+              v-for="(act, index) in scope === 'all'
+                ? actResults
+                : scope === 'activities'
+                  ? results
+                  : []"
+              :id="`search-result-${
+                scope === 'all'
+                  ? orgResults.length + userResults.length + index
+                  : index
+              }`"
+              :key="'act_' + act['Activity ID']"
+              :class="[
+                'px-4 py-3 cursor-pointer flex justify-between items-center transition duration-200 ease-in-out',
+                selected ===
+                (scope === 'all'
+                  ? orgResults.length + userResults.length + index
+                  : index)
+                  ? 'bg-blue-900/40 border-l-2 border-blue-500'
+                  : 'hover:bg-zinc-700 border-l-2 border-transparent',
+              ]"
+              :style="{ transitionDelay: `${index * 25}ms` }"
+              @mouseenter="
+                selected =
+                  scope === 'all'
+                    ? orgResults.length + userResults.length + index
+                    : index
+              "
+              @click="sendResult({ ...act, type: 'activity' })"
+            >
+              <div class="flex items-center">
+                <div class="mr-3">
+                  <div
+                    class="h-10 w-10 bg-zinc-700 rounded-full flex items-center justify-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 text-zinc-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <div class="text-white font-semibold">
+                    {{ act["Key"] }}
+                  </div>
+                  <div class="flex items-center mt-1 gap-2">
+                    <span class="text-xs text-blue-400 font-mono">{{
+                      act["Activity ID"]
+                    }}</span>
+                    <span
+                      v-if="act['User Name']"
+                      class="px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
+                    >
+                      {{ act["User Name"] }}
+                    </span>
+                    <span
+                      v-if="act['Organization Name']"
+                      class="px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
+                    >
+                      {{ act["Organization Name"] }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="text-zinc-400 text-sm ml-4 text-right">
+                {{ relativeTime(act["Created At"]) }}
               </div>
             </div>
           </transition-group>
