@@ -175,7 +175,7 @@
                   class="text-blue-400 hover:underline"
                 >
                   <div class="flex items-center gap-2">
-                    <img
+                    <NuxtImg
                       :src="activity.user.photo"
                       :alt="activity.user.full_name"
                       class="w-6 h-6 rounded-full"
@@ -191,7 +191,7 @@
                   class="text-blue-400 hover:underline"
                 >
                   <div class="flex items-center gap-2">
-                    <img
+                    <NuxtImg
                       v-if="activity.organization.logo"
                       :src="activity.organization.logo"
                       :alt="activity.organization.name"

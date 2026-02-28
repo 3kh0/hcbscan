@@ -166,7 +166,7 @@
       <div v-else>
         <div class="flex items-center justify-center mb-6">
           <a :href="orgData?.logo" target="_blank" rel="noreferrer">
-            <img
+            <NuxtImg
               v-if="orgData?.logo"
               :src="orgData?.logo"
               alt="Logo"
@@ -393,9 +393,8 @@
               :to="`/app/usr/${user.id}`"
               class="bg-zinc-900 p-4 rounded-lg flex items-center text-blue-400 hover:underline"
             >
-              <img
-                :src="`${user.photo}`"
-                referrerpolicy="no-referrer"
+              <NuxtImg
+                :src="user.photo"
                 loading="lazy"
                 :alt="user.full_name"
                 class="h-12 w-12 rounded-lg mr-4 object-cover"

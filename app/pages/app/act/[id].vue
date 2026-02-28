@@ -93,7 +93,7 @@
       <div class="bg-zinc-900 rounded-lg p-4 mb-4">
         <h2 class="text-sm text-zinc-400 mb-3">Organization</h2>
         <div class="flex items-center gap-4">
-          <img
+          <NuxtImg
             v-if="activityData.organization.logo"
             :src="activityData.organization.logo"
             :alt="activityData.organization.name"
@@ -119,7 +119,7 @@
           :to="`/app/usr/${activityData.user.id}`"
           class="flex items-center gap-3 text-blue-400 hover:underline"
         >
-          <img
+          <NuxtImg
             :src="activityData.user.photo"
             :alt="activityData.user.full_name"
             class="w-10 h-10 rounded-full"

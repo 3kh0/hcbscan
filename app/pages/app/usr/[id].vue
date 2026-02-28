@@ -70,7 +70,7 @@
 
     <div v-else-if="udata" class="space-y-6">
       <div class="flex items-center mb-6">
-        <img
+        <NuxtImg
           v-if="udata.avatar"
           :src="udata.avatar"
           alt="User Avatar"
@@ -123,7 +123,7 @@
           >
             <NuxtLink :to="`/app/org/${org.id}`" class="flex items-center">
               <div class="mr-3">
-                <img
+                <NuxtImg
                   v-if="org.logo"
                   :src="org.logo"
                   :alt="org.name"
@@ -230,7 +230,7 @@
                       class="text-blue-400 hover:underline"
                     >
                       <div class="flex items-center gap-2">
-                        <img
+                        <NuxtImg
                           v-if="act['Organization Logo']"
                           :src="act['Organization Logo']"
                           :alt="act['Organization Name']"

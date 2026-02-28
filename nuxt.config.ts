@@ -36,6 +36,15 @@ export default defineNuxtConfig({
       ],
     },
   },
+  modules: ["@nuxt/image"],
+  image: {
+    domains: [
+      "bank-hackclub.s3.amazonaws.com",
+      "i2.wp.com",
+      "hcb.hackclub.com",
+      "gravatar.com"
+    ],
+  },
   compatibilityDate: "2026-02-27",
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],

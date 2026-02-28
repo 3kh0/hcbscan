@@ -86,7 +86,7 @@
                 class="text-blue-400 hover:underline"
               >
                 <div class="flex items-center gap-2">
-                  <img
+                  <NuxtImg
                     v-if="activity.user.photo"
                     :src="activity.user.photo"
                     :alt="activity.user.full_name"
@@ -103,7 +103,7 @@
                 class="text-blue-400 hover:underline"
               >
                 <div class="flex items-center gap-2">
-                  <img
+                  <NuxtImg
                     v-if="activity.organization.logo"
                     :src="activity.organization.logo"
                     :alt="activity.organization.name"

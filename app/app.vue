@@ -1,12 +1,6 @@
 <script setup lang="ts">
   useHead({
-    link: [
-      { rel: "preconnect", href: "https://bank-hackclub.s3.amazonaws.com" },
-      { rel: "preconnect", href: "https://i2.wp.com" },
-      { rel: "preconnect", href: "https://hcb.hackclub.com" },
-      { rel: "preconnect", href: "https://gravatar.com" },
-      { rel: "preconnect", href: "https://data.3kh0.net" },
-    ],
+    link: [{ rel: "preconnect", href: "https://data.3kh0.net" }],
     script: [
       {
         src: "https://data.3kh0.net/script.js",

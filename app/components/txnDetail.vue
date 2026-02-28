@@ -72,7 +72,7 @@
               :to="`/app/usr/${detail.user.id}`"
               class="flex items-center w-2/3 text-blue-400 hover:underline"
             >
-              <img
+              <NuxtImg
                 :src="detail.user.photo"
                 alt="User Photo"
                 class="w-6 h-6 rounded-lg mr-2"
