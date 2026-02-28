@@ -47,7 +47,7 @@
       <div v-if="detail.transaction" class="space-y-6">
         <p class="text-zinc-400 mb-4">
           This appears to be some type of monetary transaction with the type
-          <b>{{ detail.key }}</b> performed for
+          <b>{{ activityLabel(detail.key) }}</b> performed for
           <b>{{ detail.organization.name }}</b> on
           {{ date(detail.created_at) }}. Here are the details I could find:
         </p>
@@ -116,7 +116,7 @@
       </div>
       <div v-else>
         <p class="text-zinc-400">
-          This appears to be an <b>{{ detail.key }}</b> performed for
+          This appears to be an <b>{{ activityLabel(detail.key) }}</b> performed for
           <b>{{ detail.organization.name }}</b> on
           {{ date(detail.created_at) }}, but I am unable to find any details
           about it.

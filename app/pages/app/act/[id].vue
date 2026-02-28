@@ -2,13 +2,6 @@
   const route = useRoute();
   const activityId = route.params.id;
 
-  const formatActivityKey = (key: string) => {
-    return key
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
   const {
     data: activityData,
     error: fetchError,
@@ -30,7 +23,7 @@
 
   const pageTitle = computed(() =>
     activityData.value
-      ? `${formatActivityKey(activityData.value.key)} - HCBScan`
+      ? `${activityLabel(activityData.value.key)} - HCBScan`
       : "Activity - HCBScan"
   );
   const pageDescription = computed(() =>
@@ -85,7 +78,7 @@
       <div class="flex items-center justify-between mb-4">
         <div>
           <h1 class="text-xl font-bold font-mono">{{ activityData.id }}</h1>
-          <p class="text-zinc-400">{{ activityData.key }}</p>
+          <p class="text-zinc-400">{{ activityLabel(activityData.key) }}</p>
         </div>
         <p class="text-zinc-400">{{ date(activityData.created_at) }}</p>
       </div>
@@ -151,7 +144,7 @@
             <tr>
               <td class="py-2 px-4 text-zinc-400">Action</td>
               <td class="py-2 px-4">
-                {{ activityData.key }}
+                {{ activityLabel(activityData.key) }}
               </td>
             </tr>
             <tr>
