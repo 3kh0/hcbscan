@@ -56,6 +56,9 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
+    externals: {
+      inline: ["ofetch", "node-fetch-native", "destr", "ufo"],
+    },
     experimental: { tasks: true },
     scheduledTasks: {
       "0 */3 * * *": ["index-past-orgs"],
