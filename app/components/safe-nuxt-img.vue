@@ -1,5 +1,6 @@
 <script setup lang="ts">
   const props = defineProps<{ src?: string | null }>();
+  const origin = useRequestURL().origin;
 
   const normalizedSrc = computed(() => {
     const s = props.src;
@@ -27,13 +28,30 @@
       const lp = u.pathname.toLowerCase();
       const m =
         lp.indexOf("%3f") >= 0 ? lp.indexOf("%3f") : lp.indexOf("%253f");
-      if (m >= 0) u.pathname = u.pathname.slice(0, m);
-      // strip for coolify 400s
-      u.search = "";
+      if (m >= 0) {
+        let dp = u.pathname;
+        try {
+          dp = decodeURIComponent(u.pathname);
+        } catch {}
+        const qi = dp.indexOf("?");
+        if (qi >= 0) {
+          u.pathname = dp.slice(0, qi);
+          if (!u.search) u.search = `?${dp.slice(qi + 1)}`;
+        } else {
+          u.pathname = u.pathname.slice(0, m);
+        }
+      }
+      return `${origin}/api/gravatar/${b64url(u.toString())}`;
     }
 
     return u.toString();
   });
+
+  function b64url(v: string) {
+    let bin = "";
+    for (const b of new TextEncoder().encode(v)) bin += String.fromCharCode(b);
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
 </script>
 
 <template>

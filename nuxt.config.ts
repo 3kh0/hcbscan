@@ -1,7 +1,17 @@
+import tailwindcss from "@tailwindcss/vite";
+
 const cmSha = process.env.SOURCE_COMMIT?.slice(0, 7) || "unknown";
 const cmDate = new Date().toISOString();
-
-import tailwindcss from "@tailwindcss/vite";
+const imageDomains = [
+  "bank-hackclub.s3.amazonaws.com",
+  "i2.wp.com",
+  "hcb.hackclub.com",
+  "gravatar.com",
+  "hcbscan.3kh0.net",
+  "localhost:3000",
+  "127.0.0.1:3000",
+  process.env.COOLIFY_FQDN,
+].filter((domain): domain is string => Boolean(domain));
 export default defineNuxtConfig({
   app: {
     pageTransition: { name: "page", mode: "out-in" },
@@ -38,12 +48,7 @@ export default defineNuxtConfig({
   },
   modules: ["@nuxt/image"],
   image: {
-    domains: [
-      "bank-hackclub.s3.amazonaws.com",
-      "i2.wp.com",
-      "hcb.hackclub.com",
-      "gravatar.com",
-    ],
+    domains: imageDomains,
   },
   compatibilityDate: "2026-02-27",
   devtools: { enabled: true },
