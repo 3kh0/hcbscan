@@ -89,6 +89,9 @@
     checkIndex(orgData.value.id);
   }
 
+  const img = useImage();
+  const defaultOgImage = "https://hcbscan.3kh0.net/readme.png";
+
   const pageTitle = computed(() =>
     orgData.value?.name
       ? `${orgData.value.name} - HCBScan`
@@ -101,14 +104,19 @@
         )} raised on HCBScan`
       : "View organization details on HCBScan"
   );
+  const ogImg = computed(() =>
+    orgData.value?.logo
+      ? `https://hcbscan.3kh0.net${img(orgData.value.logo, { width: 512, height: 512 })}`
+      : defaultOgImage
+  );
 
   useSeoMeta({
     title: pageTitle,
     ogTitle: pageTitle,
     description: pageDescription,
     ogDescription: pageDescription,
-    ogImage: "https://hcbscan.3kh0.net/readme.png",
-    twitterImage: "https://hcbscan.3kh0.net/readme.png",
+    ogImage: ogImg,
+    twitterImage: ogImg,
   });
 </script>
 
