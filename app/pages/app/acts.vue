@@ -167,7 +167,7 @@
                   >{{ activity.id }}</NuxtLink
                 >
               </td>
-              <td class="py-4">{{ activity.key }}</td>
+              <td class="py-4">{{ activityLabel(activity.key) }}</td>
               <td class="py-4">
                 <NuxtLink
                   v-if="activity.user"

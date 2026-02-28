@@ -20,6 +20,41 @@ export function date(date) {
   const d = new Date(date);
   return d.toLocaleDateString();
 }
+const activityLabels = {
+  "ach_transfer.create": "ACH transfer created",
+  "ach_transfer.failed": "ACH transfer failed",
+  "ach_transfer.rejected": "ACH transfer rejected",
+  "check_deposit.create": "Check deposited",
+  "comment.create": "Comment added",
+  "comment.destroy": "Comment deleted",
+  "comment.update": "Comment updated",
+  "disbursement.create": "Transfer created",
+  "disbursement.rejected": "Transfer rejected",
+  "donation.paid": "Donation received",
+  "employee.create": "Employee added",
+  "event.create": "Organization created",
+  "increase_check.create": "Check mailed",
+  "increase_check.rejected": "Check rejected",
+  "invoice.create": "Invoice created",
+  "invoice.paid": "Invoice paid",
+  "organizer_position_invite.create": "Organizer invited",
+  "raw_pending_stripe_transaction.create": "Card transaction",
+  "reimbursement_expense.approved": "Expense approved",
+  "reimbursement_report.approved": "Reimbursement approved",
+  "reimbursement_report.create": "Reimbursement submitted",
+  "reimbursement_report.review_requested": "Reimbursement review requested",
+  "wire.create": "Wire transfer created",
+  "wire.failed": "Wire transfer failed",
+  "wire.rejected": "Wire transfer rejected",
+  "wise_transfer.create": "Wise transfer created",
+  "wise_transfer.failed": "Wise transfer failed",
+  "wise_transfer.rejected": "Wise transfer rejected",
+};
+
+export function activityLabel(key) {
+  return activityLabels[key] || key.replace(/[_.]/g, " ");
+}
+
 export function fixMoney(cents, flip = false) {
   const amount = flip ? Math.abs(cents) : cents;
   return new Intl.NumberFormat("en-US", {
