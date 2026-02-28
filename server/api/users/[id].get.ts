@@ -1,9 +1,12 @@
-import { getUserById } from "../../repositories/users";
+import { getUserById, getUserNetWorth } from "../../repositories/users";
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
   if (!id) {
-    throw createError({ statusCode: 400, statusMessage: "User ID is required" });
+    throw createError({
+      statusCode: 400,
+      statusMessage: "User ID is required",
+    });
   }
 
   const user = await getUserById(id);
@@ -11,5 +14,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: "User not found" });
   }
 
-  return user;
+  const netWorth = await getUserNetWorth(id);
+
+  return { ...user, netWorth };
 });

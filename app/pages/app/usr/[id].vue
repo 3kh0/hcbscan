@@ -13,109 +13,55 @@
 
   const route = useRoute();
   const userId = route.params.id;
-  const udata = ref<any>(null);
-  const loading = ref(true);
-  const error = ref<string | null>(null);
-  const userActs = ref<UserActivity[]>([]);
-  const actsLoading = ref(false);
+
+  const { data: udata, error } = await useFetch(`/api/users/${userId}`);
+
   const actsPage = ref(1);
-  const hasMoreActs = ref(true);
 
-  const loadActivities = async (page: number) => {
-    actsLoading.value = true;
-    try {
-      const data = await $fetch(`/api/users/${userId}/activities`, {
-        params: { page, limit: 25 },
-      });
-      userActs.value = data as UserActivity[];
-      hasMoreActs.value = (data as UserActivity[]).length === 25;
-    } catch (e) {
-      console.error("Error loading user activities:", e);
-    } finally {
-      actsLoading.value = false;
+  const { data: userActs, status: actsStatus } = await useFetch(
+    `/api/users/${userId}/activities`,
+    {
+      params: { page: actsPage, limit: 25 },
+      watch: [actsPage],
+      default: () => [] as UserActivity[],
     }
-  };
+  );
 
-  onMounted(async () => {
-    try {
-      loading.value = true;
-      udata.value = await $fetch(`/api/users/${userId}`);
-      await loadActivities(1);
-    } catch (e: any) {
-      if (e?.statusCode === 404) {
-        error.value = `User ${userId} not found.`;
-      } else {
-        error.value =
-          e instanceof Error ? e.message : "An unknown error occurred.";
-      }
-      console.error("Error loading user:", error.value);
-    } finally {
-      loading.value = false;
-    }
-  });
+  const hasMoreActs = computed(
+    () => (userActs.value as UserActivity[])?.length === 25
+  );
 
-  const changeActsPage = async (page: number) => {
+  const changeActsPage = (page: number) => {
     actsPage.value = page;
-    await loadActivities(page);
   };
+
+  const pageTitle = udata.value?.name
+    ? `${udata.value.name} - HCBScan`
+    : "User Profile - HCBScan";
+  const pageDescription = udata.value?.name
+    ? `User profile for ${udata.value.name} with ${
+        udata.value.orgs?.length || 0
+      } organizations, view their details on HCBScan`
+    : "View user details and associated organizations on HCBScan";
 
   useHead({
-    title: udata.value?.name
-      ? `${udata.value.name} - HCBScan`
-      : "User Profile - HCBScan",
+    title: pageTitle,
     meta: [
-      {
-        name: "description",
-        content: "View user details and associated organizations on HCBScan",
-      },
+      { name: "description", content: pageDescription },
+      { property: "og:title", content: pageTitle },
+      { property: "og:description", content: pageDescription },
     ],
-  });
-
-  watch(udata, (newudata) => {
-    if (newudata) {
-      useHead({
-        title: `${newudata.name} - HCBScan`,
-        meta: [
-          {
-            name: "description",
-            content: `User profile for ${newudata.name} with ${
-              newudata.orgs?.length || 0
-            } organizations`,
-          },
-        ],
-      });
-    }
   });
 </script>
 
 <template>
   <div class="mx-auto">
-    <div v-if="loading" class="flex flex-col items-center justify-center py-12">
-      <svg
-        class="animate-spin h-8 w-8 text-white"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
-      </svg>
-      <p class="mt-4 text-white animate-pulse">Loading user data...</p>
-    </div>
-
-    <div v-else-if="error">
-      <ErrorBanner :message="error" />
+    <div v-if="error">
+      <ErrorBanner
+        :message="
+          error.statusCode === 404 ? `User ${userId} not found.` : error.message
+        "
+      />
     </div>
 
     <div v-else-if="udata" class="space-y-6">
@@ -149,8 +95,10 @@
       </div>
       <div class="rounded-lg mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-zinc-900 p-4 rounded-lg">
-          <h3 class="text-zinc-400">User ID</h3>
-          <p class="font-mono">{{ udata.id }}</p>
+          <h3 class="text-zinc-400">Net Worth</h3>
+          <p class="font-bold text-2xl">
+            {{ fixMoney(udata.netWorth) }}
+          </p>
         </div>
         <div class="bg-zinc-900 p-4 rounded-lg">
           <h3 class="text-zinc-400">Name</h3>
@@ -218,7 +166,7 @@
       <div class="space-y-4">
         <h2 class="text-xl font-semibold">Recent Activities</h2>
         <div class="bg-zinc-900 rounded-lg p-6">
-          <div v-if="actsLoading" class="flex justify-center py-8">
+          <div v-if="actsStatus === 'pending'" class="flex justify-center py-8">
             <svg
               class="animate-spin h-8 w-8 text-white"
               xmlns="http://www.w3.org/2000/svg"
@@ -240,10 +188,11 @@
               />
             </svg>
           </div>
-          <div v-else-if="userActs.length === 0" class="text-center py-4">
-            <p class="text-zinc-400">
-              No activities found for this user.
-            </p>
+          <div
+            v-else-if="(userActs as UserActivity[]).length === 0"
+            class="text-center py-4"
+          >
+            <p class="text-zinc-400">No activities found for this user.</p>
           </div>
           <div v-else class="overflow-x-auto">
             <table class="w-full">
@@ -257,7 +206,7 @@
               </thead>
               <tbody class="divide-y divide-zinc-700">
                 <tr
-                  v-for="act in userActs"
+                  v-for="act in userActs as UserActivity[]"
                   :key="act['Activity ID']"
                   class="text-sm"
                 >
@@ -282,7 +231,7 @@
                           :src="act['Organization Logo']"
                           :alt="act['Organization Name']"
                           class="w-6 h-6 rounded-full"
-                        >
+                        />
                         <span>{{ act["Organization Name"] }}</span>
                       </div>
                     </NuxtLink>
@@ -298,7 +247,7 @@
             </table>
           </div>
           <div
-            v-if="userActs.length > 0"
+            v-if="(userActs as UserActivity[]).length > 0"
             class="flex items-center justify-between mt-4 pt-4 border-t border-zinc-700"
           >
             <button
