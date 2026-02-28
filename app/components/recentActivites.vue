@@ -91,7 +91,7 @@
                     :src="activity.user.photo"
                     :alt="activity.user.full_name"
                     class="w-6 h-6 rounded-full"
-                  >
+                  />
                   <span>{{ activity.user.full_name }}</span>
                 </div>
               </NuxtLink>
@@ -108,7 +108,7 @@
                     :src="activity.organization.logo"
                     :alt="activity.organization.name"
                     class="w-6 h-6 rounded-full"
-                  >
+                  />
                   <span> {{ activity.organization.name }}</span>
                 </div>
               </NuxtLink>

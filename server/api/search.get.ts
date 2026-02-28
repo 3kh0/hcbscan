@@ -1,10 +1,17 @@
-import { searchOrgs, searchUsers, searchActivities } from "../repositories/search";
+import {
+  searchOrgs,
+  searchUsers,
+  searchActivities,
+} from "../repositories/search";
 
 export default defineEventHandler(async (event) => {
   const params = getQuery(event);
   const q = String(params.q || "").trim();
   const scope = String(params.scope || "all");
-  const limit = Math.min(Math.max(parseInt(String(params.limit || "15"), 10) || 15, 1), 50);
+  const limit = Math.min(
+    Math.max(parseInt(String(params.limit || "15"), 10) || 15, 1),
+    50
+  );
 
   if (!q) {
     return { orgs: [], users: [], activities: [] };

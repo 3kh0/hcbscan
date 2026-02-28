@@ -76,7 +76,7 @@
                 :src="detail.user.photo"
                 alt="User Photo"
                 class="w-6 h-6 rounded-lg mr-2"
-              >
+              />
               <span>{{ detail.user.full_name }}</span>
             </NuxtLink>
           </div>

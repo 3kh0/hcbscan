@@ -10,7 +10,11 @@ export async function getActivities(limit: number, offset: number = 0) {
   return result.rows;
 }
 
-export async function getActivitiesByUserId(userId: string, limit: number = 50, offset: number = 0) {
+export async function getActivitiesByUserId(
+  userId: string,
+  limit: number = 50,
+  offset: number = 0
+) {
   const result = await query(
     `SELECT * FROM "hcb.hackclub.com-acts"
      WHERE "User ID" = $1

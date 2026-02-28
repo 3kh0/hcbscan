@@ -225,7 +225,7 @@
         @focus="f"
         @blur="b"
         @keydown="k"
-      >
+      />
       <div
         v-if="isFocused && !query"
         class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg overflow-hidden"
@@ -450,7 +450,7 @@
                     :src="user.avatar"
                     alt="User Avatar"
                     class="h-10 w-10 rounded-full object-cover"
-                  >
+                  />
                   <div
                     v-else
                     class="h-10 w-10 bg-zinc-700 rounded-full flex items-center justify-center"

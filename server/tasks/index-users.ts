@@ -4,7 +4,8 @@ import { bulkUpsertUsers } from "../repositories/users";
 export default defineTask({
   meta: {
     name: "index-users",
-    description: "Re-index users from the HCB API (fetches orgs to extract user data)",
+    description:
+      "Re-index users from the HCB API (fetches orgs to extract user data)",
   },
   async run() {
     console.log("[index-users] starting...");

@@ -22,7 +22,7 @@ export default defineTask({
 
       const batch = stale.slice(0, BATCH_SIZE);
       const results = await Promise.all(
-        batch.map((row) => fetchOrg(row["Organization ID"])),
+        batch.map((row) => fetchOrg(row["Organization ID"]))
       );
 
       const orgs = results
