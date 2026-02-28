@@ -84,14 +84,13 @@
     gimmeData(currentPage.value);
   });
 
-  useHead({
-    title: "Viewing recent activities - HCBScan",
-    meta: [
-      {
-        name: "description",
-        content: "View all the recent activities and browse them using HCBScan",
-      },
-    ],
+  useSeoMeta({
+    title: "Recent Activities - HCBScan",
+    ogTitle: "Recent Activities - HCBScan",
+    description:
+      "Browse all recent activities from transparent HCB organizations.",
+    ogDescription:
+      "Browse all recent activities from transparent HCB organizations.",
   });
 </script>
 

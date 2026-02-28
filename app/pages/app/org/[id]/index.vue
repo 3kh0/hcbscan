@@ -1,25 +1,59 @@
 <script setup lang="ts">
   import { marked } from "marked";
-  import { useRoute } from "vue-router";
 
   const route = useRoute();
-  const orgData = ref<any>(null);
-  const transactions = ref<any[]>([]);
-  const loading = ref(true);
-  const txnsLoading = ref(true);
-  const error = ref<string | null>(null);
   const isIndexed = ref(true);
   const askIndex = ref(false);
+
+  const {
+    data: orgData,
+    error: orgError,
+    status: orgStatus,
+  } = await useAsyncData(`org-${route.params.id}`, async () => {
+    const response = await $fetch<any>(
+      buildApiUrl(`api/v3/organizations/${route.params.id}`),
+      { headers: { Accept: "application/json" } }
+    );
+    return response;
+  });
+
+  const loading = computed(() => orgStatus.value === "pending");
+  const error = computed(() =>
+    orgError.value ? "This organization does not exist." : null
+  );
+
+  const { data: transactions, status: txnsStatus } = await useLazyAsyncData(
+    `org-txns-${route.params.id}`,
+    async () => {
+      if (!orgData.value?.id) return [];
+      const response = await $fetch<any[]>(
+        buildApiUrl(
+          `api/v3/organizations/${orgData.value.id}/transactions?per_page=25`
+        ),
+        { headers: { Accept: "application/json" } }
+      );
+      return response;
+    },
+    { default: () => [] }
+  );
+
+  const txnsLoading = computed(() => txnsStatus.value === "pending");
 
   const pubMsg = computed(() => {
     if (!orgData.value?.public_message) return "";
     const pubMsg = orgData.value.public_message
       .replace(/\]\s*\n\s*\(/g, "](")
-      .replace(/\[(.*?)\]\s*\((.*?)\)/g, (_, text, url) => {
-        if (url.includes(text)) return `[${text}](${url})`;
-        return `[${text}](${url})`;
-      })
-      .replace(/\[(.*?)\]\s*\((.*?)\)/g, (_, text, url) => `[${text}](${url})`);
+      .replace(
+        /\[(.*?)\]\s*\((.*?)\)/g,
+        (_: string, text: string, url: string) => {
+          if (url.includes(text)) return `[${text}](${url})`;
+          return `[${text}](${url})`;
+        }
+      )
+      .replace(
+        /\[(.*?)\]\s*\((.*?)\)/g,
+        (_: string, text: string, url: string) => `[${text}](${url})`
+      );
     return marked.parse(pubMsg);
   });
 
@@ -51,75 +85,28 @@
     }
   };
 
-  onMounted(async () => {
-    try {
-      loading.value = true;
+  if (orgData.value?.id) {
+    checkIndex(orgData.value.id);
+  }
 
-      const isSwitch = route.params.id;
-      const response = await fetch(
-        buildApiUrl(`api/v3/organizations/${isSwitch}`),
-        {
-          method: "GET",
-          headers: { Accept: "application/json" },
-        }
-      );
+  const pageTitle = computed(() =>
+    orgData.value?.name
+      ? `${orgData.value.name} - HCBScan`
+      : "Organization - HCBScan"
+  );
+  const pageDescription = computed(() =>
+    orgData.value?.name
+      ? `Organization ${orgData.value.name} with ${fixMoney(
+          orgData.value.balances?.balance_cents
+        )} raised on HCBScan`
+      : "View organization details on HCBScan"
+  );
 
-      if (!response.ok) {
-        throw new Error("This organization does not exist.");
-      }
-
-      orgData.value = await response.json();
-      await checkIndex(orgData.value.id);
-
-      const transactionsResponse = await fetch(
-        buildApiUrl(
-          `api/v3/organizations/${orgData.value.id}/transactions?per_page=25`
-        ),
-        {
-          method: "GET",
-          headers: { Accept: "application/json" },
-        }
-      );
-
-      if (!transactionsResponse.ok) {
-        throw new Error("Failed to fetch transactions.");
-      }
-
-      transactions.value = await transactionsResponse.json();
-      txnsLoading.value = false;
-    } catch (e) {
-      error.value =
-        e instanceof Error ? e.message : "Failed to load organization data.";
-      console.error("Error:", error.value);
-    } finally {
-      loading.value = false;
-    }
-  });
-
-  useHead({
-    title: "Viewing organization - HCBScan",
-    meta: [
-      {
-        name: "description",
-        content: "View the details of a specific organization on HCBScan",
-      },
-    ],
-  });
-
-  watch(orgData, (metadata) => {
-    if (metadata) {
-      useHead({
-        title: `${metadata.name} - HCBScan`,
-        meta: [
-          {
-            name: "description",
-            content: `Organization ${metadata.name} with ${fixMoney(
-              metadata.balances?.balance_cents
-            )} raised`,
-          },
-        ],
-      });
-    }
+  useSeoMeta({
+    title: pageTitle,
+    ogTitle: pageTitle,
+    description: pageDescription,
+    ogDescription: pageDescription,
   });
 </script>
 

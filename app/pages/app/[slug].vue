@@ -1,3 +1,11 @@
+<script setup>
+  useSeoMeta({
+    title: "Page Not Found - HCBScan",
+    ogTitle: "Page Not Found - HCBScan",
+    description: "The page you are looking for does not exist.",
+    ogDescription: "The page you are looking for does not exist.",
+  });
+</script>
 <template>
   <div class="mx-auto">
     <div>

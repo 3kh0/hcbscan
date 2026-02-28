@@ -1,8 +1,5 @@
 <script setup lang="ts">
   const route = useRoute();
-  const activityData = ref<Activity | null>(null);
-  const loading = ref(true);
-  const error = ref<string | null>(null);
   const activityId = route.params.id;
 
   const formatActivityKey = (key: string) => {
@@ -12,53 +9,43 @@
       .join(" ");
   };
 
-  onMounted(async () => {
-    try {
-      loading.value = true;
-      const response = await fetch(
-        buildApiUrl(`api/v3/activities/${activityId}`),
-        { headers: { Accept: "application/json" } }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          "Failed to fetch activity as this activity does not exist."
-        );
-      }
-
-      activityData.value = await response.json();
-    } catch (e) {
-      error.value =
-        e instanceof Error ? e.message : "An unknown error occurred.";
-    } finally {
-      loading.value = false;
-    }
+  const {
+    data: activityData,
+    error: fetchError,
+    status,
+  } = await useAsyncData(`act-${activityId}`, async () => {
+    const response = await $fetch<Activity>(
+      buildApiUrl(`api/v3/activities/${activityId}`),
+      { headers: { Accept: "application/json" } }
+    );
+    return response;
   });
 
-  useHead({
-    title: "Viewing activity - HCBScan",
-    meta: [
-      {
-        name: "description",
-        content: "View the details of a specific activity on HCBScan",
-      },
-    ],
-  });
+  const loading = computed(() => status.value === "pending");
+  const error = computed(() =>
+    fetchError.value
+      ? "Failed to fetch activity as this activity does not exist."
+      : null
+  );
 
-  watch(activityData, (metadata) => {
-    if (metadata) {
-      useHead({
-        title: `${formatActivityKey(metadata.key)} - HCBScan`,
-        meta: [
-          {
-            name: "description",
-            content: `Activity ${metadata.id} performed by ${
-              metadata.user?.full_name || "unknown"
-            } for ${metadata.organization.name}`,
-          },
-        ],
-      });
-    }
+  const pageTitle = computed(() =>
+    activityData.value
+      ? `${formatActivityKey(activityData.value.key)} - HCBScan`
+      : "Activity - HCBScan"
+  );
+  const pageDescription = computed(() =>
+    activityData.value
+      ? `Activity ${activityData.value.id} performed by ${
+          activityData.value.user?.full_name || "unknown"
+        } for ${activityData.value.organization.name}`
+      : "View activity details on HCBScan"
+  );
+
+  useSeoMeta({
+    title: pageTitle,
+    ogTitle: pageTitle,
+    description: pageDescription,
+    ogDescription: pageDescription,
   });
 </script>
 

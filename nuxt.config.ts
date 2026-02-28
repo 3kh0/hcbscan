@@ -15,7 +15,17 @@ export default defineNuxtConfig({
       meta: [
         {
           name: "description",
-          content: "HCBScan - The HCB Explorer",
+          content:
+            "The first public explorer for HCB transactions and organizations.",
+        },
+        { name: "theme-color", content: "#09090b" },
+        { property: "og:site_name", content: "HCBScan" },
+        { property: "og:type", content: "website" },
+        { property: "og:image", content: "https://hcbscan.3kh0.net/hcbscan.png" },
+        { name: "twitter:card", content: "summary" },
+        {
+          name: "twitter:image",
+          content: "https://hcbscan.3kh0.net/hcbscan.png",
         },
       ],
     },

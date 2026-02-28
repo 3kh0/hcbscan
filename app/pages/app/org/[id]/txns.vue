@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import { useRoute } from "vue-router";
-
   const route = useRoute();
   const orgId = computed(() => route.params.id as string);
   const orgData = ref<any>(null);
@@ -11,6 +9,17 @@
   const hasMore = ref(true);
   const currentPage = ref(1);
   const perPage = 25;
+
+  const { data: orgMeta } = await useAsyncData(
+    `org-meta-${orgId.value}`,
+    async () => {
+      const response = await $fetch<any>(
+        buildApiUrl(`api/v3/organizations/${orgId.value}`),
+        { headers: { Accept: "application/json" } }
+      );
+      return { name: response.name, logo: response.logo };
+    }
+  );
 
   async function load(page = 1, append = false) {
     try {
@@ -112,28 +121,22 @@
     });
   });
 
-  useHead({
-    title: "Organization Transactions - HCBScan",
-    meta: [
-      {
-        name: "description",
-        content: "View all transactions for an organization on HCBScan",
-      },
-    ],
-  });
+  const pageTitle = computed(() =>
+    orgMeta.value?.name
+      ? `${orgMeta.value.name} Transactions - HCBScan`
+      : "Organization Transactions - HCBScan"
+  );
+  const pageDescription = computed(() =>
+    orgMeta.value?.name
+      ? `All transactions for ${orgMeta.value.name} on HCBScan`
+      : "View all transactions for an organization on HCBScan"
+  );
 
-  watch(orgData, (metadata) => {
-    if (metadata) {
-      useHead({
-        title: `${metadata.name} Transactions - HCBScan`,
-        meta: [
-          {
-            name: "description",
-            content: `All transactions for ${metadata.name} on HCBScan`,
-          },
-        ],
-      });
-    }
+  useSeoMeta({
+    title: pageTitle,
+    ogTitle: pageTitle,
+    description: pageDescription,
+    ogDescription: pageDescription,
   });
 </script>
 

@@ -1,57 +1,41 @@
 <script setup lang="ts">
-  import { buildApiUrl } from "~/utils/apiConfig";
-
   const route = useRoute();
-  const txnData = ref<Transaction | null>(null);
-  const loading = ref(true);
-  const error = ref<string | null>(null);
 
-  const getTxn = async () => {
-    try {
-      loading.value = true;
-      const response = await fetch(
-        buildApiUrl(`api/v3/transactions/${route.params.id}`),
-        { headers: { Accept: "application/json" } }
-      );
-
-      if (!response.ok) throw new Error("Transaction not found");
-
-      txnData.value = await response.json();
-    } catch (e) {
-      error.value =
-        e instanceof Error ? e.message : "Failed to load transaction";
-      console.error("Error loading transaction:", error.value);
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  onMounted(getTxn);
-
-  useHead({
-    title: "Viewing transaction - HCBScan",
-    meta: [
-      {
-        name: "description",
-        content: "View the details of a specific transaction on HCBScan",
-      },
-    ],
+  const {
+    data: txnData,
+    error: fetchError,
+    status,
+  } = await useAsyncData(`txn-${route.params.id}`, async () => {
+    const response = await $fetch<Transaction>(
+      buildApiUrl(`api/v3/transactions/${route.params.id}`),
+      { headers: { Accept: "application/json" } }
+    );
+    return response;
   });
 
-  watch(txnData, (metadata) => {
-    if (metadata) {
-      useHead({
-        title: `${metadata.id} - HCBScan`,
-        meta: [
-          {
-            name: "description",
-            content: `Transaction ${metadata.id} of type ${
-              metadata.type
-            } for ${fixMoney(metadata.amount_cents)}`,
-          },
-        ],
-      });
-    }
+  const loading = computed(() => status.value === "pending");
+  const error = computed(() =>
+    fetchError.value ? "Transaction not found" : null
+  );
+
+  const pageTitle = computed(() =>
+    txnData.value
+      ? `${txnData.value.memo || txnData.value.id} - HCBScan`
+      : "Transaction - HCBScan"
+  );
+  const pageDescription = computed(() =>
+    txnData.value
+      ? `Transaction ${txnData.value.id} of type ${
+          txnData.value.type
+        } for ${fixMoney(txnData.value.amount_cents)}`
+      : "View transaction details on HCBScan"
+  );
+
+  useSeoMeta({
+    title: pageTitle,
+    ogTitle: pageTitle,
+    description: pageDescription,
+    ogDescription: pageDescription,
   });
 </script>
 

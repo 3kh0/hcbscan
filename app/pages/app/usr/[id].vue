@@ -35,22 +35,24 @@
     actsPage.value = page;
   };
 
-  const pageTitle = udata.value?.name
-    ? `${udata.value.name} - HCBScan`
-    : "User Profile - HCBScan";
-  const pageDescription = udata.value?.name
-    ? `User profile for ${udata.value.name} with ${
-        udata.value.orgs?.length || 0
-      } organizations, view their details on HCBScan`
-    : "View user details and associated organizations on HCBScan";
+  const pageTitle = computed(() =>
+    udata.value?.name
+      ? `${udata.value.name} - HCBScan`
+      : "User Profile - HCBScan"
+  );
+  const pageDescription = computed(() =>
+    udata.value?.name
+      ? `User profile for ${udata.value.name} with ${
+          udata.value.orgs?.length || 0
+        } organizations on HCBScan`
+      : "View user details and associated organizations on HCBScan"
+  );
 
-  useHead({
+  useSeoMeta({
     title: pageTitle,
-    meta: [
-      { name: "description", content: pageDescription },
-      { property: "og:title", content: pageTitle },
-      { property: "og:description", content: pageDescription },
-    ],
+    ogTitle: pageTitle,
+    description: pageDescription,
+    ogDescription: pageDescription,
   });
 </script>
 

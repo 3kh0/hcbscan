@@ -15,15 +15,13 @@
     return 0;
   });
 
-  useHead({
-    title: "HCBScan",
-    meta: [
-      {
-        name: "description",
-        content:
-          "The HCB Explorer -  The first public explorer for HCB transactions and organizations. ",
-      },
-    ],
+  useSeoMeta({
+    title: "HCBScan - The HCB Explorer",
+    ogTitle: "HCBScan - The HCB Explorer",
+    description:
+      "The first public explorer for HCB transactions and organizations.",
+    ogDescription:
+      "The first public explorer for HCB transactions and organizations.",
   });
 </script>
 
