@@ -42,7 +42,7 @@ export default defineNuxtConfig({
       "bank-hackclub.s3.amazonaws.com",
       "i2.wp.com",
       "hcb.hackclub.com",
-      "gravatar.com"
+      "gravatar.com",
     ],
   },
   compatibilityDate: "2026-02-27",
