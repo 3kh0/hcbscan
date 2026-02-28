@@ -23,7 +23,7 @@ export default defineNuxtConfig({
         { property: "og:type", content: "website" },
         {
           property: "og:image",
-          content: "https://hcbscan.3kh0.net/hcbscan.png",
+          content: "https://hcbscan.3kh0.net/readme.png",
         },
         { property: "og:image:width", content: "512" },
         { property: "og:image:height", content: "512" },
@@ -31,7 +31,7 @@ export default defineNuxtConfig({
         { name: "twitter:card", content: "summary" },
         {
           name: "twitter:image",
-          content: "https://hcbscan.3kh0.net/hcbscan.png",
+          content: "https://hcbscan.3kh0.net/readme.png",
         },
       ],
     },
