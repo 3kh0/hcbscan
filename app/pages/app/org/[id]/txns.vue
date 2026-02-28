@@ -179,7 +179,7 @@
       <div class="text-center mb-4">
         <div class="flex items-center justify-center">
           <a :href="orgData?.logo" target="_blank" rel="noreferrer">
-            <NuxtImg
+            <SafeNuxtImg
               v-if="orgData?.logo"
               :src="orgData?.logo"
               alt="Logo"

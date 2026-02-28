@@ -445,7 +445,7 @@
             >
               <div class="flex items-center">
                 <div class="mr-3">
-                  <NuxtImg
+                  <SafeNuxtImg
                     v-if="user.avatar"
                     :src="user.avatar"
                     alt="User Avatar"
