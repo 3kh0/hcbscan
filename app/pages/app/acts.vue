@@ -91,6 +91,8 @@
       "Browse all recent activities from transparent HCB organizations.",
     ogDescription:
       "Browse all recent activities from transparent HCB organizations.",
+    ogImage: "https://hcbscan.3kh0.net/readme.png",
+    twitterImage: "https://hcbscan.3kh0.net/readme.png",
   });
 </script>
 

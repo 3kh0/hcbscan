@@ -4,6 +4,8 @@
     ogTitle: "Page Not Found - HCBScan",
     description: "The page you are looking for does not exist.",
     ogDescription: "The page you are looking for does not exist.",
+    ogImage: "https://hcbscan.3kh0.net/readme.png",
+    twitterImage: "https://hcbscan.3kh0.net/readme.png",
   });
 </script>
 <template>

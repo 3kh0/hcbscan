@@ -107,6 +107,8 @@
     ogTitle: pageTitle,
     description: pageDescription,
     ogDescription: pageDescription,
+    ogImage: "https://hcbscan.3kh0.net/readme.png",
+    twitterImage: "https://hcbscan.3kh0.net/readme.png",
   });
 </script>
 
