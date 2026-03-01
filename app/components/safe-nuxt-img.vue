@@ -19,8 +19,7 @@
     ) {
       const id = u.pathname.split("/")[4];
       if (id) {
-        const ext = u.pathname.match(/\.([A-Za-z0-9]+)$/)?.[1]?.toLowerCase();
-        u.pathname = `/storage/blobs/redirect/${id}/${ext ? `file.${ext}` : "file"}`;
+        return `${origin}/api/hcb-image/${id}`;
       }
     }
 

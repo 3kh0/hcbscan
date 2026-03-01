@@ -5,6 +5,8 @@ services:
       - "3000:3000"
     environment:
       - DATABASE_URL=postgresql://app_rw:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
+    volumes:
+      - hcb-cache:/app/.data/hcb-image-cache
     depends_on:
       db:
         condition: service_healthy
@@ -33,3 +35,4 @@ services:
 
 volumes:
   pgdata:
+  hcb-cache:
