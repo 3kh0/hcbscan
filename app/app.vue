@@ -1,4 +1,7 @@
 <script setup lang="ts">
+  import NProgress from "nprogress";
+  import "nprogress/nprogress.css";
+
   useHead({
     link: [{ rel: "preconnect", href: "https://data.3kh0.net" }],
     script: [
@@ -8,6 +11,16 @@
         defer: true,
       },
     ],
+  });
+
+  const router = useRouter();
+
+  router.beforeEach(() => {
+    NProgress.start();
+  });
+
+  router.afterEach(() => {
+    NProgress.done();
   });
 </script>
 <template>

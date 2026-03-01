@@ -116,8 +116,8 @@
       </div>
       <div v-else>
         <p class="text-zinc-400">
-          This appears to be an <b>{{ activityLabel(detail.key) }}</b> performed for
-          <b>{{ detail.organization.name }}</b> on
+          This appears to be an <b>{{ activityLabel(detail.key) }}</b> performed
+          for <b>{{ detail.organization.name }}</b> on
           {{ date(detail.created_at) }}, but I am unable to find any details
           about it.
         </p>

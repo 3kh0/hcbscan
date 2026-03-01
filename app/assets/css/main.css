@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+#nprogress .bar {
+  background: #fff !important;
+}
+
+#nprogress .spinner-icon {
+  border-top-color: #fff !important;
+  border-left-color: #fff !important;
+}
+
 body {
   background-color: #09090b;
 }
