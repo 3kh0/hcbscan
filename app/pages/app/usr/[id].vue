@@ -234,7 +234,7 @@
                       {{ act["Activity ID"] }}
                     </NuxtLink>
                   </td>
-                  <td class="py-4">{{ act["Key"] }}</td>
+                  <td class="py-4">{{ activityLabel(act["Key"]) }}</td>
                   <td class="py-4">
                     <NuxtLink
                       v-if="act['Organization ID']"

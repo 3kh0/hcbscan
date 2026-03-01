@@ -140,7 +140,7 @@
         <div>
           <h1 class="text-xl font-bold font-mono">{{ txnData.id }}</h1>
           <p class="text-zinc-400">
-            {{ txnData.type.replace("_", " ").toUpperCase() }}
+            {{ activityLabel(txnData.type) }}
           </p>
         </div>
         <div
@@ -244,7 +244,7 @@
             </tr>
             <tr>
               <td class="py-2 px-4 text-zinc-400">Type</td>
-              <td class="py-2 px-4">{{ txnData.type }}</td>
+              <td class="py-2 px-4">{{ activityLabel(txnData.type) }}</td>
             </tr>
             <tr v-if="orgData">
               <td class="py-2 px-4 text-zinc-400">Organization</td>
