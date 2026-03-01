@@ -67,7 +67,6 @@
           {{ (data?.accounts ?? "-").toLocaleString() }}
         </p>
       </div>
-
     </div>
     <NuxtLink to="/app/stats" class="flex items-center justify-center mb-4">
       <p class="text-xs text-zinc-400 mb-1">View Detailed Stats</p>

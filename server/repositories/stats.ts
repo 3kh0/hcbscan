@@ -23,7 +23,6 @@ export const getVolumePrevious = () =>
     `SELECT COUNT(*) FROM "hcb.hackclub.com-acts" WHERE "Created At" >= NOW() - INTERVAL '14 days' AND "Created At" < NOW() - INTERVAL '7 days'`
   );
 
-
 export async function getTopOrgsByBalance(limit = 10) {
   const r = await query(
     `SELECT "Organization ID", "Name", "Slug", "Category", "Balance"
