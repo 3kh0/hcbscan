@@ -34,24 +34,16 @@ export default defineEventHandler(async (event) => {
     return data;
   } catch {}
 
-  const res = await fetch(
-    `https://hcb.hackclub.com/storage/blobs/redirect/${id}/file`,
-    { method: m === "HEAD" ? "HEAD" : "GET", redirect: "follow" }
-  );
+  const hcbUrl = `https://hcb.hackclub.com/storage/blobs/redirect/${id}/file`;
 
-  if (res.status === 429) {
-    return sendRedirect(
-      event,
-      `https://hcb.hackclub.com/storage/blobs/redirect/${id}/file`,
-      302
-    );
+  const res = await fetch(hcbUrl, {
+    method: m === "HEAD" ? "HEAD" : "GET",
+    redirect: "follow",
+  });
+
+  if (!res.ok) {
+    return sendRedirect(event, hcbUrl, 302);
   }
-
-  if (!res.ok)
-    throw createError({
-      statusCode: res.status,
-      statusMessage: `upstream error (${res.status})`,
-    });
 
   const ct = res.headers.get("content-type") || "image/jpeg";
   setHeaders(ct);

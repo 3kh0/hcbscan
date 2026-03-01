@@ -2,14 +2,20 @@
   const props = defineProps<{ src?: string | null }>();
   const origin = useRequestURL().origin;
 
+  const isHcbImage = ref(false);
+
   const normalizedSrc = computed(() => {
     const s = props.src;
-    if (!s) return s;
+    if (!s) {
+      isHcbImage.value = false;
+      return s;
+    }
 
     let u: URL;
     try {
       u = new URL(s);
     } catch {
+      isHcbImage.value = false;
       return s;
     }
 
@@ -20,9 +26,12 @@
     ) {
       const id = u.pathname.split("/")[4];
       if (id) {
+        isHcbImage.value = true;
         return `${origin}/api/hcb-image/${id}`;
       }
     }
+
+    isHcbImage.value = false;
 
     if (u.hostname === "gravatar.com" || u.hostname.endsWith(".gravatar.com")) {
       const lp = u.pathname.toLowerCase();
@@ -55,5 +64,6 @@
 </script>
 
 <template>
-  <NuxtImg v-bind="$attrs" :src="normalizedSrc" />
+  <img v-if="isHcbImage" v-bind="$attrs" :src="normalizedSrc" />
+  <NuxtImg v-else v-bind="$attrs" :src="normalizedSrc" />
 </template>
