@@ -21,6 +21,7 @@ export default defineTask({
       slug: org.slug,
       category: org.category || null,
       balance: org.balances?.balance_cents || 0,
+      financially_frozen: org.financially_frozen || false,
     }));
 
     await bulkUpsertOrgs(formatted);
