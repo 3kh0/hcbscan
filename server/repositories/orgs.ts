@@ -1,5 +1,15 @@
 import { query, pool } from "../utils/db";
 
+export async function getExistingOrgIds(ids: string[]): Promise<Set<string>> {
+  if (ids.length === 0) return new Set();
+  const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
+  const result = await query(
+    `SELECT "Organization ID" FROM "hcb.hackclub.com" WHERE "Organization ID" IN (${placeholders})`,
+    ids
+  );
+  return new Set(result.rows.map((r: any) => r["Organization ID"]));
+}
+
 export async function isOrgIndexed(id: string) {
   const result = await query(
     'SELECT 1 FROM "hcb.hackclub.com" WHERE "Organization ID" = $1',

@@ -25,6 +25,18 @@ export async function getActivitiesByUserId(
   return result.rows;
 }
 
+export async function getExistingActivityIds(
+  ids: string[]
+): Promise<Set<string>> {
+  if (ids.length === 0) return new Set();
+  const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
+  const result = await query(
+    `SELECT "Activity ID" FROM "hcb.hackclub.com-acts" WHERE "Activity ID" IN (${placeholders})`,
+    ids
+  );
+  return new Set(result.rows.map((r: any) => r["Activity ID"]));
+}
+
 export async function bulkUpsertActivities(
   activities: Array<{
     id: string;

@@ -24,9 +24,7 @@
     async () => {
       if (!txnData.value?.organization?.id) return null;
       const response = await $fetch<any>(
-        buildApiUrl(
-          `api/v3/organizations/${txnData.value.organization.id}`
-        ),
+        buildApiUrl(`api/v3/organizations/${txnData.value.organization.id}`),
         { headers: { Accept: "application/json" } }
       );
       return response;
@@ -132,8 +130,8 @@
           </p>
           <p v-if="frozenAt" class="text-xs mt-2 text-red-400">
             HCBScan estimates that this organization has been frozen since
-            {{ new Date(frozenAt).toLocaleDateString() }}. Estimates are based on
-            the last crawl and may not be exact.
+            {{ new Date(frozenAt).toLocaleDateString() }}. Estimates are based
+            on the last crawl and may not be exact.
           </p>
         </div>
       </div>
@@ -257,12 +255,7 @@
                 >
                   {{ orgData.name }}
                 </NuxtLink>
-                <span
-                  v-if="isFrozen"
-                  class="ml-2 text-red-400"
-                >
-                  Frozen
-                </span>
+                <span v-if="isFrozen" class="ml-2 text-red-400"> Frozen </span>
               </td>
             </tr>
             <tr>
