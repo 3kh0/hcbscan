@@ -37,7 +37,7 @@
     </div>
 
     <!-- stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
       <div class="bg-zinc-900 p-4 rounded-lg">
         <p class="text-sm text-zinc-400 mb-1">Total Balance</p>
         <p class="text-2xl font-bold">
@@ -67,7 +67,11 @@
           {{ (data?.accounts ?? "-").toLocaleString() }}
         </p>
       </div>
+
     </div>
+    <NuxtLink to="/app/stats" class="flex items-center justify-center mb-4">
+      <p class="text-xs text-zinc-400 mb-1">View Detailed Stats</p>
+    </NuxtLink>
 
     <!-- recent -->
     <RecentActivites />
