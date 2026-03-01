@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "signedId");
   const m = getMethod(event);
 
-  if (!id || !/^[A-Za-z0-9_-]+$/.test(id))
+  if (!id || !/^[A-Za-z0-9_=-]+$/.test(id))
     throw createError({ statusCode: 400, statusMessage: "invalid signed ID" });
 
   const setHeaders = (ct: string) => {

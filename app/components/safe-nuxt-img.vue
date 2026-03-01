@@ -15,7 +15,8 @@
 
     if (
       u.hostname === "hcb.hackclub.com" &&
-      u.pathname.startsWith("/storage/blobs/redirect/")
+      (u.pathname.startsWith("/storage/blobs/redirect/") ||
+        u.pathname.startsWith("/storage/representations/redirect/"))
     ) {
       const id = u.pathname.split("/")[4];
       if (id) {
