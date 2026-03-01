@@ -39,6 +39,14 @@ export default defineEventHandler(async (event) => {
     { method: m === "HEAD" ? "HEAD" : "GET", redirect: "follow" }
   );
 
+  if (res.status === 429) {
+    return sendRedirect(
+      event,
+      `https://hcb.hackclub.com/storage/blobs/redirect/${id}/file`,
+      302
+    );
+  }
+
   if (!res.ok)
     throw createError({
       statusCode: res.status,
