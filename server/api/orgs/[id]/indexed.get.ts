@@ -1,4 +1,4 @@
-import { isOrgIndexed } from "../../../repositories/orgs";
+import { isOrgIndexed, getOrgFrozenAt } from "../../../repositories/orgs";
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
@@ -10,5 +10,6 @@ export default defineEventHandler(async (event) => {
   }
 
   const indexed = await isOrgIndexed(id);
-  return { indexed };
+  const frozenAt = indexed ? await getOrgFrozenAt(id) : null;
+  return { indexed, frozenAt };
 });

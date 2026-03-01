@@ -54,6 +54,7 @@ async function yoink(orgId) {
       Category: orgData.category,
       Balance: orgData.balances?.balance_cents || 0,
       Added: now,
+      "Frozen At": orgData.financially_frozen ? now : null,
     };
   } catch (error) {
     console.error(`[${time()}] ah shit it said no no ${orgId}:`, error.message);

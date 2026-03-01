@@ -4,6 +4,7 @@
   const route = useRoute();
   const isIndexed = ref(true);
   const askIndex = ref(false);
+  const frozenAt = ref<string | null>(null);
 
   const {
     data: orgData,
@@ -63,6 +64,9 @@
       if (!data.indexed) {
         isIndexed.value = false;
         askIndex.value = true;
+      }
+      if (data.frozenAt) {
+        frozenAt.value = data.frozenAt;
       }
     } catch {
       isIndexed.value = false;
@@ -191,6 +195,9 @@
           <div>
             <p class="text-sm font-bold">
               This organization has been frozen by HCB, preventing all financial activity. This is typically due to a ongoing investigation or legal issue. Be careful when interacting with this organization.
+            </p>
+            <p v-if="frozenAt" class="text-xs mt-1 text-red-300">
+              HCBScan estimates that this organization was frozen since {{ new Date(frozenAt).toLocaleDateString() }}. Estimates are based on the last crawl from the organization and may not be exact.
             </p>
           </div>
         </div>
