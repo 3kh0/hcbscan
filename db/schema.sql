@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS "hcb.hackclub.com" (
   "Slug" TEXT,
   "Category" TEXT,
   "Balance" BIGINT DEFAULT 0,
-  "Added" TIMESTAMPTZ
+  "Added" TIMESTAMPTZ,
+  "Frozen At" TIMESTAMPTZ
 );
 
 CREATE INDEX IF NOT EXISTS idx_orgs_name ON "hcb.hackclub.com" ("Name");

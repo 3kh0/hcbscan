@@ -4,6 +4,7 @@
   const route = useRoute();
   const isIndexed = ref(true);
   const askIndex = ref(false);
+  const frozenAt = ref<string | null>(null);
 
   const {
     data: orgData,
@@ -63,6 +64,9 @@
       if (!data.indexed) {
         isIndexed.value = false;
         askIndex.value = true;
+      }
+      if (data.frozenAt) {
+        frozenAt.value = data.frozenAt;
       }
     } catch {
       isIndexed.value = false;
@@ -172,6 +176,36 @@
       </div>
 
       <div v-else>
+        <div
+          v-if="orgData?.financially_frozen"
+          class="bg-red-500/10 text-red-400 border-2 border-red-500/50 rounded-lg p-4 mb-6 flex items-center gap-3"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 text-red-400 shrink-0"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.499-2.599 4.499H4.645c-2.309 0-3.752-2.5-2.598-4.499L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <div>
+            <p class="text-sm font-bold">
+              This organization has been frozen by HCB, preventing all financial
+              activity. This is typically due to a ongoing investigation or
+              legal issue. Please exercise caution when interacting with it.
+            </p>
+            <p class="text-xs mt-2 text-red-400">
+              HCBScan estimates that this organization has been frozen since
+              {{ new Date(frozenAt).toLocaleDateString() }}. Estimates are based
+              on the last crawl from the organization and may not be exact.
+            </p>
+          </div>
+        </div>
+
         <div class="flex items-center justify-center mb-6">
           <a :href="orgData?.logo" target="_blank" rel="noreferrer">
             <SafeNuxtImg

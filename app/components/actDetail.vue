@@ -46,10 +46,59 @@
     <div v-else>
       <div v-if="detail.transaction" class="space-y-6">
         <p class="text-zinc-400 mb-4">
-          This appears to be some type of monetary transaction with the type
-          <b>{{ activityLabel(detail.key) }}</b> performed for
-          <b>{{ detail.organization.name }}</b> on
-          {{ date(detail.created_at) }}. Here are the details I could find:
+          <template v-if="detail.transaction.type === 'card_charge'">
+            <template v-if="detail.user"
+              ><b>{{ detail.user.full_name }}</b> used an HCB card to
+              spend</template
+            ><template v-else>An HCB card was used to spend</template>
+            {{ fixMoney(detail.transaction.amount_cents, true) }} at
+            <b>{{ detail.transaction.memo }}</b> from
+            <b>{{ detail.organization.name }}</b
+            >.
+          </template>
+          <template v-else-if="detail.transaction.type === 'donation'">
+            <b>{{ detail.organization.name }}</b> received a donation of
+            {{ fixMoney(detail.transaction.amount_cents, true) }}.
+          </template>
+          <template v-else-if="detail.transaction.type === 'transfer'">
+            {{ fixMoney(detail.transaction.amount_cents, true) }} was
+            transferred
+            <template v-if="detail.user">
+              by <b>{{ detail.user.full_name }}</b>
+            </template>
+            for <b>{{ detail.organization.name }}</b
+            >.
+          </template>
+          <template v-else-if="detail.transaction.type === 'ach_transfer'">
+            An ACH transfer of
+            {{ fixMoney(detail.transaction.amount_cents, true) }} was initiated
+            for <b>{{ detail.organization.name }}</b
+            >.
+          </template>
+          <template v-else-if="detail.transaction.type === 'invoice'">
+            An invoice of
+            {{ fixMoney(detail.transaction.amount_cents, true) }} was
+            {{ detail.transaction.pending ? "created" : "paid" }} for
+            <b>{{ detail.organization.name }}</b
+            >.
+          </template>
+          <template v-else-if="detail.transaction.type === 'check'">
+            A check of
+            {{ fixMoney(detail.transaction.amount_cents, true) }} was issued for
+            <b>{{ detail.organization.name }}</b
+            >.
+          </template>
+          <template v-else-if="detail.transaction.type === 'hcb_fee'">
+            <b>{{ detail.organization.name }}</b> was charged a fiscal
+            sponsorship fee of
+            {{ fixMoney(detail.transaction.amount_cents, true) }}.
+          </template>
+          <template v-else>
+            A transaction of
+            {{ fixMoney(detail.transaction.amount_cents, true) }} occurred for
+            <b>{{ detail.organization.name }}</b
+            >.
+          </template>
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex items-center">
@@ -104,9 +153,12 @@
       </div>
       <div v-else-if="detail.key === 'raw_pending_stripe_transaction.create'">
         <p class="text-zinc-400">
-          This appears to be an <b>card charge</b>, but due to how HCB handles
-          these, API did not return any details about the transaction. If the
-          transaction is recent, you may be able to find it by going to the
+          <template v-if="detail.user"
+            ><b>{{ detail.user.full_name }}</b> made a card
+            purchase</template
+          ><template v-else>A card purchase was made</template>
+          from <b>{{ detail.organization.name }}</b>, but the API did not return
+          transaction details. If the charge is recent, try the
           <NuxtLink
             :to="`/app/org/${detail.organization.id}`"
             class="text-blue-400 hover:underline"
@@ -116,10 +168,12 @@
       </div>
       <div v-else>
         <p class="text-zinc-400">
-          This appears to be an <b>{{ activityLabel(detail.key) }}</b> performed
-          for <b>{{ detail.organization.name }}</b> on
-          {{ date(detail.created_at) }}, but I am unable to find any details
-          about it.
+          <template v-if="detail.user"
+            ><b>{{ detail.user.full_name }}</b> performed</template
+          ><template v-else>Someone performed</template>
+          a <b>{{ activityLabel(detail.key) }}</b> action for
+          <b>{{ detail.organization.name }}</b> on
+          {{ date(detail.created_at) }}. No additional details are available.
         </p>
       </div>
     </div>
@@ -151,7 +205,6 @@
       detail.value = await response.json();
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Failed to load activity";
-      console.error(e);
     } finally {
       loading.value = false;
     }

@@ -57,6 +57,7 @@ export default defineEventHandler(async (event) => {
     slug: orgData.slug,
     category: orgData.category || null,
     balance: orgData.balances?.balance_cents || 0,
+    financially_frozen: orgData.financially_frozen || false,
   });
 
   return { success: true };

@@ -125,6 +125,12 @@ async function sync(organizations) {
       formattedOrg.Added = now;
     }
 
+    if (org.financially_frozen) {
+      formattedOrg["Frozen At"] = now;
+    } else {
+      formattedOrg["Frozen At"] = null;
+    }
+
     return formattedOrg;
   });
 

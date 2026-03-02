@@ -1,5 +1,9 @@
 import { fetchActivities } from "../utils/hcb";
-import { bulkUpsertActivities } from "../repositories/activities";
+import {
+  bulkUpsertActivities,
+  getExistingActivityIds,
+} from "../repositories/activities";
+import { notifyNewActivity } from "../utils/slack";
 
 export default defineTask({
   meta: {
@@ -21,8 +25,20 @@ export default defineTask({
       `[index-acts] fetched ${activities.length} rows, ${unique.length} unique`
     );
 
+    const existingIds = await getExistingActivityIds(unique.map((a) => a.id));
+    const newActivities = unique.filter((a) => !existingIds.has(a.id));
+
     await bulkUpsertActivities(unique);
     console.log(`[index-acts] upserted ${unique.length} activities`);
+
+    if (newActivities.length > 0) {
+      console.log(
+        `[index-acts] ${newActivities.length} new activities, notifying slack`
+      );
+      for (const act of newActivities) {
+        await notifyNewActivity(act);
+      }
+    }
 
     console.log("[index-acts] done");
     return { result: `Indexed ${unique.length} activities` };
