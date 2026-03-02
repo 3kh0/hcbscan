@@ -6,30 +6,26 @@
     data: txnData,
     error: fetchError,
     status,
-  } = await useAsyncData(`txn-${route.params.id}`, async () => {
-    const response = await $fetch<Transaction>(
-      buildApiUrl(`api/v3/transactions/${route.params.id}`),
-      { headers: { Accept: "application/json" } }
-    );
-    return response;
-  });
+  } = useAsyncData(
+    `txn-${route.params.id}`,
+    () => hcbFetch(`api/v3/transactions/${route.params.id}`),
+    { server: false }
+  );
 
   const loading = computed(() => status.value === "pending");
   const error = computed(() =>
     fetchError.value ? "Transaction not found" : null
   );
 
-  const { data: orgData } = await useLazyAsyncData(
+  const { data: orgData } = useLazyAsyncData(
     `txn-org-${route.params.id}`,
     async () => {
       if (!txnData.value?.organization?.id) return null;
-      const response = await $fetch<any>(
-        buildApiUrl(`api/v3/organizations/${txnData.value.organization.id}`),
-        { headers: { Accept: "application/json" } }
+      return hcbFetch(
+        `api/v3/organizations/${txnData.value.organization.id}`
       );
-      return response;
     },
-    { default: () => null }
+    { server: false, default: () => null }
   );
 
   const checkOrgFrozen = async (id: string) => {
