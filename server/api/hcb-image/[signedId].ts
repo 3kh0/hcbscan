@@ -39,6 +39,7 @@ export default defineEventHandler(async (event) => {
   const res = await fetch(hcbUrl, {
     method: m === "HEAD" ? "HEAD" : "GET",
     redirect: "follow",
+    headers: { "User-Agent": "HCBScan/1.0 (https://hcbscan.3kh0.net)" },
   });
 
   if (!res.ok) {

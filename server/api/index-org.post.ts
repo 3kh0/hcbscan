@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     const response = await fetch(
       `https://hcb.hackclub.com/api/v3/organizations/${id}`,
       {
-        headers: { Accept: "application/json" },
+        headers: { Accept: "application/json", "User-Agent": "HCBScan/1.0 (https://hcbscan.3kh0.net)" },
         signal: controller.signal,
       }
     );

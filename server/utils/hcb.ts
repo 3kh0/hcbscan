@@ -1,7 +1,12 @@
 const HCB_BASE = "https://hcb.hackclub.com";
-const USER_AGENT = "HCBScan/1.0";
+const USER_AGENT = "HCBScan/1.0 (https://hcbscan.3kh0.net)";
 
-const headers = { "User-Agent": USER_AGENT, Accept: "application/json" };
+export const hcbHeaders: Record<string, string> = {
+  "User-Agent": USER_AGENT,
+  Accept: "application/json",
+};
+
+const headers = hcbHeaders;
 
 export async function fetchAllOrgs() {
   let page = 1;

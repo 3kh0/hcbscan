@@ -10,7 +10,6 @@ export function hcbFetch(endpoint, options = {}) {
     ...options,
     headers: {
       Accept: "application/json",
-      "User-Agent": "HCBScan/1.0 (https://hcbscan.3kh0.net)",
       "X-HCBScan": "1.0",
       ...options.headers,
     },
