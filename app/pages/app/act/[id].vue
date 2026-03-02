@@ -6,13 +6,11 @@
     data: activityData,
     error: fetchError,
     status,
-  } = await useAsyncData(`act-${activityId}`, async () => {
-    const response = await $fetch<Activity>(
-      buildApiUrl(`api/v3/activities/${activityId}`),
-      { headers: { Accept: "application/json" } }
-    );
-    return response;
-  });
+  } = useAsyncData(
+    `act-${activityId}`,
+    () => hcbFetch(`api/v3/activities/${activityId}`),
+    { server: false }
+  );
 
   const loading = computed(() => status.value === "pending");
   const error = computed(() =>

@@ -389,15 +389,10 @@
   const getDetail = async () => {
     loading.value = true;
     try {
-      const response = await fetch(
-        buildApiUrl(`api/v3/${props.type}s/${props.id}`),
-        { headers: { Accept: "application/json" } }
-      );
-      if (!response.ok)
-        throw new Error(`I am unable to analyze this ${props.type}`);
-      detail.value = await response.json();
+      detail.value = await hcbFetch(`api/v3/${props.type}s/${props.id}`);
     } catch (e) {
-      error.value = e instanceof Error ? e.message : props.type;
+      error.value =
+        e instanceof Error ? e.message : `Unable to analyze this ${props.type}`;
     } finally {
       loading.value = false;
     }

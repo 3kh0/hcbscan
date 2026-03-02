@@ -195,14 +195,7 @@
   const getDetail = async () => {
     loading.value = true;
     try {
-      const response = await fetch(
-        buildApiUrl(`api/v3/activities/${props.id}`),
-        {
-          headers: { Accept: "application/json" },
-        }
-      );
-      if (!response.ok) throw new Error("Activity not found");
-      detail.value = await response.json();
+      detail.value = await hcbFetch(`api/v3/activities/${props.id}`);
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Failed to load activity";
     } finally {

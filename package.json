@@ -15,7 +15,6 @@
     "@nuxt/image": "^2.0.0",
     "@tailwindcss/vite": "^4.2.1",
     "@vueuse/core": "^14.2.1",
-    "axios": "^1.13.6",
     "dotenv": "^17.3.1",
     "esbuild": "^0.27.3",
     "json2csv": "6.0.0-alpha.2",

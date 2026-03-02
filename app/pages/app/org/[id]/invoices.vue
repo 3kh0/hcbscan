@@ -10,15 +10,15 @@
   const currentPage = ref(1);
   const perPage = 25;
 
-  const { data: orgMeta } = await useAsyncData(
+  const { data: orgMeta } = useAsyncData(
     `org-meta-${orgId.value}`,
     async () => {
-      const response = await $fetch<any>(
-        buildApiUrl(`api/v3/organizations/${orgId.value}`),
-        { headers: { Accept: "application/json" } }
+      const response = await hcbFetch(
+        `api/v3/organizations/${orgId.value}`
       );
       return { name: response.name, logo: response.logo };
-    }
+    },
+    { server: false }
   );
 
   async function load(page = 1, append = false) {
@@ -29,19 +29,9 @@
         loading2.value = true;
       }
 
-      const response = await fetch(
-        buildApiUrl(
-          `api/v3/organizations/${orgId.value}/invoices?per_page=${perPage}&page=${page}`
-        ),
-        {
-          method: "GET",
-          headers: { Accept: "application/json" },
-        }
+      const data = await hcbFetch(
+        `api/v3/organizations/${orgId.value}/invoices?per_page=${perPage}&page=${page}`
       );
-
-      if (!response.ok) throw new Error("Failed to load invoices.");
-
-      const data = await response.json();
 
       if (data.length < perPage) {
         hasMore.value = false;
@@ -66,17 +56,9 @@
 
   async function loadOrganization() {
     try {
-      const response = await fetch(
-        buildApiUrl(`api/v3/organizations/${orgId.value}`),
-        {
-          method: "GET",
-          headers: { Accept: "application/json" },
-        }
+      orgData.value = await hcbFetch(
+        `api/v3/organizations/${orgId.value}`
       );
-
-      if (!response.ok) throw new Error("Failed to load organization data.");
-
-      orgData.value = await response.json();
     } catch (e) {
       error.value =
         e instanceof Error ? e.message : "An unknown error occurred.";

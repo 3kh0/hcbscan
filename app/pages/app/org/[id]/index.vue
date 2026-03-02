@@ -10,32 +10,26 @@
     data: orgData,
     error: orgError,
     status: orgStatus,
-  } = await useAsyncData(`org-${route.params.id}`, async () => {
-    const response = await $fetch<any>(
-      buildApiUrl(`api/v3/organizations/${route.params.id}`),
-      { headers: { Accept: "application/json" } }
-    );
-    return response;
-  });
+  } = useAsyncData(
+    `org-${route.params.id}`,
+    () => hcbFetch(`api/v3/organizations/${route.params.id}`),
+    { server: false }
+  );
 
   const loading = computed(() => orgStatus.value === "pending");
   const error = computed(() =>
     orgError.value ? "This organization does not exist." : null
   );
 
-  const { data: transactions, status: txnsStatus } = await useLazyAsyncData(
+  const { data: transactions, status: txnsStatus } = useLazyAsyncData(
     `org-txns-${route.params.id}`,
     async () => {
       if (!orgData.value?.id) return [];
-      const response = await $fetch<any[]>(
-        buildApiUrl(
-          `api/v3/organizations/${orgData.value.id}/transactions?per_page=25`
-        ),
-        { headers: { Accept: "application/json" } }
+      return hcbFetch(
+        `api/v3/organizations/${orgData.value.id}/transactions?per_page=25`
       );
-      return response;
     },
-    { default: () => [] }
+    { server: false, default: () => [] }
   );
 
   const txnsLoading = computed(() => txnsStatus.value === "pending");
