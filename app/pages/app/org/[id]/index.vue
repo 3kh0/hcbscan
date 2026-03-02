@@ -29,7 +29,7 @@
         `api/v3/organizations/${orgData.value.id}/transactions?per_page=25`
       );
     },
-    { server: false, default: () => [] }
+    { server: false, default: () => [], watch: [orgData] }
   );
 
   const txnsLoading = computed(() => txnsStatus.value === "pending");
@@ -83,9 +83,13 @@
     }
   };
 
-  if (orgData.value?.id) {
-    checkIndex(orgData.value.id);
-  }
+  watch(
+    orgData,
+    (val) => {
+      if (val?.id) checkIndex(val.id);
+    },
+    { immediate: true }
+  );
 
   const img = useImage();
   const defaultOgImage = "https://hcbscan.3kh0.net/readme.png";
