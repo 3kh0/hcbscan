@@ -1,7 +1,8 @@
 import { fetchOrg } from "../utils/hcb";
 import { getOrgsNeedingRefresh, bulkUpsertOrgs } from "../repositories/orgs";
 
-const BATCH_SIZE = 10;
+const BATCH_SIZE = 5;
+const BATCH_DELAY_MS = 3000;
 
 export default defineTask({
   meta: {
@@ -41,6 +42,8 @@ export default defineTask({
         totalUpdated += orgs.length;
         console.log(`[index-past-orgs] upserted batch of ${orgs.length}`);
       }
+
+      await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
     }
 
     console.log(`[index-past-orgs] refreshed ${totalUpdated} orgs total`);
