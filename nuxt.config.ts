@@ -66,7 +66,7 @@ export default defineNuxtConfig({
     },
     experimental: { tasks: true },
     scheduledTasks: {
-      "0 */3 * * *": ["index-past-orgs"],
+      "0 */6 * * *": ["index-past-orgs"],
       "*/30 * * * * *": ["index-acts"],
     },
   },
