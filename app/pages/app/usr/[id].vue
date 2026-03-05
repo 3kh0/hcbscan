@@ -50,11 +50,19 @@
         } organizations on HCBScan`
       : "View user details and associated organizations on HCBScan"
   );
-  const ogImg = computed(() =>
-    udata.value?.avatar
-      ? `https://hcbscan.3kh0.net${img(udata.value.avatar, { width: 512, height: 512 })}`
-      : defaultOgImage
-  );
+  const ogImg = computed(() => {
+    if (!udata.value?.avatar) return defaultOgImage;
+    const avatar = udata.value.avatar;
+    if (avatar.includes("gravatar.com/avatar")) {
+      const parsed = new URL(avatar);
+      parsed.searchParams.set("s", "512");
+      // Update ui-avatars fallback size if present
+      const d = parsed.searchParams.get("d");
+      if (d) parsed.searchParams.set("d", d.replace(/\/\d+\//, "/512/"));
+      return parsed.toString();
+    }
+    return `https://hcbscan.3kh0.net${img(avatar, { width: 512, height: 512 })}`;
+  });
 
   useSeoMeta({
     title: pageTitle,
