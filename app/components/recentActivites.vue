@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  interface Activity {
+  interface RawAct {
     "Activity ID": string;
     Key: string;
     "Created At": string;
@@ -11,27 +11,6 @@
     "Organization Logo": string | null;
   }
 
-  function t(dbActivity: Activity) {
-    return {
-      id: dbActivity["Activity ID"],
-      key: dbActivity["Key"],
-      created_at: dbActivity["Created At"],
-      user: dbActivity["User ID"]
-        ? {
-            id: dbActivity["User ID"],
-            full_name: dbActivity["User Name"],
-            photo: dbActivity["User Photo"],
-          }
-        : null,
-      organization: {
-        id: dbActivity["Organization ID"],
-        name: dbActivity["Organization Name"],
-        logo: dbActivity["Organization Logo"],
-      },
-    };
-  }
-
-  const maxActs = 25;
   const refreshing = ref(false);
 
   const {
@@ -39,8 +18,25 @@
     error,
     refresh,
   } = await useFetch("/api/activities", {
-    params: { limit: maxActs },
-    transform: (data: Activity[]) => (data ?? []).map(t),
+    params: { limit: 25 },
+    transform: (data: RawAct[]) =>
+      (data ?? []).map((d) => ({
+        id: d["Activity ID"],
+        key: d["Key"],
+        created_at: d["Created At"],
+        user: d["User ID"]
+          ? {
+              id: d["User ID"],
+              full_name: d["User Name"],
+              photo: d["User Photo"],
+            }
+          : null,
+        organization: {
+          id: d["Organization ID"],
+          name: d["Organization Name"],
+          logo: d["Organization Logo"],
+        },
+      })),
     default: () => [],
   });
 
@@ -65,99 +61,37 @@
 </script>
 
 <template>
-  <div class="bg-zinc-900 rounded-lg p-6">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold">Recent Activities</h2>
-      <span v-if="refreshing" class="text-xs text-blue-400 animate-pulse"
-        >Refreshing...</span
-      >
-    </div>
-    <p class="text-sm text-zinc-400 mb-4">
-      Here are the most recent activities in all of HCB, auto refreshing every
-      30 seconds.
-    </p>
-    <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead>
-          <tr class="text-left text-zinc-400 text-sm">
-            <th class="pb-4">ID</th>
-            <th class="pb-4">Action</th>
-            <th class="pb-4">User</th>
-            <th class="pb-4">Organization</th>
-            <th class="pb-4">Time</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-zinc-700">
-          <tr v-if="error" class="text-sm">
-            <td colspan="5" class="py-4 text-center text-red-400">
-              Error loading activities: {{ error.message }}
-            </td>
-          </tr>
-          <tr
-            v-for="activity in acts"
-            v-else
-            :key="activity.id"
-            class="text-sm"
+  <div class="bg-zinc-900 rounded-lg overflow-hidden">
+    <div class="px-4 pt-4 pb-3">
+      <div class="flex justify-between items-center">
+        <h2 class="text-lg font-semibold">Recent Activities</h2>
+        <div class="flex items-center gap-2">
+          <span
+            v-if="refreshing"
+            class="inline-flex items-center gap-1.5 text-xs text-zinc-400"
           >
-            <td class="py-4">
-              <NuxtLink
-                :to="`/app/act/${activity.id}`"
-                class="text-blue-400 hover:underline font-mono"
-                >{{ activity.id }}</NuxtLink
-              >
-            </td>
-            <td class="py-4">{{ activityLabel(activity.key) }}</td>
-            <td class="py-4">
-              <NuxtLink
-                v-if="activity.user"
-                :to="`/app/usr/${activity.user.id}`"
-                class="text-blue-400 hover:underline"
-              >
-                <div class="flex items-center gap-2">
-                  <SafeNuxtImg
-                    v-if="activity.user.photo"
-                    :src="activity.user.photo"
-                    :alt="activity.user.full_name"
-                    width="24"
-                    height="24"
-                    class="w-6 h-6 rounded-full"
-                  />
-                  <span>{{ activity.user.full_name }}</span>
-                </div>
-              </NuxtLink>
-              <span v-else class="text-zinc-500">System</span>
-            </td>
-            <td class="py-4">
-              <NuxtLink
-                :to="`/app/org/${activity.organization.id}`"
-                class="text-blue-400 hover:underline"
-              >
-                <div class="flex items-center gap-2">
-                  <SafeNuxtImg
-                    v-if="activity.organization.logo"
-                    :src="activity.organization.logo"
-                    :alt="activity.organization.name"
-                    width="24"
-                    height="24"
-                    class="w-6 h-6 rounded-full"
-                  />
-                  <span> {{ activity.organization.name }}</span>
-                </div>
-              </NuxtLink>
-            </td>
-            <td class="py-4 text-zinc-400">
-              <span :title="date(activity.created_at)">
-                {{ relativeTime(activity.created_at) }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            <Spinner :size="3" color="text-zinc-400" />
+            Refreshing
+          </span>
+          <NuxtLink
+            to="/app/acts"
+            class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors duration-150"
+          >
+            View all →
+          </NuxtLink>
+        </div>
+      </div>
+      <p class="text-xs text-zinc-500 mt-1">
+        Here are the most recent activities for all public organizations. Click
+        on any activity to view more details about it. New activities will
+        appear here in real-time as they happen!
+      </p>
     </div>
-    <div class="text-center mt-4">
-      <NuxtLink to="/app/acts" class="text-blue-400 hover:underline"
-        >View all activities</NuxtLink
-      >
+
+    <div v-if="error" class="px-4 pb-4">
+      <ErrorBanner :message="error.message" />
     </div>
+
+    <ActsList :acts="acts" />
   </div>
 </template>

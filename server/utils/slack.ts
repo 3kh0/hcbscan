@@ -8,7 +8,7 @@ const activityLabels: Record<string, string> = {
   "comment.create": "Comment added",
   "comment.destroy": "Comment deleted",
   "comment.update": "Comment updated",
-  "disbursement.create": "Transfer created",
+  "disbursement.create": "Transfer initiated",
   "disbursement.rejected": "Transfer rejected",
   "donation.paid": "Donation received",
   "employee.create": "Employee added",

@@ -1,71 +1,68 @@
 <script setup lang="ts">
-  interface Activity {
-    id: string;
-    key: string;
-    created_at: string;
-    user: {
-      id: string;
-      full_name: string;
-      photo: string;
-    } | null;
-    organization: {
-      name: string;
-      logo: string | null;
-      id: string;
-    };
+  interface RawAct {
+    "Activity ID": string;
+    Key: string;
+    "Created At": string;
+    "User ID": string | null;
+    "User Name": string | null;
+    "User Photo": string | null;
+    "Organization ID": string | null;
+    "Organization Name": string | null;
+    "Organization Logo": string | null;
   }
 
   const route = useRoute();
   const router = useRouter();
-
   const currentPage = ref(Number(route.query.page) || 1);
-  const itemsPerPage = 50; // setting this higher can break stuff due to how long it takes to load
-  const acts = ref<Activity[]>([]);
-  const loading = ref(true);
+  const acts = ref<any[]>([]);
+  const initialLoading = ref(true);
+  const transitioning = ref(false);
   const error = ref<string | null>(null);
 
+  const mapActs = (data: RawAct[]) =>
+    data.map((d) => ({
+      id: d["Activity ID"],
+      key: d["Key"],
+      created_at: d["Created At"],
+      user: d["User ID"]
+        ? {
+            id: d["User ID"],
+            full_name: d["User Name"],
+            photo: d["User Photo"],
+          }
+        : null,
+      organization: {
+        name: d["Organization Name"],
+        logo: d["Organization Logo"],
+        id: d["Organization ID"],
+      },
+    }));
+
   const gimmeData = async (page: number) => {
-    loading.value = true;
     try {
       const data = await $fetch("/api/activities", {
-        params: { page, limit: itemsPerPage },
+        params: { page, limit: 50 },
       });
-
-      acts.value = data.map((act) => ({
-        id: act["Activity ID"],
-        key: act["Key"],
-        created_at: act["Created At"],
-        user: act["User ID"]
-          ? {
-              id: act["User ID"],
-              full_name: act["User Name"],
-              photo: act["User Photo"],
-            }
-          : null,
-        organization: {
-          name: act["Organization Name"],
-          logo: act["Organization Logo"],
-          id: act["Organization ID"],
-        },
-      }));
+      acts.value = mapActs(data);
     } catch (e) {
       error.value =
         e instanceof Error ? e.message : "An unknown error occurred.";
       console.error("Error loading activities:", error.value);
-    } finally {
-      loading.value = false;
     }
   };
 
   const changePage = async (page: number) => {
     try {
+      transitioning.value = true;
       await router.push({ query: { page: page.toString() } });
       await gimmeData(page);
       currentPage.value = page;
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Failed to change page.";
       console.error("Error changing page:", error.value);
+    } finally {
+      transitioning.value = false;
     }
   };
 
@@ -80,8 +77,9 @@
     }
   );
 
-  onMounted(() => {
-    gimmeData(currentPage.value);
+  onMounted(async () => {
+    await gimmeData(currentPage.value);
+    initialLoading.value = false;
   });
 
   useSeoMeta({
@@ -102,124 +100,39 @@
       <ErrorBanner :message="error" />
     </div>
 
-    <div v-else class="bg-zinc-900 rounded-lg p-6">
-      <h2 class="text-xl font-semibold mb-4">Activities list</h2>
-      <p class="text-sm text-zinc-400 mb-4">
-        Only showing recent activities from HCB organizations that are in
-        Transparency Mode and have opted in to public listing. Due to the amount
-        of data, only 50 activities are shown per page and loading can take up
-        to 15 seconds.
-      </p>
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="text-left text-zinc-400 text-sm">
-              <th class="pb-4">ID</th>
-              <th class="pb-4">Action</th>
-              <th class="pb-4">User</th>
-              <th class="pb-4">Organization</th>
-              <th class="pb-4">Time</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-zinc-700">
-            <tr v-if="loading" class="text-sm">
-              <td colspan="5" class="py-4 text-center text-zinc-400">
-                <div
-                  v-if="loading"
-                  class="flex flex-col items-center justify-center py-12"
-                >
-                  <svg
-                    class="animate-spin h-8 w-8 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    />
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  <p class="mt-4 text-white animate-pulse">
-                    Loading activities...
-                  </p>
-                </div>
-              </td>
-            </tr>
-            <tr
-              v-for="activity in acts"
-              v-else
-              :key="activity.id"
-              class="text-sm"
-            >
-              <td class="py-4">
-                <NuxtLink
-                  :to="`/app/act/${activity.id}`"
-                  class="text-blue-400 hover:underline font-mono"
-                  >{{ activity.id }}</NuxtLink
-                >
-              </td>
-              <td class="py-4">{{ activityLabel(activity.key) }}</td>
-              <td class="py-4">
-                <NuxtLink
-                  v-if="activity.user"
-                  :to="`/app/usr/${activity.user.id}`"
-                  class="text-blue-400 hover:underline"
-                >
-                  <div class="flex items-center gap-2">
-                    <SafeNuxtImg
-                      :src="activity.user.photo"
-                      :alt="activity.user.full_name"
-                      width="24"
-                      height="24"
-                      class="w-6 h-6 rounded-full"
-                    />
-                    <span>{{ activity.user.full_name }}</span>
-                  </div>
-                </NuxtLink>
-                <span v-else class="text-zinc-500">System</span>
-              </td>
-              <td class="py-4">
-                <NuxtLink
-                  :to="`/app/org/${activity.organization.id}`"
-                  class="text-blue-400 hover:underline"
-                >
-                  <div class="flex items-center gap-2">
-                    <SafeNuxtImg
-                      v-if="activity.organization.logo"
-                      :src="activity.organization.logo"
-                      :alt="activity.organization.name"
-                      width="24"
-                      height="24"
-                      class="w-6 h-6 rounded-full"
-                    />
-                    <span> {{ activity.organization.name }}</span>
-                  </div>
-                </NuxtLink>
-              </td>
-              <td class="py-4 text-zinc-400">
-                <span :title="date(activity.created_at)">
-                  {{ relativeTime(activity.created_at) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <div v-else class="bg-zinc-900 rounded-lg overflow-hidden">
+      <div class="px-4 pt-4 pb-3">
+        <h2 class="text-lg font-semibold">Activities list</h2>
+        <p class="text-xs text-zinc-500 mt-1">
+          Only showing recent activities from HCB organizations that are in
+          Transparency Mode and have opted in to public listing. Due to the
+          amount of data, only 50 activities are shown per page.
+        </p>
+      </div>
+
+      <div
+        v-if="initialLoading"
+        class="flex flex-col items-center justify-center py-12"
+      >
+        <Spinner :size="8" />
+        <p class="mt-4 text-white animate-pulse">Loading activities...</p>
+      </div>
+
+      <div
+        v-else
+        class="transition-opacity duration-200"
+        :class="
+          transitioning ? 'opacity-40 pointer-events-none' : 'opacity-100'
+        "
+      >
+        <ActsList :acts="acts" :loading="initialLoading" />
       </div>
     </div>
 
     <div class="flex items-center justify-between bg-zinc-900 p-4 rounded-lg">
       <button
-        :disabled="currentPage <= 1"
-        class="px-4 py-2 text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed bg-zinc-800 hover:bg-zinc-700"
+        :disabled="currentPage <= 1 || transitioning"
+        class="px-4 py-2 text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed bg-zinc-800 hover:bg-zinc-700 transition-colors duration-150"
         @click="changePage(currentPage - 1)"
       >
         Previous
@@ -232,7 +145,8 @@
         <button
           v-for="offset in 3"
           :key="offset"
-          class="px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700"
+          :disabled="transitioning"
+          class="px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
           @click="changePage(currentPage + offset)"
         >
           +{{ offset }}
@@ -240,7 +154,8 @@
       </div>
 
       <button
-        class="px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700"
+        :disabled="transitioning"
+        class="px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
         @click="changePage(currentPage + 1)"
       >
         Next
