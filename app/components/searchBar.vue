@@ -577,7 +577,7 @@
               </div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 transition-colors duration-150"
+                class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all duration-150"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -662,7 +662,7 @@
               </div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 transition-colors duration-150"
+                class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all duration-150"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -949,7 +949,7 @@
               </div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 transition-colors duration-150"
+                class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all duration-150"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -991,11 +991,4 @@
     </div>
   </div>
 </template>
-<style scoped>
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation: none;
-      transition: none;
-    }
-  }
-</style>
+

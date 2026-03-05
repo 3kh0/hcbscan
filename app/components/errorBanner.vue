@@ -1,4 +1,5 @@
 <template>
+  <transition name="fade-slide" appear>
   <div
     class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center"
   >
@@ -34,6 +35,7 @@
       </div>
     </div>
   </div>
+  </transition>
 </template>
 
 <script setup lang="ts">

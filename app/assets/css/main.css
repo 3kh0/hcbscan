@@ -27,3 +27,108 @@ body {
     }
   }
 }
+
+.page-enter-active {
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.page-leave-active {
+  transition:
+    opacity 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.fade-slide-enter-active {
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.fade-slide-leave-active {
+  transition:
+    opacity 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+}
+
+.list-enter-active {
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.list-leave-active {
+  transition:
+    opacity 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.list-move {
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+@keyframes fade-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes grow-up {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.bar-grow {
+  animation: grow-up 400ms cubic-bezier(0.23, 1, 0.32, 1) backwards;
+  transform-origin: bottom;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

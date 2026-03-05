@@ -47,7 +47,7 @@
       >
         <img
           src="~/assets/img/hcbscan.png"
-          class="w-16 h-16 transform transition-transform duration-200 hover:scale-110 hover:op"
+          class="w-16 h-16 transform transition-transform duration-200 hover:scale-105 active:scale-95"
         />
         <div class="ml-4">
           <h1 class="font-bold text-4xl">HCBScan</h1>
@@ -76,7 +76,7 @@
         >
           <img
             src="~/assets/img/bank.png"
-            class="w-16 h-16 transform transition-transform duration-200 hover:scale-110"
+            class="w-16 h-16 transform transition-transform duration-200 hover:scale-105 active:scale-95"
           />
         </a>
       </div>

@@ -85,19 +85,20 @@
         </h2>
         <div class="flex items-end gap-0.5 h-40">
           <div
-            v-for="e in data.activityVolume"
+            v-for="(e, i) in data.activityVolume"
             :key="e.day"
             class="flex-1 h-full group relative flex items-end"
           >
             <div
-              class="bg-blue-500 rounded-t hover:bg-blue-400 transition-colors w-full"
+              class="bg-blue-500 rounded-t hover:bg-blue-400 transition-colors w-full bar-grow will-change-transform"
               :style="{
                 height: `${(e.count / maxVolume) * 100}%`,
                 minHeight: e.count > 0 ? '2px' : '0',
+                animationDelay: `${i * 15}ms`,
               }"
             ></div>
             <div
-              class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-zinc-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10"
+              class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-zinc-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 scale-95 group-hover:scale-100 pointer-events-none transition-all duration-150 z-10"
             >
               {{ formatDay(e.day) }}: {{ e.count.toLocaleString() }}
             </div>

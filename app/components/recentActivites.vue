@@ -92,6 +92,8 @@
       <ErrorBanner :message="error.message" />
     </div>
 
-    <ActsList :acts="acts" />
+    <TransitionGroup name="list" tag="div">
+      <ActsList :acts="acts" :key="acts?.map(a => a.id).join(',')" />
+    </TransitionGroup>
   </div>
 </template>

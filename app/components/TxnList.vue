@@ -27,7 +27,7 @@
       v-for="txn in transactions"
       :key="txn.id"
       :to="`/app/txn/${txn.id}`"
-      class="group flex items-center gap-3 px-4 py-3 hover:bg-zinc-800/40 transition-colors duration-150"
+      class="group flex items-center gap-3 px-4 py-3 hover:bg-zinc-800/40 active:bg-zinc-800/60 transition-colors duration-150"
     >
       <div
         :class="[
@@ -181,7 +181,7 @@
       <!-- Arrow -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 transition-colors duration-150"
+        class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all duration-150"
         viewBox="0 0 20 20"
         fill="currentColor"
       >
