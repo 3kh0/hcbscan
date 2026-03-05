@@ -38,11 +38,20 @@ function activityLabel(key: string): string {
 interface SlackBlock {
   type: string;
   text?: { type: string; text: string };
+  accessory?: {
+    type: string;
+    image_url?: string;
+    alt_text?: string;
+  };
+  image_url?: string;
+  alt_text?: string;
   elements?: Array<{
     type: string;
     text?: string | { type: string; text: string };
     url?: string;
     style?: string;
+    image_url?: string;
+    alt_text?: string;
   }>;
 }
 
@@ -67,12 +76,40 @@ async function sendSlackMessage(
   }
 }
 
+function proxyImageUrl(src: string | null | undefined): string | null {
+  if (!src) return null;
+  let u: URL;
+  try {
+    u = new URL(src);
+  } catch {
+    return null;
+  }
+
+  if (
+    u.hostname === "hcb.hackclub.com" &&
+    (u.pathname.startsWith("/storage/blobs/redirect/") ||
+      u.pathname.startsWith("/storage/representations/redirect/"))
+  ) {
+    const id = u.pathname.split("/")[4];
+    if (id) return `https://hcbscan.3kh0.net/api/hcb-image/${id}`;
+  }
+
+  return src;
+}
+
 export async function notifyNewActivity(act: {
   id: string;
   key: string;
   created_at: string;
-  user: { id: string; full_name: string } | null;
+  user: { id: string; full_name: string; photo?: string | null } | null;
   organization: { id: string; name: string; logo?: string | null } | null;
+  transaction?: {
+    id: string;
+    amount_cents: number;
+    memo: string;
+    type: string;
+    pending: boolean;
+  } | null;
 }): Promise<void> {
   if (!slackup()) return;
 
@@ -81,15 +118,58 @@ export async function notifyNewActivity(act: {
   const ts = Math.floor(new Date(act.created_at).getTime() / 1000);
 
   const label = activityLabel(act.key);
+  const orgLogo = proxyImageUrl(act.organization?.logo);
 
-  await sendSlackMessage(`📡 ${label} by ${user} in ${org}`, [
-    {
+  const headerBlock: SlackBlock = {
+    type: "section",
+    text: {
+      type: "mrkdwn",
+      text: `*📡 ${label}*\nby *${user}* in *${org}*\n<!date^${ts}^{date_short_pretty} at {time}|${act.created_at}>`,
+    },
+  };
+
+  if (orgLogo) {
+    headerBlock.accessory = {
+      type: "image",
+      image_url: orgLogo,
+      alt_text: org,
+    };
+  }
+
+  const blocks: SlackBlock[] = [headerBlock];
+
+  if (act.transaction) {
+    const amt = (Math.abs(act.transaction.amount_cents) / 100).toLocaleString(
+      "en-US",
+      { style: "currency", currency: "USD" }
+    );
+    const sign = act.transaction.amount_cents < 0 ? "-" : "+";
+    const memo = act.transaction.memo || "No memo";
+
+    blocks.push({
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*📡 ${label}*\nby *${user}* in *${org}*\n<!date^${ts}^{date_short_pretty} at {time}|${act.created_at}>`,
+        text: `*Amount:* ${sign}${amt}\n*Memo:* ${memo}`,
       },
-    },
+    });
+  }
+
+  const contextElements: SlackBlock["elements"] = [];
+  const userPhoto = proxyImageUrl(act.user?.photo);
+  if (userPhoto) {
+    contextElements.push({
+      type: "image",
+      image_url: userPhoto,
+      alt_text: user,
+    });
+  }
+  contextElements.push({
+    type: "mrkdwn",
+    text: `${user} - Powered by <https://github.com/3kh0/hcbscan|HCBScan>`,
+  });
+
+  blocks.push(
     {
       type: "actions",
       elements: [
@@ -103,14 +183,11 @@ export async function notifyNewActivity(act: {
     },
     {
       type: "context",
-      elements: [
-        {
-          type: "mrkdwn",
-          text: `Powered by <https://github.com/3kh0/hcbscan|HCBScan>`,
-        },
-      ],
-    },
-  ]);
+      elements: contextElements,
+    }
+  );
+
+  await sendSlackMessage(`📡 ${label} by ${user} in ${org}`, blocks);
 }
 
 export async function notifyNewOrg(org: {
