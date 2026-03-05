@@ -23,6 +23,173 @@
     ];
   });
 
+  type Style = { bg: string; text: string; icon: string };
+  const actStyles: Record<string, Style> = {
+    "raw_pending_stripe_transaction.create": {
+      bg: "bg-purple-500/10",
+      text: "text-purple-400",
+      icon: "card",
+    },
+    "ach_transfer.create": {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      icon: "bank",
+    },
+    "ach_transfer.failed": {
+      bg: "bg-red-500/10",
+      text: "text-red-400",
+      icon: "bank",
+    },
+    "ach_transfer.rejected": {
+      bg: "bg-red-500/10",
+      text: "text-red-400",
+      icon: "bank",
+    },
+    "check_deposit.create": {
+      bg: "bg-emerald-500/10",
+      text: "text-emerald-400",
+      icon: "document",
+    },
+    "increase_check.create": {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      icon: "mail",
+    },
+    "increase_check.rejected": {
+      bg: "bg-red-500/10",
+      text: "text-red-400",
+      icon: "mail",
+    },
+    "comment.create": {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      icon: "chat",
+    },
+    "comment.destroy": {
+      bg: "bg-red-500/10",
+      text: "text-red-400",
+      icon: "chat",
+    },
+    "comment.update": {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      icon: "chat",
+    },
+    "disbursement.create": {
+      bg: "bg-orange-500/10",
+      text: "text-orange-400",
+      icon: "arrows",
+    },
+    "disbursement.rejected": {
+      bg: "bg-red-500/10",
+      text: "text-red-400",
+      icon: "arrows",
+    },
+    "donation.paid": {
+      bg: "bg-emerald-500/10",
+      text: "text-emerald-400",
+      icon: "heart",
+    },
+    "organizer_position_invite.create": {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      icon: "person",
+    },
+    "event.create": {
+      bg: "bg-emerald-500/10",
+      text: "text-emerald-400",
+      icon: "building",
+    },
+    "invoice.create": {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      icon: "document",
+    },
+    "invoice.paid": {
+      bg: "bg-emerald-500/10",
+      text: "text-emerald-400",
+      icon: "dollar",
+    },
+    "reimbursement_expense.approved": {
+      bg: "bg-emerald-500/10",
+      text: "text-emerald-400",
+      icon: "check",
+    },
+    "reimbursement_report.approved": {
+      bg: "bg-emerald-500/10",
+      text: "text-emerald-400",
+      icon: "check",
+    },
+    "reimbursement_report.create": {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      icon: "clipboard",
+    },
+    "reimbursement_report.review_requested": {
+      bg: "bg-yellow-500/10",
+      text: "text-yellow-400",
+      icon: "eye",
+    },
+    "wire.create": {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      icon: "globe",
+    },
+    "wire.failed": {
+      bg: "bg-red-500/10",
+      text: "text-red-400",
+      icon: "globe",
+    },
+    "wire.rejected": {
+      bg: "bg-red-500/10",
+      text: "text-red-400",
+      icon: "globe",
+    },
+    "wise_transfer.create": {
+      bg: "bg-blue-500/10",
+      text: "text-blue-400",
+      icon: "globe",
+    },
+    "wise_transfer.failed": {
+      bg: "bg-red-500/10",
+      text: "text-red-400",
+      icon: "globe",
+    },
+    "wise_transfer.rejected": {
+      bg: "bg-red-500/10",
+      text: "text-red-400",
+      icon: "globe",
+    },
+  };
+  const actFallback: Style = {
+    bg: "bg-zinc-500/10",
+    text: "text-zinc-400",
+    icon: "bolt",
+  };
+  const s = (k: string) => actStyles[k] ?? actFallback;
+
+  const truncId = (id: string) =>
+    !id || id.length <= 12 ? id : `${id.slice(0, 6)}…${id.slice(-4)}`;
+
+  function fmtDate(v: string) {
+    const d = new Date(v);
+    const sec = Math.floor((Date.now() - d.getTime()) / 1000);
+    if (sec < 60) return `${sec}s ago`;
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}m ago`;
+    const hrs = Math.floor(min / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    if (days === 1) return "Yesterday";
+    if (days < 7) return `${days}d ago`;
+    return d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year:
+        d.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
+    });
+  }
+
   const search = _.debounce(async (query) => {
     if (!query.trim()) {
       fetching.value = false;
@@ -108,20 +275,14 @@
 
   const goResult = () => {
     nextTick(() => {
-      const selectedElement = document.getElementById(
-        `search-result-${selected.value}`
-      );
-      if (selectedElement) {
-        selectedElement.scrollIntoView({ block: "nearest" });
-      }
+      const el = document.getElementById(`search-result-${selected.value}`);
+      if (el) el.scrollIntoView({ block: "nearest" });
     });
   };
 
   const setScope = (type) => {
     scope.value = type;
-    if (query.value) {
-      search(query.value);
-    }
+    if (query.value) search(query.value);
   };
 
   const f = () => {
@@ -182,26 +343,7 @@
         v-else
         class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
       >
-        <svg
-          class="animate-spin h-5 w-5 text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          />
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          />
-        </svg>
+        <Spinner :size="5" color="text-white" />
       </div>
 
       <div
@@ -226,109 +368,119 @@
         @blur="b"
         @keydown="k"
       />
-      <div
-        v-if="isFocused && !query"
-        class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg overflow-hidden"
+      <transition
+        enter-active-class="transition ease-out duration-150"
+        enter-from-class="opacity-0 -translate-y-1 scale-[0.98]"
+        enter-to-class="opacity-100 translate-y-0 scale-100"
+        leave-active-class="transition ease-out duration-100"
+        leave-from-class="opacity-100 translate-y-0 scale-100"
+        leave-to-class="opacity-0 -translate-y-1 scale-[0.98]"
       >
-        <div class="border-b border-zinc-700">
-          <div class="flex">
-            <button
-              class="px-4 py-2 text-sm transition-colors"
-              :class="
-                scope === 'all'
-                  ? 'text-white border-b-2 border-blue-500'
-                  : 'text-zinc-400 hover:text-white'
-              "
-              @click="setScope('all')"
+        <div
+          v-if="isFocused && !query"
+          class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg overflow-hidden origin-top will-change-transform"
+        >
+          <div class="border-b border-zinc-700">
+            <div class="flex">
+              <button
+                class="px-4 py-2 text-sm transition-colors"
+                :class="
+                  scope === 'all'
+                    ? 'text-white border-b-2 border-blue-500'
+                    : 'text-zinc-400 hover:text-white'
+                "
+                @click="setScope('all')"
+              >
+                All
+              </button>
+              <button
+                class="px-4 py-2 text-sm transition-colors"
+                :class="
+                  scope === 'orgs'
+                    ? 'text-white border-b-2 border-blue-500'
+                    : 'text-zinc-400 hover:text-white'
+                "
+                @click="setScope('orgs')"
+              >
+                Organizations
+              </button>
+              <button
+                class="px-4 py-2 text-sm transition-colors"
+                :class="
+                  scope === 'users'
+                    ? 'text-white border-b-2 border-blue-500'
+                    : 'text-zinc-400 hover:text-white'
+                "
+                @click="setScope('users')"
+              >
+                Users
+              </button>
+              <button
+                class="px-4 py-2 text-sm transition-colors"
+                :class="
+                  scope === 'activities'
+                    ? 'text-white border-b-2 border-blue-500'
+                    : 'text-zinc-400 hover:text-white'
+                "
+                @click="setScope('activities')"
+              >
+                Activities
+              </button>
+            </div>
+          </div>
+
+          <div class="px-4 py-3 text-zinc-400">
+            <p>Start typing to search. You can search for:</p>
+            <ul
+              v-if="scope !== 'users' && scope !== 'activities'"
+              class="mt-1 text-sm list-disc pl-5 space-y-1"
             >
-              All
-            </button>
-            <button
-              class="px-4 py-2 text-sm transition-colors"
-              :class="
-                scope === 'orgs'
-                  ? 'text-white border-b-2 border-blue-500'
-                  : 'text-zinc-400 hover:text-white'
-              "
-              @click="setScope('orgs')"
+              <li>Organization name</li>
+              <li>Category</li>
+              <li>URL slug</li>
+              <li>Organization ID</li>
+            </ul>
+            <ul
+              v-if="scope !== 'orgs' && scope !== 'activities'"
+              class="mt-1 text-sm list-disc pl-5 space-y-1"
             >
-              Organizations
-            </button>
-            <button
-              class="px-4 py-2 text-sm transition-colors"
-              :class="
-                scope === 'users'
-                  ? 'text-white border-b-2 border-blue-500'
-                  : 'text-zinc-400 hover:text-white'
-              "
-              @click="setScope('users')"
+              <li>User name</li>
+              <li>User ID</li>
+            </ul>
+            <ul
+              v-if="scope !== 'orgs' && scope !== 'users'"
+              class="mt-1 text-sm list-disc pl-5 space-y-1"
             >
-              Users
-            </button>
-            <button
-              class="px-4 py-2 text-sm transition-colors"
-              :class="
-                scope === 'activities'
-                  ? 'text-white border-b-2 border-blue-500'
-                  : 'text-zinc-400 hover:text-white'
-              "
-              @click="setScope('activities')"
-            >
-              Activities
-            </button>
+              <li>Activity ID</li>
+              <li>Action type</li>
+              <li>User name</li>
+              <li>Organization name</li>
+            </ul>
+            <p class="mt-2 text-xs text-zinc-500">
+              <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">↑/↓</span>
+              to navigate •
+              <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">Tab</span>
+              to cycle •
+              <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded"
+                >Enter</span
+              >
+              to select
+            </p>
           </div>
         </div>
-
-        <div class="px-4 py-3 text-zinc-400">
-          <p>Start typing to search. You can search for:</p>
-          <ul
-            v-if="scope !== 'users' && scope !== 'activities'"
-            class="mt-1 text-sm list-disc pl-5 space-y-1"
-          >
-            <li>Organization name</li>
-            <li>Category</li>
-            <li>URL slug</li>
-            <li>Organization ID</li>
-          </ul>
-          <ul
-            v-if="scope !== 'orgs' && scope !== 'activities'"
-            class="mt-1 text-sm list-disc pl-5 space-y-1"
-          >
-            <li>User name</li>
-            <li>User ID</li>
-          </ul>
-          <ul
-            v-if="scope !== 'orgs' && scope !== 'users'"
-            class="mt-1 text-sm list-disc pl-5 space-y-1"
-          >
-            <li>Activity ID</li>
-            <li>Action type</li>
-            <li>User name</li>
-            <li>Organization name</li>
-          </ul>
-          <p class="mt-2 text-xs text-zinc-500">
-            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">↑/↓</span>
-            to navigate •
-            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">Tab</span>
-            to cycle •
-            <span class="bg-zinc-700 text-zinc-400 px-1.5 rounded">Enter</span>
-            to select
-          </p>
-        </div>
-      </div>
+      </transition>
 
       <transition
-        name="dropdown"
-        enter-active-class="transition ease-out duration-200"
-        enter-from-class="opacity-0 transform -translate-y-2"
-        enter-to-class="opacity-100 transform translate-y-0"
-        leave-active-class="transition ease-in duration-150"
-        leave-from-class="opacity-100 transform translate-y-0"
-        leave-to-class="opacity-0 transform -translate-y-2"
+        enter-active-class="transition ease-out duration-150"
+        enter-from-class="opacity-0 -translate-y-1 scale-[0.98]"
+        enter-to-class="opacity-100 translate-y-0 scale-100"
+        leave-active-class="transition ease-out duration-100"
+        leave-from-class="opacity-100 translate-y-0 scale-100"
+        leave-to-class="opacity-0 -translate-y-1 scale-[0.98]"
       >
         <div
           v-if="fetching && isFocused"
-          class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg"
+          class="absolute z-10 w-full mt-1 bg-zinc-800 rounded-lg shadow-lg origin-top will-change-transform"
         >
           <div class="px-4 py-2 text-zinc-400 animate-pulse">Searching...</div>
         </div>
@@ -336,92 +488,109 @@
 
       <transition
         v-if="results.length > 0 && isFocused"
-        name="dropdown"
-        enter-active-class="transition ease-out duration-300"
-        enter-from-class="opacity-0 transform -translate-y-2"
-        enter-to-class="opacity-100 transform translate-y-0"
-        leave-active-class="transition ease-in duration-150"
-        leave-from-class="opacity-100 transform translate-y-0"
-        leave-to-class="opacity-0 transform -translate-y-2"
+        enter-active-class="transition ease-out duration-200"
+        enter-from-class="opacity-0 -translate-y-1 scale-[0.98]"
+        enter-to-class="opacity-100 translate-y-0 scale-100"
+        leave-active-class="transition ease-out duration-150"
+        leave-from-class="opacity-100 translate-y-0 scale-100"
+        leave-to-class="opacity-0 -translate-y-1 scale-[0.98]"
       >
         <div
-          class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10 max-h-80 overflow-y-auto"
+          class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10 max-h-80 overflow-y-auto origin-top will-change-transform"
         >
-          <transition-group
-            name="list"
-            tag="div"
-            enter-active-class="transition duration-300 ease-out"
-            enter-from-class="opacity-0 transform scale-95"
-            enter-to-class="opacity-100 transform scale-100"
-            leave-active-class="transition duration-200 ease-in"
-            leave-from-class="opacity-100 transform scale-100"
-            leave-to-class="opacity-0 transform scale-95"
-          >
+          <div class="divide-y divide-zinc-800/50">
             <div
               v-if="scope === 'all' && orgResults.length > 0"
-              key="org-header"
               class="px-4 py-2 text-xs font-semibold text-zinc-500 bg-zinc-800 sticky top-0"
             >
               Organizations
             </div>
             <div
-              v-for="(org, index) in scope === 'all' ? orgResults : results"
+              v-for="(org, index) in scope === 'all'
+                ? orgResults
+                : scope === 'orgs'
+                  ? results
+                  : []"
               :id="`search-result-${scope === 'all' ? index : index}`"
               :key="'org_' + org['Organization ID']"
               :class="[
-                'px-4 py-3 cursor-pointer flex justify-between items-center transition duration-200 ease-in-out',
+                'group flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors duration-150',
                 selected === (scope === 'all' ? index : index)
-                  ? 'bg-blue-900/40 border-l-2 border-blue-500'
-                  : 'hover:bg-zinc-700 border-l-2 border-transparent',
+                  ? 'bg-blue-900/40'
+                  : 'hover:bg-zinc-800/40',
               ]"
-              :style="{ transitionDelay: `${index * 25}ms` }"
               @mouseenter="selected = scope === 'all' ? index : index"
               @click="sendResult({ ...org, type: 'org' })"
             >
-              <div class="flex-grow">
-                <div class="text-white font-semibold">{{ org.Name }}</div>
-                <div class="flex items-center mt-1">
-                  <span class="text-zinc-400 text-sm">{{ org.Slug }}</span>
+              <div
+                class="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium truncate text-white">
+                    {{ org.Name }}
+                  </span>
                   <span
                     v-if="org.Category"
-                    class="ml-2 px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
+                    class="shrink-0 px-1.5 py-0.5 text-[10px] rounded-full bg-zinc-700 text-zinc-300"
                   >
                     {{ org.Category }}
                   </span>
                   <span
                     v-if="org['Frozen At']"
-                    class="ml-2 px-2 py-0.5 text-xs rounded-full bg-red-500/10 text-red-400 border border-red-500/20"
+                    class="shrink-0 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-red-500/10 text-red-400 border border-red-500/20"
                   >
                     Frozen
                   </span>
                 </div>
+                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span class="text-xs text-zinc-500">{{ org.Slug }}</span>
+                  <span class="text-zinc-700">·</span>
+                  <span class="text-xs text-zinc-500 font-mono">{{
+                    truncId(org["Organization ID"])
+                  }}</span>
+                  <span class="text-zinc-700">·</span>
+                  <span class="text-xs text-zinc-500">{{
+                    fmtDate(org.Added)
+                  }}</span>
+                </div>
               </div>
-              <div>
-                <div
-                  class="inline-block px-2 py-0.5 text-xs font-mono rounded-full"
-                  :class="{
-                    'bg-green-500/10 border border-green-500/20 text-green-400':
-                      new Date() - new Date(org.Added) <= 30 * 60 * 1000,
-                    'bg-orange-500/10 border border-orange-500/20 text-orange-400':
-                      new Date() - new Date(org.Added) > 30 * 60 * 1000 &&
-                      new Date() - new Date(org.Added) <= 24 * 60 * 60 * 1000,
-                    'bg-red-500/10 border border-red-500/20 text-red-400':
-                      new Date() - new Date(org.Added) > 24 * 60 * 60 * 1000,
-                  }"
+              <div class="shrink-0 text-right">
+                <span
+                  class="text-sm font-semibold tabular-nums text-emerald-400"
                 >
-                  Updated: {{ relativeTime(org.Added) }}
-                </div>
+                  {{ fixMoney(org.Balance) }}
+                </span>
               </div>
-              <div class="text-zinc-400 text-sm ml-4 text-right">
-                <div class="mt-1">Balance: {{ fixMoney(org.Balance) }}</div>
-                <div class="text-xs text-zinc-500 mt-1 font-mono">
-                  {{ org["Organization ID"] }}
-                </div>
-              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 transition-colors duration-150"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
             </div>
+
             <div
               v-if="scope === 'all' && userResults.length > 0"
-              key="user-header"
               class="px-4 py-2 text-xs font-semibold text-zinc-500 bg-zinc-800 sticky top-0"
             >
               Users
@@ -437,66 +606,76 @@
               }`"
               :key="'user_' + user.id"
               :class="[
-                'px-4 py-3 cursor-pointer flex justify-between items-center transition duration-200 ease-in-out',
+                'group flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors duration-150',
                 selected ===
                 (scope === 'all' ? orgResults.length + index : index)
-                  ? 'bg-blue-900/40 border-l-2 border-blue-500'
-                  : 'hover:bg-zinc-700 border-l-2 border-transparent',
+                  ? 'bg-blue-900/40'
+                  : 'hover:bg-zinc-800/40',
               ]"
-              :style="{ transitionDelay: `${index * 25}ms` }"
               @mouseenter="
                 selected = scope === 'all' ? orgResults.length + index : index
               "
               @click="sendResult({ ...user, type: 'user' })"
             >
-              <div class="flex items-center">
-                <div class="mr-3">
-                  <SafeNuxtImg
-                    v-if="user.avatar"
-                    :src="user.avatar"
-                    alt="User Avatar"
-                    width="40"
-                    height="40"
-                    class="h-10 w-10 rounded-full object-cover"
+              <div v-if="user.avatar" class="shrink-0">
+                <SafeNuxtImg
+                  :src="user.avatar"
+                  alt="User Avatar"
+                  width="32"
+                  height="32"
+                  class="w-8 h-8 rounded-lg object-cover"
+                />
+              </div>
+              <div
+                v-else
+                class="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clip-rule="evenodd"
                   />
-                  <div
-                    v-else
-                    class="h-10 w-10 bg-zinc-700 rounded-full flex items-center justify-center"
+                </svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium truncate text-white">
+                    {{ user.name }}
+                  </span>
+                  <span
+                    class="shrink-0 px-1.5 py-0.5 text-[10px] rounded-full bg-zinc-700 text-zinc-300"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-6 w-6 text-zinc-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
-                  </div>
+                    {{ user.orgs?.length || 0 }} orgs
+                  </span>
                 </div>
-                <div>
-                  <div class="text-white font-semibold">{{ user.name }}</div>
-                  <div class="flex items-center mt-1">
-                    <span class="text-xs text-blue-400 font-mono">{{
-                      user.id
-                    }}</span>
-                    <span
-                      class="ml-2 px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
-                    >
-                      {{ user.orgs?.length || 0 }} organizations
-                    </span>
-                  </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs text-zinc-500 font-mono">{{
+                    truncId(user.id)
+                  }}</span>
                 </div>
               </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 transition-colors duration-150"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
             </div>
+
             <div
               v-if="scope === 'all' && actResults.length > 0"
-              key="act-header"
               class="px-4 py-2 text-xs font-semibold text-zinc-500 bg-zinc-800 sticky top-0"
             >
               Activities
@@ -514,15 +693,14 @@
               }`"
               :key="'act_' + act['Activity ID']"
               :class="[
-                'px-4 py-3 cursor-pointer flex justify-between items-center transition duration-200 ease-in-out',
+                'group flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors duration-150',
                 selected ===
                 (scope === 'all'
                   ? orgResults.length + userResults.length + index
                   : index)
-                  ? 'bg-blue-900/40 border-l-2 border-blue-500'
-                  : 'hover:bg-zinc-700 border-l-2 border-transparent',
+                  ? 'bg-blue-900/40'
+                  : 'hover:bg-zinc-800/40',
               ]"
-              :style="{ transitionDelay: `${index * 25}ms` }"
               @mouseenter="
                 selected =
                   scope === 'all'
@@ -531,70 +709,272 @@
               "
               @click="sendResult({ ...act, type: 'activity' })"
             >
-              <div class="flex items-center">
-                <div class="mr-3">
-                  <div
-                    class="h-10 w-10 bg-zinc-700 rounded-full flex items-center justify-center"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5 text-zinc-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
-                  </div>
+              <div
+                :class="[
+                  'shrink-0 flex items-center justify-center w-8 h-8 rounded-lg',
+                  s(act['Key']).bg,
+                  s(act['Key']).text,
+                ]"
+              >
+                <svg
+                  v-if="s(act['Key']).icon === 'card'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'bank'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v1h14V8a1 1 0 00.496-1.868l-7-4zM5 11v5h2v-5H5zm4 0v5h2v-5H9zm4 0v5h2v-5h-2zM3 17a1 1 0 000 2h14a1 1 0 100-2H3z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'dollar'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'check'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'document'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'mail'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+                  />
+                  <path
+                    d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'chat'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'arrows'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'heart'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'person'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'building'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'clipboard'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                  <path
+                    d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'globe'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="s(act['Key']).icon === 'eye'"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <!-- Fallback bolt -->
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <!-- Content -->
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium truncate text-white">
+                    {{ activityLabel(act["Key"]) }}
+                  </span>
                 </div>
-                <div>
-                  <div class="text-white font-semibold">
-                    {{ act["Key"] }}
-                  </div>
-                  <div class="flex items-center mt-1 gap-2">
-                    <span class="text-xs text-blue-400 font-mono">{{
-                      act["Activity ID"]
+                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span class="text-xs text-zinc-500 font-mono">{{
+                    truncId(act["Activity ID"])
+                  }}</span>
+                  <span class="text-zinc-700">·</span>
+                  <span class="text-xs text-zinc-500">{{
+                    fmtDate(act["Created At"])
+                  }}</span>
+                  <template v-if="act['User Name']">
+                    <span class="text-zinc-700">·</span>
+                    <span class="text-xs text-zinc-500">{{
+                      act["User Name"]
                     }}</span>
-                    <span
-                      v-if="act['User Name']"
-                      class="px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
-                    >
-                      {{ act["User Name"] }}
-                    </span>
-                    <span
-                      v-if="act['Organization Name']"
-                      class="px-2 py-0.5 text-xs rounded-full bg-zinc-700 text-zinc-300"
-                    >
-                      {{ act["Organization Name"] }}
-                    </span>
-                  </div>
+                  </template>
                 </div>
               </div>
-              <div class="text-zinc-400 text-sm ml-4 text-right">
-                {{ relativeTime(act["Created At"]) }}
+              <div
+                v-if="act['Organization Name']"
+                class="hidden sm:flex shrink-0 items-center gap-2 max-w-45"
+              >
+                <span class="text-sm text-zinc-400 truncate">{{
+                  act["Organization Name"]
+                }}</span>
               </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 transition-colors duration-150"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
             </div>
-          </transition-group>
+          </div>
         </div>
       </transition>
 
       <transition
         v-else-if="!fetching && query && isFocused && results.length === 0"
-        name="dropdown"
         enter-active-class="transition ease-out duration-200"
-        enter-from-class="opacity-0 transform -translate-y-2"
-        enter-to-class="opacity-100 transform translate-y-0"
-        leave-active-class="transition ease-in duration-150"
-        leave-from-class="opacity-100 transform translate-y-0"
-        leave-to-class="opacity-0 transform -translate-y-2"
+        enter-from-class="opacity-0 -translate-y-1 scale-[0.98]"
+        enter-to-class="opacity-100 translate-y-0 scale-100"
+        leave-active-class="transition ease-out duration-150"
+        leave-from-class="opacity-100 translate-y-0 scale-100"
+        leave-to-class="opacity-0 -translate-y-1 scale-[0.98]"
       >
         <div
-          class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10"
+          class="absolute w-full mt-1 bg-zinc-800 bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg z-10 origin-top will-change-transform"
         >
           <div class="px-4 py-3 text-red-400">
             <p>
@@ -612,14 +992,10 @@
   </div>
 </template>
 <style scoped>
-  .list-move {
-    transition: transform 0.3s ease;
-  }
-  .dropdown-enter-active,
-  .dropdown-leave-active,
-  .list-enter-active,
-  .list-leave-active {
-    position: absolute;
-    width: 100%;
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none;
+      transition: none;
+    }
   }
 </style>
