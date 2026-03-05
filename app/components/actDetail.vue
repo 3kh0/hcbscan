@@ -154,11 +154,11 @@
       <div v-else-if="detail.key === 'raw_pending_stripe_transaction.create'">
         <p class="text-zinc-400">
           <template v-if="detail.user"
-            ><b>{{ detail.user.full_name }}</b> made a card
-            purchase</template
-          ><template v-else>A card purchase was made</template>
-          from <b>{{ detail.organization.name }}</b>, but the API did not return
-          transaction details. If the charge is recent, try the
+            ><b>{{ detail.user.full_name }}</b> made a card purchase</template
+          ><template v-else>A card purchase was made</template> from
+          <b>{{ detail.organization.name }}</b
+          >, but the API did not return transaction details. If the charge is
+          recent, try the
           <NuxtLink
             :to="`/app/org/${detail.organization.id}`"
             class="text-blue-400 hover:underline"
@@ -170,8 +170,8 @@
         <p class="text-zinc-400">
           <template v-if="detail.user"
             ><b>{{ detail.user.full_name }}</b> performed</template
-          ><template v-else>Someone performed</template>
-          a <b>{{ activityLabel(detail.key) }}</b> action for
+          ><template v-else>Someone performed</template> a
+          <b>{{ activityLabel(detail.key) }}</b> action for
           <b>{{ detail.organization.name }}</b> on
           {{ date(detail.created_at) }}. No additional details are available.
         </p>

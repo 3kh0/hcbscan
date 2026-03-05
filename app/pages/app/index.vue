@@ -41,9 +41,15 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
       <div
         v-for="(card, i) in [
-          { label: 'Total Balance', value: data?.balance ? fixMoney(data.balance) : '-' },
+          {
+            label: 'Total Balance',
+            value: data?.balance ? fixMoney(data.balance) : '-',
+          },
           { label: null, value: null },
-          { label: 'Indexed Organizations', value: (data?.accounts ?? '-').toLocaleString() },
+          {
+            label: 'Indexed Organizations',
+            value: (data?.accounts ?? '-').toLocaleString(),
+          },
         ]"
         :key="i"
         class="bg-zinc-900 p-4 rounded-lg animate-[fade-slide-up_300ms_ease-out_both]"

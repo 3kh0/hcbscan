@@ -13,7 +13,8 @@
     return d.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      year: d.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
+      year:
+        d.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
     });
   }
 

@@ -21,7 +21,9 @@ async function throttle() {
   if (stamps.length < LIMIT - BUFFER) return;
   const wait = stamps[0] + WINDOW - Date.now() + 1000;
   if (wait <= 0) return;
-  console.log(`[hcb] rate limit approaching (${stamps.length}/${LIMIT}), waiting ${Math.ceil(wait / 1000)}s`);
+  console.log(
+    `[hcb] rate limit approaching (${stamps.length}/${LIMIT}), waiting ${Math.ceil(wait / 1000)}s`
+  );
   await delay(wait);
   prune();
 }
@@ -49,7 +51,10 @@ export async function fetchAllOrgs() {
   const umap: Record<string, any> = {};
 
   while (true) {
-    const res = await hfetch(`${BASE}/api/v3/organizations?page=${page}&per_page=100`, { headers });
+    const res = await hfetch(
+      `${BASE}/api/v3/organizations?page=${page}&per_page=100`,
+      { headers }
+    );
     if (!res.ok) throw new Error(`HCB API error: ${res.status}`);
     const data: any[] = await res.json();
     if (!data.length) break;
@@ -57,13 +62,24 @@ export async function fetchAllOrgs() {
     for (const o of data) {
       for (const u of o.users || []) {
         if (!umap[u.id])
-          umap[u.id] = { id: u.id, name: u.full_name, avatar: u.photo, orgs: {} as Record<string, any> };
-        umap[u.id].orgs[o.id] = { id: o.id, name: o.name, logo: o.logo || null };
+          umap[u.id] = {
+            id: u.id,
+            name: u.full_name,
+            avatar: u.photo,
+            orgs: {} as Record<string, any>,
+          };
+        umap[u.id].orgs[o.id] = {
+          id: o.id,
+          name: o.name,
+          logo: o.logo || null,
+        };
       }
     }
 
     orgs.push(...data);
-    console.log(`[hcb] fetched page ${page} (${data.length} orgs, ${orgs.length} total)`);
+    console.log(
+      `[hcb] fetched page ${page} (${data.length} orgs, ${orgs.length} total)`
+    );
     page++;
     await delay(500);
   }
@@ -83,7 +99,10 @@ export async function fetchActivities(maxPages = 1, perPage = 15) {
   let page = 1;
 
   while (page <= maxPages) {
-    const res = await hfetch(`${BASE}/api/v3/activities?page=${page}&per_page=${perPage}`, { headers });
+    const res = await hfetch(
+      `${BASE}/api/v3/activities?page=${page}&per_page=${perPage}`,
+      { headers }
+    );
     if (!res.ok) throw new Error(`HCB API error: ${res.status}`);
     const data: any[] = await res.json();
     if (!data.length) break;

@@ -21,9 +21,7 @@
     `txn-org-${route.params.id}`,
     async () => {
       if (!txnData.value?.organization?.id) return null;
-      return hcbFetch(
-        `api/v3/organizations/${txnData.value.organization.id}`
-      );
+      return hcbFetch(`api/v3/organizations/${txnData.value.organization.id}`);
     },
     { server: false, default: () => null }
   );

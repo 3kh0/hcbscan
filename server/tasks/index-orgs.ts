@@ -37,7 +37,9 @@ export default defineTask({
     const previouslyUnfrozen = await getUnfrozenOrgIds(
       frozenFromApi.map((o) => o.id)
     );
-    const newlyFrozen = frozenFromApi.filter((o) => previouslyUnfrozen.has(o.id));
+    const newlyFrozen = frozenFromApi.filter((o) =>
+      previouslyUnfrozen.has(o.id)
+    );
 
     await bulkUpsertOrgs(formatted);
     console.log(`[index-orgs] upserted ${formatted.length} orgs`);

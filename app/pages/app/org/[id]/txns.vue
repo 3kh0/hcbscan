@@ -13,9 +13,7 @@
   const { data: orgMeta } = useAsyncData(
     `org-meta-${orgId.value}`,
     async () => {
-      const response = await hcbFetch(
-        `api/v3/organizations/${orgId.value}`
-      );
+      const response = await hcbFetch(`api/v3/organizations/${orgId.value}`);
       return { name: response.name, logo: response.logo };
     },
     { server: false }
@@ -31,9 +29,7 @@
         `api/v3/organizations/${orgId.value}/transactions?per_page=${perPage}&page=${page}`
       );
       if (data.length < perPage) hasMore.value = false;
-      transactions.value = append
-        ? [...transactions.value, ...data]
-        : data;
+      transactions.value = append ? [...transactions.value, ...data] : data;
       currentPage.value = page;
     } catch (e) {
       error.value = errMsg(e);
@@ -45,9 +41,7 @@
 
   async function loadOrg() {
     try {
-      orgData.value = await hcbFetch(
-        `api/v3/organizations/${orgId.value}`
-      );
+      orgData.value = await hcbFetch(`api/v3/organizations/${orgId.value}`);
     } catch (e) {
       error.value = errMsg(e);
     }
@@ -139,10 +133,7 @@
       </div>
 
       <div class="bg-zinc-900 rounded-lg overflow-hidden">
-        <TxnList
-          :transactions="transactions"
-          :loading="loading"
-        />
+        <TxnList :transactions="transactions" :loading="loading" />
       </div>
 
       <div

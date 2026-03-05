@@ -93,7 +93,7 @@
     </div>
 
     <TransitionGroup name="list" tag="div">
-      <ActsList :acts="acts" :key="acts?.map(a => a.id).join(',')" />
+      <ActsList :acts="acts" :key="acts?.map((a) => a.id).join(',')" />
     </TransitionGroup>
   </div>
 </template>

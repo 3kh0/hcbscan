@@ -440,10 +440,7 @@
         <div v-else class="mb-6">
           <h2 class="text-xl font-semibold mb-2">Recent Transactions</h2>
           <div class="bg-zinc-900 rounded-lg overflow-hidden">
-            <TxnList
-              :transactions="transactions"
-              :loading="txnsLoading"
-            />
+            <TxnList :transactions="transactions" :loading="txnsLoading" />
             <div
               class="flex items-center justify-center gap-4 px-4 py-3 border-t border-zinc-800/50"
             >

@@ -197,8 +197,8 @@
         <p class="text-zinc-400 mb-4">
           <template v-if="detail.sponsor"
             ><b>{{ detail.sponsor.name }}</b> was invoiced</template
-          ><template v-else>An invoice was created</template>
-          for {{ fixMoney(detail.amount_cents, true) }}, due on
+          ><template v-else>An invoice was created</template> for
+          {{ fixMoney(detail.amount_cents, true) }}, due on
           {{ date(detail.date) }}.
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -354,8 +354,9 @@
       </div>
       <div v-else>
         <p class="text-zinc-400">
-          This transaction is of type <b>{{ detail.object || props.type }}</b>,
-          which HCB Goggles does not yet support. You can view the raw data at
+          This transaction is of type <b>{{ detail.object || props.type }}</b
+          >, which HCB Goggles does not yet support. You can view the raw data
+          at
           <a
             :href="buildApiUrl(`api/v3/${props.type}s/${props.id}`)"
             class="text-blue-400 hover:underline"
