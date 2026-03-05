@@ -106,33 +106,13 @@ const routes: Array<{
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `*🔍 HCBScan*\nThe HCB Explorer\n\n*Total Balance:* ${money(s.balance)}\n*Organizations:* ${s.accounts.toLocaleString()}\n*7d Volume:* ${money(s.volume7d)}`,
+            text: `HCBScan is an open-source explorer for HCB that allows you to search for organizations, view transactions, and explore public financial data across HCB.\n\n*Total Balance:* ${money(s.balance)}\n*Organizations:* ${s.accounts.toLocaleString()}`,
           },
           accessory: {
             type: "image",
             image_url: IMG,
             alt_text: "HCBScan",
           },
-        },
-        {
-          type: "actions",
-          elements: [
-            {
-              type: "button",
-              text: { type: "plain_text", text: "Open HCBScan" },
-              url,
-              style: "primary",
-            },
-          ],
-        },
-        {
-          type: "context",
-          elements: [
-            {
-              type: "mrkdwn",
-              text: `Powered by <https://github.com/3kh0/hcbscan|HCBScan>`,
-            },
-          ],
         },
       ];
     },
@@ -162,31 +142,6 @@ const routes: Array<{
 
       return [
         header,
-        {
-          type: "actions",
-          elements: [
-            {
-              type: "button",
-              text: { type: "plain_text", text: "View Transactions" },
-              url,
-              style: "primary",
-            },
-            {
-              type: "button",
-              text: { type: "plain_text", text: "View on HCB" },
-              url: `https://hcb.hackclub.com/${m[1]}`,
-            },
-          ],
-        },
-        {
-          type: "context",
-          elements: [
-            {
-              type: "mrkdwn",
-              text: `Powered by <https://github.com/3kh0/hcbscan|HCBScan>`,
-            },
-          ],
-        },
       ];
     },
   },
@@ -215,31 +170,6 @@ const routes: Array<{
 
       return [
         header,
-        {
-          type: "actions",
-          elements: [
-            {
-              type: "button",
-              text: { type: "plain_text", text: "View on HCBScan" },
-              url,
-              style: "primary",
-            },
-            {
-              type: "button",
-              text: { type: "plain_text", text: "View on HCB" },
-              url: `https://hcb.hackclub.com/${m[1]}`,
-            },
-          ],
-        },
-        {
-          type: "context",
-          elements: [
-            {
-              type: "mrkdwn",
-              text: `Powered by <https://github.com/3kh0/hcbscan|HCBScan>`,
-            },
-          ],
-        },
       ];
     },
   },
@@ -273,26 +203,6 @@ const routes: Array<{
 
       return [
         header,
-        {
-          type: "actions",
-          elements: [
-            {
-              type: "button",
-              text: { type: "plain_text", text: "View on HCBScan" },
-              url,
-              style: "primary",
-            },
-          ],
-        },
-        {
-          type: "context",
-          elements: [
-            {
-              type: "mrkdwn",
-              text: `Powered by <https://github.com/3kh0/hcbscan|HCBScan>`,
-            },
-          ],
-        },
       ];
     },
   },
@@ -329,22 +239,11 @@ const routes: Array<{
       return [
         header,
         {
-          type: "actions",
-          elements: [
-            {
-              type: "button",
-              text: { type: "plain_text", text: "View on HCBScan" },
-              url,
-              style: "primary",
-            },
-          ],
-        },
-        {
           type: "context",
           elements: [
             {
               type: "mrkdwn",
-              text: `${t.type || "Transaction"} · Powered by <https://github.com/3kh0/hcbscan|HCBScan>`,
+              text: `${t.type || "Transaction"}`,
             },
           ],
         },
@@ -398,18 +297,6 @@ const routes: Array<{
         });
       }
 
-      blocks.push({
-        type: "actions",
-        elements: [
-          {
-            type: "button",
-            text: { type: "plain_text", text: "View on HCBScan" },
-            url,
-            style: "primary",
-          },
-        ],
-      });
-
       const contextElements: Block["elements"] = [];
       if (userPhoto) {
         contextElements.push({
@@ -418,10 +305,6 @@ const routes: Array<{
           alt_text: user,
         });
       }
-      contextElements.push({
-        type: "mrkdwn",
-        text: `${user} · Powered by <https://github.com/3kh0/hcbscan|HCBScan>`,
-      });
 
       blocks.push({
         type: "context",
