@@ -218,21 +218,23 @@ const routes: Array<{
       const memo = (t.memo as string) || "No memo";
       const pending = t.pending ? " _(pending)_" : "";
       const orgName = (t.organization?.name as string) || "Unknown";
-      const orgLogo = proxyImageUrl(t.organization?.logo as string | null);
       const date = t.date as string;
+      const user = (t.user?.full_name as string) || null;
+      const userPhoto = proxyImageUrl(t.user?.photo as string | null);
 
+      const userLine = user ? `\n*User:* ${user}` : "";
       const header: Block = {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*💰 ${memo}*${pending}\n\n*Amount:* ${sign}${amt}\n*Organization:* ${orgName}\n*Date:* ${date}`,
+          text: `*💰 ${memo}*${pending}\n\n*Amount:* ${sign}${amt}\n*Organization:* ${orgName}${userLine}\n*Date:* ${date}`,
         },
       };
-      if (orgLogo) {
+      if (userPhoto) {
         header.accessory = {
           type: "image",
-          image_url: orgLogo,
-          alt_text: orgName,
+          image_url: userPhoto,
+          alt_text: user || "User",
         };
       }
 
@@ -259,7 +261,6 @@ const routes: Array<{
       const label = activityLabel(a.key as string);
       const user = (a.user?.full_name as string) || "Unknown";
       const orgName = (a.organization?.name as string) || "Unknown";
-      const orgLogo = proxyImageUrl(a.organization?.logo as string | null);
       const userPhoto = proxyImageUrl(a.user?.photo as string | null);
       const ts = Math.floor(
         new Date(a.created_at as string).getTime() / 1000
@@ -269,14 +270,14 @@ const routes: Array<{
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*📡 ${label}*\nby *${user}* in *${orgName}*\n<!date^${ts}^{date_short_pretty} at {time}|${a.created_at}>`,
+          text: `*${label}*\nby *${user}* in *${orgName}*\n<!date^${ts}^{date_short_pretty} at {time}|${a.created_at}>`,
         },
       };
-      if (orgLogo) {
+      if (userPhoto) {
         header.accessory = {
           type: "image",
-          image_url: orgLogo,
-          alt_text: orgName,
+          image_url: userPhoto,
+          alt_text: user,
         };
       }
 
@@ -296,20 +297,6 @@ const routes: Array<{
           },
         });
       }
-
-      const contextElements: Block["elements"] = [];
-      if (userPhoto) {
-        contextElements.push({
-          type: "image",
-          image_url: userPhoto,
-          alt_text: user,
-        });
-      }
-
-      blocks.push({
-        type: "context",
-        elements: contextElements,
-      });
 
       return blocks;
     },
