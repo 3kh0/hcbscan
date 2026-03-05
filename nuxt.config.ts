@@ -56,6 +56,8 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   vite: { plugins: [tailwindcss()] },
   runtimeConfig: {
+    slackBotToken: process.env.SLACK_BOT_TOKEN,
+    slackSigningSecret: process.env.SLACK_SIGNING_SECRET,
     public: {
       sha: cmSha,
       date: cmDate,
