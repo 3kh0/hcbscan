@@ -22,6 +22,7 @@
       "The first public explorer for HCB transactions and organizations.",
     ogDescription:
       "The first public explorer for HCB transactions and organizations.",
+    ogUrl: "https://hcbscan.3kh0.net/app",
     ogImage: "https://hcbscan.3kh0.net/readme.png",
     twitterImage: "https://hcbscan.3kh0.net/readme.png",
   });

@@ -31,6 +31,7 @@ export default defineNuxtConfig({
         { name: "theme-color", content: "#09090b" },
         { property: "og:site_name", content: "HCBScan" },
         { property: "og:type", content: "website" },
+        { property: "og:url", content: "https://hcbscan.3kh0.net" },
         {
           property: "og:image",
           content: "https://hcbscan.3kh0.net/readme.png",
