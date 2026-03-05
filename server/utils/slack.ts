@@ -190,29 +190,42 @@ export async function notifyNewActivity(act: {
   await sendSlackMessage(`📡 ${label} by ${user} in ${org}`, blocks);
 }
 
-export async function notifyNewOrg(org: {
+interface OrgPayload {
   id: string;
   name: string;
   slug: string;
+  logo?: string | null;
   category: string | null;
   balance: number;
-}): Promise<void> {
-  if (!slackup()) return;
+}
 
+function orgBlocks(
+  headline: string,
+  org: OrgPayload,
+  extra?: string
+): SlackBlock[] {
   const bal = (org.balance / 100).toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
   });
   const cat = org.category ? ` (${org.category})` : "";
+  const logo = proxyImageUrl(org.logo);
 
-  await sendSlackMessage(`🏢 New organization: ${org.name}`, [
-    {
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `*Indexed New Organization*\n*${org.name}*${cat}\nBalance: ${bal}`,
-      },
+  const header: SlackBlock = {
+    type: "section",
+    text: {
+      type: "mrkdwn",
+      text: extra
+        ? `*${headline}*\n*${org.name}*${cat}\nBalance: ${bal}\n\n${extra}`
+        : `*${headline}*\n*${org.name}*${cat}\nBalance: ${bal}`,
     },
+  };
+  if (logo) {
+    header.accessory = { type: "image", image_url: logo, alt_text: org.name };
+  }
+
+  return [
+    header,
     {
       type: "actions",
       elements: [
@@ -238,5 +251,25 @@ export async function notifyNewOrg(org: {
         },
       ],
     },
-  ]);
+  ];
+}
+
+export async function notifyOrgFrozen(org: OrgPayload): Promise<void> {
+  if (!slackup()) return;
+  await sendSlackMessage(
+    `:bangbang: Organization frozen: ${org.name}`,
+    orgBlocks(
+      ":bangbang: Organization Frozen",
+      org,
+      "This is typically due to a ongoing investigation or legal issue. Please exercise caution when interacting with it."
+    )
+  );
+}
+
+export async function notifyNewOrg(org: OrgPayload): Promise<void> {
+  if (!slackup()) return;
+  await sendSlackMessage(
+    `🏢 New organization: ${org.name}`,
+    orgBlocks("Indexed New Organization", org)
+  );
 }

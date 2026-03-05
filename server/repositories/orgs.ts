@@ -89,6 +89,16 @@ export async function bulkUpsertOrgs(
   }
 }
 
+export async function getUnfrozenOrgIds(ids: string[]): Promise<Set<string>> {
+  if (ids.length === 0) return new Set();
+  const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
+  const result = await query(
+    `SELECT "Organization ID" FROM "hcb.hackclub.com" WHERE "Organization ID" IN (${placeholders}) AND "Frozen At" IS NULL`,
+    ids
+  );
+  return new Set(result.rows.map((r: any) => r["Organization ID"]));
+}
+
 export async function getOrgsNeedingRefresh() {
   const result = await query(
     `SELECT "Organization ID" FROM "hcb.hackclub.com"
