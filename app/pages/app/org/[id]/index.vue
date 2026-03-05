@@ -36,20 +36,13 @@
 
   const pubMsg = computed(() => {
     if (!orgData.value?.public_message) return "";
-    const pubMsg = orgData.value.public_message
+    const msg = orgData.value.public_message
       .replace(/\]\s*\n\s*\(/g, "](")
       .replace(
         /\[(.*?)\]\s*\((.*?)\)/g,
-        (_: string, text: string, url: string) => {
-          if (url.includes(text)) return `[${text}](${url})`;
-          return `[${text}](${url})`;
-        }
-      )
-      .replace(
-        /\[(.*?)\]\s*\((.*?)\)/g,
-        (_: string, text: string, url: string) => `[${text}](${url})`
+        (_: string, t: string, u: string) => `[${t}](${u})`
       );
-    return marked.parse(pubMsg);
+    return marked.parse(msg);
   });
 
   const checkIndex = async (id: string) => {
@@ -146,26 +139,7 @@
         v-if="loading"
         class="flex flex-col items-center justify-center py-12"
       >
-        <svg
-          class="animate-spin h-8 w-8 text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
+        <Spinner />
         <p class="mt-4 text-white animate-pulse">Loading organization...</p>
       </div>
 
@@ -460,161 +434,26 @@
           v-if="txnsLoading"
           class="flex flex-col items-center justify-center py-12 bg-zinc-900 rounded-lg"
         >
-          <svg
-            class="animate-spin h-8 w-8 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
+          <Spinner />
           <p class="mt-4 text-white animate-pulse">Loading transactions...</p>
         </div>
         <div v-else class="mb-6">
           <h2 class="text-xl font-semibold mb-2">Recent Transactions</h2>
-          <table class="w-full border-collapse bg-zinc-900 text-sm rounded-lg">
-            <thead>
-              <tr class="text-left">
-                <th
-                  class="py-2 px-4 text-left text-zinc-400 border-b border-zinc-700"
-                >
-                  Date
-                </th>
-                <th
-                  class="py-2 px-4 text-left text-zinc-400 border-b border-zinc-700"
-                >
-                  Memo
-                </th>
-                <th
-                  class="py-2 px-4 text-left text-zinc-400 border-b border-zinc-700"
-                >
-                  Amount
-                </th>
-                <th
-                  class="py-2 px-4 text-left text-zinc-400 border-b border-zinc-700"
-                >
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="txn in transactions" :key="txn.id">
-                <td class="py-2 px-4 border-b border-zinc-700">
-                  {{ new Date(txn.date).toLocaleDateString() }}
-                </td>
-                <td class="py-2 px-4 border-b border-zinc-700">
-                  <div class="flex items-center gap-2">
-                    <NuxtLink
-                      :to="`/app/txn/${txn.id}`"
-                      class="text-blue-400 hover:underline"
-                    >
-                      {{ txn.memo || "No memo" }}
-                    </NuxtLink>
-                    <span
-                      v-if="txn.receipts?.missing"
-                      class="inline-flex items-center gap-0.5 text-xs text-yellow-400 animate-pulse"
-                      title="Missing receipt"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-3.5 w-3.5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                      Missing receipt!
-                    </span>
-                    <span
-                      v-else-if="txn.receipts?.count > 0"
-                      class="inline-flex items-center gap-0.5 text-xs text-zinc-400"
-                      title="Receipts"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-3.5 w-3.5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                      {{ txn.receipts.count }}
-                    </span>
-                    <span
-                      v-if="txn.comments?.count > 0"
-                      class="inline-flex items-center gap-0.5 text-xs text-zinc-400"
-                      title="Comments"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-3.5 w-3.5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                      {{ txn.comments.count }}
-                    </span>
-                  </div>
-                </td>
-                <td class="py-2 px-4 border-b border-zinc-700">
-                  {{ fixMoney(txn.amount_cents) }}
-                </td>
-                <td class="py-2 px-4 border-b border-zinc-700">
-                  <div
-                    :class="[
-                      'px-3 py-1 rounded-full font-semibold text-center',
-                      txn.pending
-                        ? 'bg-yellow-500/10 text-yellow-500'
-                        : 'bg-green-500/10 text-green-500',
-                    ]"
-                  >
-                    {{ txn.pending ? "Pending" : "Completed" }}
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="py-2 px-4 border-zinc-700 text-center" colspan="4">
-                  <div class="flex items-center justify-center gap-4">
-                    <NuxtLink
-                      :to="`/app/org/${route.params.id}/txns`"
-                      class="text-blue-400"
-                      >View all transactions</NuxtLink
-                    >
-                    <NuxtLink
-                      :to="`/app/org/${route.params.id}/invoices`"
-                      class="text-blue-400"
-                      >View all invoices</NuxtLink
-                    >
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="bg-zinc-900 rounded-lg overflow-hidden">
+            <TxnList
+              :transactions="transactions"
+              :loading="txnsLoading"
+            />
+            <div
+              class="flex items-center justify-center gap-4 px-4 py-3 border-t border-zinc-800/50"
+            >
+              <NuxtLink
+                :to="`/app/org/${route.params.id}/txns`"
+                class="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-150"
+                >View all transactions</NuxtLink
+              >
+            </div>
+          </div>
         </div>
       </div>
     </div>

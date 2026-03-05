@@ -14,13 +14,6 @@ body {
 }
 
 @theme {
-  --animate-spin: spin 0.4s linear infinite;
-  @keyframes animate-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
   --animate-pulse: pulse 1s infinite;
   @keyframes animate-pulse {
     0% {
