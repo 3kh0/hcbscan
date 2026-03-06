@@ -1,4 +1,4 @@
-import { getUserById, getUserNetWorth } from "../../repositories/users";
+import { getUserWithBalances } from "../../repositories/users";
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
@@ -9,12 +9,28 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const user = await getUserById(id);
+  const user = await getUserWithBalances(id);
   if (!user) {
     throw createError({ statusCode: 404, statusMessage: "User not found" });
   }
 
-  const netWorth = await getUserNetWorth(id);
+  const orgBalances: Record<string, number> = user.orgBalances || {};
 
-  return { ...user, netWorth };
+  const orgs = (user.orgs || []).map((org: any) => ({
+    ...org,
+    balance: orgBalances[org.id] ?? null,
+  }));
+
+  const netWorth = Object.values(orgBalances).reduce(
+    (sum: number, b: number) => sum + (Number(b) || 0),
+    0
+  );
+
+  return {
+    ...user,
+    orgs,
+    netWorth,
+    activityCount: Number(user.activityCount) || 0,
+    orgBalances: undefined,
+  };
 });

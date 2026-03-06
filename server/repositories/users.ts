@@ -8,19 +8,28 @@ export async function getUserById(id: string) {
   return result.rows[0] ?? null;
 }
 
-export async function getUserNetWorth(id: string): Promise<number> {
+export async function getUserWithBalances(id: string) {
   const result = await query(
-    `SELECT COALESCE(SUM(o."Balance"), 0) AS "netWorth"
-     FROM "hcb.hackclub.com" o
-     WHERE o."Organization ID" IN (
-       SELECT elem->>'id'
-       FROM "hcb.hackclub.com-users" u,
-            jsonb_array_elements(u."orgs") AS elem
-       WHERE u."id" = $1
-     )`,
+    `SELECT u.*,
+            COALESCE(b.balances, '{}'::jsonb) AS "orgBalances",
+            COALESCE(ac.cnt, 0) AS "activityCount"
+     FROM "hcb.hackclub.com-users" u
+     LEFT JOIN LATERAL (
+       SELECT jsonb_object_agg(o."Organization ID", o."Balance") AS balances
+       FROM "hcb.hackclub.com" o
+       WHERE o."Organization ID" IN (
+         SELECT elem->>'id' FROM jsonb_array_elements(u."orgs") AS elem
+       )
+     ) b ON true
+     LEFT JOIN LATERAL (
+       SELECT COUNT(*)::int AS cnt
+       FROM "hcb.hackclub.com-acts" a
+       WHERE a."User ID" = u."id"
+     ) ac ON true
+     WHERE u."id" = $1`,
     [id]
   );
-  return parseInt(result.rows[0]?.netWorth ?? "0", 10);
+  return result.rows[0] ?? null;
 }
 
 export async function bulkUpsertUsers(

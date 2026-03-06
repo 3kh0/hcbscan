@@ -35,6 +35,30 @@
     actsPage.value = page;
   };
 
+  const idCopied = ref(false);
+  const copyUserId = async () => {
+    await navigator.clipboard.writeText(String(userId));
+    idCopied.value = true;
+    setTimeout(() => (idCopied.value = false), 2000);
+  };
+
+  const orgSort = ref("balance-desc");
+  const sortedOrgs = computed(() => {
+    const orgs = [...(udata.value?.orgs || [])];
+    switch (orgSort.value) {
+      case "balance-desc":
+        return orgs.sort((a: any, b: any) => (b.balance ?? 0) - (a.balance ?? 0));
+      case "balance-asc":
+        return orgs.sort((a: any, b: any) => (a.balance ?? 0) - (b.balance ?? 0));
+      case "name-asc":
+        return orgs.sort((a: any, b: any) => (a.name || "").localeCompare(b.name || ""));
+      case "name-desc":
+        return orgs.sort((a: any, b: any) => (b.name || "").localeCompare(a.name || ""));
+      default:
+        return orgs;
+    }
+  });
+
   const img = useImage();
   const defaultOgImage = "https://hcbscan.3kh0.net/readme.png";
 
@@ -117,73 +141,126 @@
       </div>
       <div class="rounded-lg mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-zinc-900 p-4 rounded-lg">
-          <h3 class="text-zinc-400">Net Worth</h3>
-          <p class="font-bold text-2xl">
+          <h3 class="text-zinc-400 text-sm">Net Worth</h3>
+          <p class="font-bold text-2xl tabular-nums">
             {{ fixMoney(udata.netWorth) }}
           </p>
         </div>
         <div class="bg-zinc-900 p-4 rounded-lg">
-          <h3 class="text-zinc-400">Name</h3>
-          <p class="font-bold">{{ udata.name }}</p>
+          <h3 class="text-zinc-400 text-sm">User ID</h3>
+          <button
+            class="flex items-center gap-2 group mt-1"
+            @click="copyUserId"
+          >
+            <p class="font-mono text-sm truncate">{{ userId }}</p>
+            <svg
+              v-if="!idCopied"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 shrink-0 text-zinc-500 group-hover:text-zinc-300 transition-colors"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
+            </svg>
+            <svg
+              v-else
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 shrink-0 text-emerald-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </button>
         </div>
         <div class="bg-zinc-900 p-4 rounded-lg">
-          <h3 class="text-zinc-400">Organizations</h3>
-          <p class="font-bold">{{ udata.orgs?.length || 0 }}</p>
+          <h3 class="text-zinc-400 text-sm">Total Activities</h3>
+          <p class="font-bold text-2xl tabular-nums">
+            {{ (udata.activityCount || 0).toLocaleString() }}
+          </p>
         </div>
       </div>
-      <div v-if="udata.orgs && udata.orgs.length > 0" class="space-y-4">
-        <h2 class="text-xl font-semibold">Organizations</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div
-            v-for="org in udata.orgs"
-            :key="org.id"
-            class="bg-zinc-900 p-4 rounded-lg hover:bg-zinc-800 transition-colors duration-200"
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Organizations</h2>
+          <select
+            v-if="udata.orgs && udata.orgs.length > 1"
+            v-model="orgSort"
+            class="bg-zinc-800 text-sm text-zinc-300 rounded-lg px-3 py-1.5 border border-zinc-700 focus:outline-none focus:border-zinc-500"
           >
-            <NuxtLink :to="`/app/org/${org.id}`" class="flex items-center">
-              <div class="mr-3">
-                <SafeNuxtImg
-                  v-if="org.logo"
-                  :src="org.logo"
-                  :alt="org.name"
-                  width="40"
-                  height="40"
-                  class="h-10 w-10 rounded-lg object-cover"
-                />
-                <div
-                  v-else
-                  class="h-10 w-10 bg-zinc-700 rounded-lg flex items-center justify-center"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6 text-zinc-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div>
-                <h3 class="font-medium text-blue-400 hover:underline">
-                  {{ org.name }}
-                </h3>
-                <p class="text-xs text-zinc-400">ID: {{ org.id }}</p>
-              </div>
-            </NuxtLink>
-          </div>
+            <option value="balance-desc">Balance: High → Low</option>
+            <option value="balance-asc">Balance: Low → High</option>
+            <option value="name-asc">Name: A → Z</option>
+            <option value="name-desc">Name: Z → A</option>
+          </select>
         </div>
-      </div>
-
-      <div v-else class="bg-zinc-900 rounded-lg p-4 text-center">
-        <p class="text-zinc-400">
-          I couldn't find any organizations for this user.
-        </p>
+        <div
+          v-if="udata.orgs && udata.orgs.length > 0"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2"
+        >
+          <NuxtLink
+            v-for="org in sortedOrgs"
+            :key="org.id"
+            :to="`/app/org/${org.id}`"
+            class="group flex items-center gap-3 bg-zinc-900 rounded-lg px-3 py-2.5 hover:bg-zinc-800 transition-colors duration-150"
+          >
+            <SafeNuxtImg
+              v-if="org.logo"
+              :src="org.logo"
+              :alt="org.name"
+              width="32"
+              height="32"
+              class="shrink-0 h-8 w-8 rounded-lg object-cover"
+            />
+            <div
+              v-else
+              class="shrink-0 h-8 w-8 bg-zinc-700 rounded-lg flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 text-zinc-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p
+                class="text-sm font-medium truncate text-white group-hover:text-blue-400 transition-colors duration-150"
+              >
+                {{ org.name }}
+              </p>
+              <p
+                v-if="org.balance != null"
+                class="text-xs text-zinc-400 tabular-nums"
+              >
+                {{ fixMoney(org.balance) }}
+              </p>
+            </div>
+          </NuxtLink>
+        </div>
+        <div v-else class="bg-zinc-900 rounded-lg py-8 text-center text-zinc-500 text-sm">
+          No organizations found for this user.
+        </div>
       </div>
 
       <!-- User Activities -->
