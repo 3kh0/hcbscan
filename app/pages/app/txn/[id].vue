@@ -190,7 +190,11 @@
         </UCard>
       </div>
 
-      <txnDetail :id="txnData[txnData.type]?.id" :type="txnData.type" />
+      <txnDetail
+        v-if="txnData[txnData.type]?.id"
+        :id="txnData[txnData.type].id"
+        :type="txnData.type"
+      />
 
       <UDataGrid :items="txnGridItems" />
     </div>
