@@ -364,6 +364,165 @@
           </div>
         </div>
       </div>
+      <div v-else-if="props.type === 'wise_transfer'">
+        <p class="text-text-secondary mb-4">
+          <template
+            v-if="detail.local_currency && detail.local_amount_cents"
+            >{{ formatLocalCurrency(detail.local_amount_cents, detail.local_currency) }}
+            ({{ fixMoney(detail.amount_cents, true) }} USD)</template
+          ><template v-else>{{
+            fixMoney(detail.amount_cents, true)
+          }}</template>
+          was sent via Wise<template v-if="detail.beneficiary">
+            to <b>{{ detail.beneficiary.name }}</b></template
+          >
+          on {{ date(detail.date) }}.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex items-center">
+            <span class="text-text-secondary w-1/3">Wise Transfer ID</span>
+            <a :href="detail.href" class="text-text-primary w-2/3">{{
+              detail.id
+            }}</a>
+          </div>
+          <div class="flex items-center">
+            <span class="text-text-secondary w-1/3">Organization</span>
+            <span class="text-text-primary w-2/3">
+              <NuxtLink
+                :to="`/app/org/${detail.organization.id}`"
+                class="text-blue-400 hover:underline"
+                >View Organization</NuxtLink
+              >
+            </span>
+          </div>
+          <div class="flex items-center">
+            <span class="text-text-secondary w-1/3">Amount (USD)</span>
+            <span class="text-text-primary w-2/3">{{
+              fixMoney(detail.amount_cents, true)
+            }}</span>
+          </div>
+          <div
+            v-if="detail.local_currency && detail.local_amount_cents"
+            class="flex items-center"
+          >
+            <span class="text-text-secondary w-1/3">Local Amount</span>
+            <span class="text-text-primary w-2/3">{{
+              formatLocalCurrency(detail.local_amount_cents, detail.local_currency)
+            }}</span>
+          </div>
+          <div v-if="detail.beneficiary" class="flex items-center">
+            <span class="text-text-secondary w-1/3">Beneficiary</span>
+            <span class="text-text-primary w-2/3">{{
+              detail.beneficiary.name
+            }}</span>
+          </div>
+          <div v-if="detail.user" class="flex items-center">
+            <span class="text-text-secondary w-1/3">Sent By</span>
+            <NuxtLink
+              :to="`/app/usr/${detail.user.id}`"
+              class="flex items-center w-2/3 text-blue-400 hover:underline"
+            >
+              <SafeNuxtImg
+                :src="detail.user.photo"
+                alt="User Photo"
+                width="24"
+                height="24"
+                class="w-6 h-6 rounded-lg mr-2"
+              />
+              <span>{{ detail.user.full_name }}</span>
+            </NuxtLink>
+          </div>
+          <div class="flex items-center">
+            <span class="text-text-secondary w-1/3">Date</span>
+            <span class="text-text-primary w-2/3">{{ date(detail.date) }}</span>
+          </div>
+          <div class="flex items-center">
+            <span class="text-text-secondary w-1/3">Status</span>
+            <span class="text-text-primary w-2/3">{{ detail.status }}</span>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="props.type === 'wire_transfer'">
+        <p class="text-text-secondary mb-4">
+          <template
+            v-if="detail.local_currency && detail.local_amount_cents"
+            >{{ formatLocalCurrency(detail.local_amount_cents, detail.local_currency) }}
+            ({{ fixMoney(detail.amount_cents, true) }} USD)</template
+          ><template v-else>{{
+            fixMoney(detail.amount_cents, true)
+          }}</template>
+          was sent via wire transfer<template
+            v-if="detail.beneficiary"
+          >
+            to <b>{{ detail.beneficiary.name }}</b></template
+          >
+          on {{ date(detail.date) }}.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex items-center">
+            <span class="text-text-secondary w-1/3">Wire Transfer ID</span>
+            <a :href="detail.href" class="text-text-primary w-2/3">{{
+              detail.id
+            }}</a>
+          </div>
+          <div class="flex items-center">
+            <span class="text-text-secondary w-1/3">Organization</span>
+            <span class="text-text-primary w-2/3">
+              <NuxtLink
+                :to="`/app/org/${detail.organization.id}`"
+                class="text-blue-400 hover:underline"
+                >View Organization</NuxtLink
+              >
+            </span>
+          </div>
+          <div class="flex items-center">
+            <span class="text-text-secondary w-1/3">Amount (USD)</span>
+            <span class="text-text-primary w-2/3">{{
+              fixMoney(detail.amount_cents, true)
+            }}</span>
+          </div>
+          <div
+            v-if="detail.local_currency && detail.local_amount_cents"
+            class="flex items-center"
+          >
+            <span class="text-text-secondary w-1/3">Local Amount</span>
+            <span class="text-text-primary w-2/3">{{
+              formatLocalCurrency(detail.local_amount_cents, detail.local_currency)
+            }}</span
+            >
+          </div>
+          <div v-if="detail.beneficiary" class="flex items-center">
+            <span class="text-text-secondary w-1/3">Beneficiary</span>
+            <span class="text-text-primary w-2/3">{{
+              detail.beneficiary.name
+            }}</span>
+          </div>
+          <div v-if="detail.user" class="flex items-center">
+            <span class="text-text-secondary w-1/3">Sent By</span>
+            <NuxtLink
+              :to="`/app/usr/${detail.user.id}`"
+              class="flex items-center w-2/3 text-blue-400 hover:underline"
+            >
+              <SafeNuxtImg
+                :src="detail.user.photo"
+                alt="User Photo"
+                width="24"
+                height="24"
+                class="w-6 h-6 rounded-lg mr-2"
+              />
+              <span>{{ detail.user.full_name }}</span>
+            </NuxtLink>
+          </div>
+          <div class="flex items-center">
+            <span class="text-text-secondary w-1/3">Date</span>
+            <span class="text-text-primary w-2/3">{{ date(detail.date) }}</span>
+          </div>
+          <div class="flex items-center">
+            <span class="text-text-secondary w-1/3">Status</span>
+            <span class="text-text-primary w-2/3">{{ detail.status }}</span>
+          </div>
+        </div>
+      </div>
       <div v-else>
         <p class="text-text-secondary">
           This transaction is of type <b>{{ detail.object || props.type }}</b
@@ -412,6 +571,14 @@
   };
 
   onMounted(getDetail);
+
+  const formatLocalCurrency = (cents: number, currency: string) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+    }).format(Math.abs(cents) / 100);
+  };
 
   const date = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {

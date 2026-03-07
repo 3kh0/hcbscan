@@ -71,11 +71,7 @@
     if (!txnData.value) return [];
     const t = txnData.value;
     const items: any[] = [
-      { label: "ID", value: t.id },
-      { label: "Object", value: t.object },
       { label: "Memo", value: t.memo },
-      { label: "Date", value: t.date },
-      { label: "Type", value: activityLabel(t.type) },
     ];
     if (orgData.value) {
       items.push({
@@ -194,9 +190,9 @@
         </UCard>
       </div>
 
-      <UDataGrid :items="txnGridItems" />
-
       <txnDetail :id="txnData[txnData.type]?.id" :type="txnData.type" />
+
+      <UDataGrid :items="txnGridItems" />
     </div>
   </div>
 </template>
