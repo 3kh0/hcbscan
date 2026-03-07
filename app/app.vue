@@ -24,7 +24,7 @@
   });
 </script>
 <template>
-  <div class="min-h-screen bg-zinc-950 text-white p-8">
+  <div class="min-h-screen bg-surface-0 text-text-primary p-8">
     <NuxtLayout>
       <NuxtPage :transition="{ name: 'page', mode: 'out-in' }" />
     </NuxtLayout>

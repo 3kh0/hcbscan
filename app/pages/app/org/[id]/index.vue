@@ -105,6 +105,82 @@
       : defaultOgImage
   );
 
+  const dataGridItems = computed(() => {
+    if (!orgData.value) return [];
+    const items: any[] = [];
+    const o = orgData.value;
+    if (o.id) items.push({ label: "Internal ID", value: o.id });
+    if (o.object) items.push({ label: "Object", value: o.object });
+    if (o.href)
+      items.push({
+        label: "API Link",
+        value: o.href,
+        link: o.href,
+        external: true,
+      });
+    if (o.slug)
+      items.push({
+        label: "URL Slug",
+        value: o.slug,
+        link: buildApiUrl(o.slug),
+        external: true,
+      });
+    if (o.website)
+      items.push({
+        label: "Website",
+        value: o.website,
+        link: o.website,
+        external: true,
+      });
+    if (o.category) items.push({ label: "Category", value: o.category });
+    if (o.transparent != null)
+      items.push({
+        label: "Transparency",
+        value: o.transparent ? "Yes" : "No",
+      });
+    if (o.demo_mode != null)
+      items.push({ label: "Demo Mode", value: o.demo_mode ? "Yes" : "No" });
+    if (o.logo)
+      items.push({
+        label: "Logo",
+        value: o.logo,
+        link: o.logo,
+        external: true,
+      });
+    if (o.donation_header)
+      items.push({
+        label: "Donation Header",
+        value: o.donation_header,
+        link: o.donation_header,
+        external: true,
+      });
+    if (o.background_image)
+      items.push({
+        label: "Background Image",
+        value: o.background_image,
+        link: o.background_image,
+        external: true,
+      });
+    if (o.balances)
+      items.push({
+        label: "Balances",
+        value: `Raw: ${fixMoney(o.balances.balance_cents)} · Fee: ${fixMoney(o.balances.fee_balance_cents)} · Incoming: ${fixMoney(o.balances.incoming_balance_cents)} · Total: ${fixMoney(o.balances.total_raised)}`,
+      });
+    if (o.created_at)
+      items.push({
+        label: "Created At",
+        value: new Date(o.created_at).toLocaleDateString(),
+      });
+    if (o.donation_link)
+      items.push({
+        label: "Donation Link",
+        value: o.donation_link,
+        link: o.donation_link,
+        external: true,
+      });
+    return items;
+  });
+
   useSeoMeta({
     title: pageTitle,
     ogTitle: pageTitle,
@@ -178,227 +254,35 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-center mb-6">
-          <a :href="orgData?.logo" target="_blank" rel="noreferrer">
-            <SafeNuxtImg
-              v-if="orgData?.logo"
-              :src="orgData?.logo"
-              alt="Logo"
-              width="48"
-              height="48"
-              class="h-12 w-12 mr-4 object-cover rounded-lg"
-            />
-          </a>
-          <h1 class="font-bold text-4xl">
-            {{ orgData?.name }}
-          </h1>
-        </div>
-
-        <div class="flex flex-col md:flex-row gap-4 mb-6">
-          <div class="bg-zinc-900 p-4 rounded-lg flex-1">
-            <h2 class="text-sm text-zinc-400">Confirmed Balance</h2>
-            <p class="text-2xl font-bold">
-              {{ fixMoney(orgData?.balances?.balance_cents) }}
-            </p>
-          </div>
-          <div class="bg-zinc-900 p-4 rounded-lg flex-1">
-            <h2 class="text-sm text-zinc-400">Total Received</h2>
-            <p class="text-2xl font-bold">
-              {{ fixMoney(orgData?.balances?.total_raised) }}
-            </p>
-          </div>
-        </div>
-
-        <table
-          class="w-full mb-6 border-collapse bg-zinc-900 text-sm rounded-lg"
+        <UPageHeader
+          :title="orgData?.name"
+          :image="orgData?.logo"
+          :image-alt="orgData?.name + ' logo'"
         >
-          <thead>
-            <tr class="text-left">
-              <th
-                class="py-2 px-4 text-left text-zinc-400 border-b border-zinc-700"
-              >
-                Key
-              </th>
-              <th
-                class="py-2 px-4 text-left text-zinc-400 border-b border-zinc-700"
-              >
-                Value
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="orgData?.id">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Internal ID
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                {{ orgData?.id }}
-              </td>
-            </tr>
-            <tr v-if="orgData?.object">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Object
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                {{ orgData?.object }}
-              </td>
-            </tr>
-            <tr v-if="orgData?.href">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                API Link
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                <a
-                  class="underline text-blue-400"
-                  :href="orgData?.href"
-                  target="_blank"
-                >
-                  {{ orgData?.href }}
-                </a>
-              </td>
-            </tr>
-            <tr v-if="orgData?.name">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Name
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                {{ orgData?.name }}
-              </td>
-            </tr>
-            <tr v-if="orgData?.slug">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                URL Slug
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                <a
-                  class="underline text-blue-400"
-                  :href="buildApiUrl(`${orgData?.slug}`)"
-                  target="_blank"
-                >
-                  {{ orgData?.slug }}
-                </a>
-              </td>
-            </tr>
-            <tr v-if="orgData?.website">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Website
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                <a
-                  class="underline text-blue-400"
-                  :href="orgData?.website"
-                  target="_blank"
-                >
-                  {{ orgData?.website }}
-                </a>
-              </td>
-            </tr>
-            <tr v-if="orgData?.category">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Category
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                {{ orgData?.category }}
-              </td>
-            </tr>
-            <tr v-if="orgData?.transparent">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Transparency
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                {{ orgData?.transparent ? "Yes" : "No" }}
-              </td>
-            </tr>
-            <tr v-if="orgData?.demo_mode">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Demo Mode
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                {{ orgData?.demo_mode ? "Yes" : "No" }}
-              </td>
-            </tr>
-            <tr v-if="orgData?.logo">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Logo
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                <a
-                  class="underline text-blue-400 break-all"
-                  :href="orgData?.logo"
-                  target="_blank"
-                >
-                  {{ orgData?.logo }}
-                </a>
-              </td>
-            </tr>
-            <tr v-if="orgData?.donation_header">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Donation Header
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                <a
-                  class="underline text-blue-400 break-all"
-                  :href="orgData?.donation_header"
-                  target="_blank"
-                >
-                  {{ orgData?.donation_header }}
-                </a>
-              </td>
-            </tr>
-            <tr v-if="orgData?.background_image">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Background Image
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                <a
-                  class="underline text-blue-400 break-all"
-                  :href="orgData?.background_image"
-                  target="_blank"
-                >
-                  {{ orgData?.background_image }}
-                </a>
-              </td>
-            </tr>
-            <tr v-if="orgData?.balances">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Balances
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                Raw Balance: {{ fixMoney(orgData?.balances?.balance_cents) }}.
-                Fee: {{ fixMoney(orgData?.balances?.fee_balance_cents) }}.
-                Incoming:
-                {{ fixMoney(orgData?.balances?.incoming_balance_cents) }}. Total
-                Received:
-                {{ fixMoney(orgData?.balances?.total_raised) }}
-              </td>
-            </tr>
-            <tr v-if="orgData?.created_at">
-              <td class="py-2 px-4 font-medium border-b border-zinc-700">
-                Created At
-              </td>
-              <td class="py-2 px-4 border-b border-zinc-700">
-                {{ new Date(orgData?.created_at).toLocaleDateString() }}
-              </td>
-            </tr>
-            <tr v-if="orgData?.donation_link">
-              <td class="py-2 px-4 font-medium">Donation Link</td>
-              <td class="py-2 px-4">
-                <a
-                  class="underline text-blue-400"
-                  :href="orgData?.donation_link"
-                  target="_blank"
-                >
-                  {{ orgData?.donation_link }}
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <template #actions>
+            <UBadge v-if="orgData?.financially_frozen" variant="red" size="md">
+              Frozen
+            </UBadge>
+          </template>
+        </UPageHeader>
 
-        <div v-if="pubMsg" class="mb-6 bg-zinc-900 p-4 rounded-lg pub">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <UStatCard
+            label="Confirmed Balance"
+            :value="fixMoney(orgData?.balances?.balance_cents)"
+          />
+          <UStatCard
+            label="Total Received"
+            :value="fixMoney(orgData?.balances?.total_raised)"
+          />
+        </div>
+
+        <UDataGrid :items="dataGridItems" class="mb-6" />
+
+        <UCard v-if="pubMsg" class="mb-6 pub">
           <h2 class="text-xl font-semibold mb-2">Public Message</h2>
           <div v-html="pubMsg"></div>
-        </div>
+        </UCard>
 
         <div v-if="orgData?.users?.length > 0" class="mb-6">
           <h2 class="text-xl font-semibold mb-2">Users</h2>
@@ -407,50 +291,49 @@
               v-for="user in orgData?.users"
               :key="user.id"
               :to="`/app/usr/${user.id}`"
-              class="bg-zinc-900 p-4 rounded-lg flex items-center text-blue-400 hover:underline"
             >
-              <SafeNuxtImg
-                :src="user.photo"
-                loading="lazy"
-                :alt="user.full_name"
-                width="48"
-                height="48"
-                class="h-12 w-12 rounded-lg mr-4 object-cover"
-              />
-              <div>
-                <p class="font-md">{{ user.full_name }}</p>
-                <p v-if="user.admin" class="text-sm text-red-400">⚡ Admin</p>
-              </div>
+              <UCard class="flex items-center text-blue-400 hover:underline">
+                <SafeNuxtImg
+                  :src="user.photo"
+                  loading="lazy"
+                  :alt="user.full_name"
+                  width="48"
+                  height="48"
+                  class="h-12 w-12 rounded-lg mr-4 object-cover"
+                />
+                <div>
+                  <p class="font-md">{{ user.full_name }}</p>
+                  <p v-if="user.admin" class="text-sm text-red-400">⚡ Admin</p>
+                </div>
+              </UCard>
             </NuxtLink>
           </div>
         </div>
-        <div v-else class="bg-zinc-900 p-4 rounded-lg">
-          <p class="text-zinc-400">
-            No users found associated with this account
-          </p>
-        </div>
+        <UCard v-else class="mb-6">
+          <UEmptyState message="No users found associated with this account" />
+        </UCard>
 
         <div
           v-if="txnsLoading"
-          class="flex flex-col items-center justify-center py-12 bg-zinc-900 rounded-lg"
+          class="flex flex-col items-center justify-center py-12 bg-surface-1 rounded-lg"
         >
           <Spinner />
           <p class="mt-4 text-white animate-pulse">Loading transactions...</p>
         </div>
         <div v-else class="mb-6">
           <h2 class="text-xl font-semibold mb-2">Recent Transactions</h2>
-          <div class="bg-zinc-900 rounded-lg overflow-hidden">
+          <UCard padding="p-0">
             <TxnList :transactions="transactions" :loading="txnsLoading" />
             <div
-              class="flex items-center justify-center gap-4 px-4 py-3 border-t border-zinc-800/50"
+              class="flex items-center justify-center gap-4 px-4 py-3 border-t border-border"
             >
               <NuxtLink
                 :to="`/app/org/${route.params.id}/txns`"
-                class="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-150"
+                class="text-sm text-accent hover:text-accent/80 transition-colors duration-150"
                 >View all transactions</NuxtLink
               >
             </div>
-          </div>
+          </UCard>
         </div>
       </div>
     </div>

@@ -23,12 +23,12 @@
 </script>
 
 <template>
-  <div class="divide-y divide-zinc-800/50">
+  <div class="divide-y divide-border">
     <NuxtLink
       v-for="txn in transactions"
       :key="txn.id"
       :to="`/app/txn/${txn.id}`"
-      class="group flex items-center gap-3 px-4 py-3 hover:bg-zinc-800/40 active:bg-zinc-800/60 transition-colors duration-150"
+      class="group flex items-center gap-3 px-4 py-3 hover:bg-surface-2/40 active:bg-surface-2/60 transition-colors duration-150"
     >
       <div
         :class="[
@@ -97,15 +97,15 @@
             :class="[
               'text-sm font-medium truncate transition-colors duration-150',
               txn.pending
-                ? 'text-zinc-400 group-hover:text-blue-400'
-                : 'text-white group-hover:text-blue-400',
+                ? 'text-text-secondary group-hover:text-blue-400'
+                : 'text-text-primary group-hover:text-blue-400',
             ]"
           >
             {{ txn.memo || "No memo" }}
           </span>
           <span
             v-if="txn.pending"
-            class="shrink-0 inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-zinc-500/10 text-zinc-400 border border-zinc-500/20"
+            class="shrink-0 inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-zinc-500/10 text-text-secondary border border-zinc-500/20"
           >
             Pending
           </span>
@@ -117,17 +117,17 @@
           </span>
         </div>
         <div class="flex items-center gap-2 mt-0.5">
-          <span class="text-xs text-zinc-500 font-mono">
+          <span class="text-xs text-text-muted font-mono">
             {{ truncId(txn.id) }}
           </span>
-          <span class="text-zinc-700">·</span>
-          <span class="text-xs text-zinc-500">
+          <span class="text-surface-3">·</span>
+          <span class="text-xs text-text-muted">
             {{ formatDate(txn.date) }}
           </span>
           <template v-if="txn.receipts?.count > 0 && !txn.receipts?.missing">
-            <span class="text-zinc-700">·</span>
+            <span class="text-surface-3">·</span>
             <span
-              class="inline-flex items-center gap-0.5 text-xs text-zinc-500"
+              class="inline-flex items-center gap-0.5 text-xs text-text-muted"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -145,9 +145,9 @@
             </span>
           </template>
           <template v-if="txn.comments?.count > 0">
-            <span class="text-zinc-700">·</span>
+            <span class="text-surface-3">·</span>
             <span
-              class="inline-flex items-center gap-0.5 text-xs text-zinc-500"
+              class="inline-flex items-center gap-0.5 text-xs text-text-muted"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -182,7 +182,7 @@
       <!-- Arrow -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all duration-150"
+        class="h-4 w-4 shrink-0 text-text-muted group-hover:text-text-secondary group-hover:translate-x-0.5 transition-all duration-150"
         viewBox="0 0 20 20"
         fill="currentColor"
       >
@@ -196,7 +196,7 @@
 
     <div
       v-if="transactions.length === 0 && !loading"
-      class="py-8 text-center text-zinc-500 text-sm"
+      class="py-8 text-center text-text-muted text-sm"
     >
       No transactions found
     </div>

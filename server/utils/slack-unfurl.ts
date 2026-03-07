@@ -140,9 +140,7 @@ const routes: Array<{
         };
       }
 
-      return [
-        header,
-      ];
+      return [header];
     },
   },
   {
@@ -168,9 +166,7 @@ const routes: Array<{
         };
       }
 
-      return [
-        header,
-      ];
+      return [header];
     },
   },
   {
@@ -201,9 +197,7 @@ const routes: Array<{
         };
       }
 
-      return [
-        header,
-      ];
+      return [header];
     },
   },
   {
@@ -262,9 +256,7 @@ const routes: Array<{
       const user = (a.user?.full_name as string) || "Unknown";
       const orgName = (a.organization?.name as string) || "Unknown";
       const userPhoto = proxyImageUrl(a.user?.photo as string | null);
-      const ts = Math.floor(
-        new Date(a.created_at as string).getTime() / 1000
-      );
+      const ts = Math.floor(new Date(a.created_at as string).getTime() / 1000);
 
       const header: Block = {
         type: "section",

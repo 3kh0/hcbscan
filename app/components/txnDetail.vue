@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-zinc-900 rounded-lg p-6">
+  <UCard>
     <div class="flex items-center mb-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -18,7 +18,7 @@
     <div v-if="loading" class="text-center">
       <div class="flex flex-col items-center justify-center py-12">
         <svg
-          class="animate-spin h-8 w-8 text-white"
+          class="animate-spin h-8 w-8 text-text-primary"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -37,7 +37,7 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           />
         </svg>
-        <p class="mt-4 text-white animate-pulse">Loading details...</p>
+        <p class="mt-4 text-text-primary animate-pulse">Loading details...</p>
       </div>
     </div>
     <div v-else-if="error" class="text-red-400 text-center">
@@ -45,7 +45,7 @@
     </div>
     <div v-else>
       <div v-if="props.type === 'card_charge'">
-        <p class="text-zinc-400 mb-4">
+        <p class="text-text-secondary mb-4">
           <template v-if="detail.user"
             ><b>{{ detail.user.full_name }}</b> used an HCB card to
             spend</template
@@ -55,21 +55,21 @@
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Charge ID</span>
-            <span class="text-white w-2/3">{{ detail.id }}</span>
+            <span class="text-text-secondary w-1/3">Charge ID</span>
+            <span class="text-text-primary w-2/3">{{ detail.id }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Amount</span>
-            <span class="text-white w-2/3">{{
+            <span class="text-text-secondary w-1/3">Amount</span>
+            <span class="text-text-primary w-2/3">{{
               fixMoney(detail.amount_cents, true)
             }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Date</span>
-            <span class="text-white w-2/3">{{ date(detail.date) }}</span>
+            <span class="text-text-secondary w-1/3">Date</span>
+            <span class="text-text-primary w-2/3">{{ date(detail.date) }}</span>
           </div>
           <div v-if="detail.user" class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Card Owner</span>
+            <span class="text-text-secondary w-1/3">Card Owner</span>
             <NuxtLink
               :to="`/app/usr/${detail.user.id}`"
               class="flex items-center w-2/3 text-blue-400 hover:underline"
@@ -85,8 +85,8 @@
             </NuxtLink>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Organization</span>
-            <span class="text-white w-2/3">
+            <span class="text-text-secondary w-1/3">Organization</span>
+            <span class="text-text-primary w-2/3">
               <NuxtLink
                 :to="`/app/org/${detail.organization.id}`"
                 class="text-blue-400 hover:underline"
@@ -95,43 +95,43 @@
             </span>
           </div>
           <div v-if="detail.card" class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Card ID</span>
-            <span class="text-white w-2/3">{{ detail.card.id }}</span>
+            <span class="text-text-secondary w-1/3">Card ID</span>
+            <span class="text-text-primary w-2/3">{{ detail.card.id }}</span>
           </div>
         </div>
       </div>
       <div v-else-if="props.type === 'transfer'">
-        <p class="text-zinc-400 mb-4">
+        <p class="text-text-secondary mb-4">
           {{ fixMoney(detail.amount_cents, true) }} was transferred on
           {{ date(detail.date) }}, currently <b>{{ detail.status }}</b
           >.
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Transfer ID</span>
-            <span class="text-white w-2/3">{{ detail.id }}</span>
+            <span class="text-text-secondary w-1/3">Transfer ID</span>
+            <span class="text-text-primary w-2/3">{{ detail.id }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Amount</span>
-            <span class="text-white w-2/3">{{
+            <span class="text-text-secondary w-1/3">Amount</span>
+            <span class="text-text-primary w-2/3">{{
               fixMoney(detail.amount_cents, true)
             }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Memo</span>
-            <span class="text-white w-2/3">{{ detail.memo }}</span>
+            <span class="text-text-secondary w-1/3">Memo</span>
+            <span class="text-text-primary w-2/3">{{ detail.memo }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Date</span>
-            <span class="text-white w-2/3">{{ date(detail.date) }}</span>
+            <span class="text-text-secondary w-1/3">Date</span>
+            <span class="text-text-primary w-2/3">{{ date(detail.date) }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Status</span>
-            <span class="text-white w-2/3">{{ detail.status }}</span>
+            <span class="text-text-secondary w-1/3">Status</span>
+            <span class="text-text-primary w-2/3">{{ detail.status }}</span>
           </div>
           <div v-if="detail.organization" class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Organization</span>
-            <span class="text-white w-2/3">
+            <span class="text-text-secondary w-1/3">Organization</span>
+            <span class="text-text-primary w-2/3">
               <NuxtLink
                 :to="`/app/org/${detail.organization.id}`"
                 class="text-blue-400 hover:underline"
@@ -142,7 +142,7 @@
         </div>
       </div>
       <div v-else-if="props.type === 'donation'">
-        <p class="text-zinc-400 mb-4">
+        <p class="text-text-secondary mb-4">
           <template v-if="detail.donor && !detail.donor.anonymous"
             ><b>{{ detail.donor.name }}</b> donated</template
           ><template v-else>An anonymous donor gave</template>
@@ -152,12 +152,14 @@
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Donation ID</span>
-            <a :href="detail.href" class="text-white w-2/3">{{ detail.id }}</a>
+            <span class="text-text-secondary w-1/3">Donation ID</span>
+            <a :href="detail.href" class="text-text-primary w-2/3">{{
+              detail.id
+            }}</a>
           </div>
           <div v-if="detail.organization" class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Organization</span>
-            <span class="text-white w-2/3">
+            <span class="text-text-secondary w-1/3">Organization</span>
+            <span class="text-text-primary w-2/3">
               <NuxtLink
                 :to="`/app/org/${detail.organization.id}`"
                 class="text-blue-400 hover:underline"
@@ -166,35 +168,35 @@
             </span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Amount</span>
-            <span class="text-white w-2/3">{{
+            <span class="text-text-secondary w-1/3">Amount</span>
+            <span class="text-text-primary w-2/3">{{
               fixMoney(detail.amount_cents, true)
             }}</span>
           </div>
           <div v-if="detail.donor" class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Donor</span>
-            <span class="text-white w-2/3">
+            <span class="text-text-secondary w-1/3">Donor</span>
+            <span class="text-text-primary w-2/3">
               {{ detail.donor.anonymous ? "Anonymous" : detail.donor.name }}
             </span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Date</span>
-            <span class="text-white w-2/3">{{ date(detail.date) }}</span>
+            <span class="text-text-secondary w-1/3">Date</span>
+            <span class="text-text-primary w-2/3">{{ date(detail.date) }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Status</span>
-            <span class="text-white w-2/3">{{ detail.status }}</span>
+            <span class="text-text-secondary w-1/3">Status</span>
+            <span class="text-text-primary w-2/3">{{ detail.status }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Recurring</span>
-            <span class="text-white w-2/3">{{
+            <span class="text-text-secondary w-1/3">Recurring</span>
+            <span class="text-text-primary w-2/3">{{
               detail.recurring ? "Yes" : "No"
             }}</span>
           </div>
         </div>
       </div>
       <div v-else-if="props.type === 'invoice'">
-        <p class="text-zinc-400 mb-4">
+        <p class="text-text-secondary mb-4">
           <template v-if="detail.sponsor"
             ><b>{{ detail.sponsor.name }}</b> was invoiced</template
           ><template v-else>An invoice was created</template> for
@@ -203,12 +205,14 @@
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Invoice ID</span>
-            <a :href="detail.href" class="text-white w-2/3">{{ detail.id }}</a>
+            <span class="text-text-secondary w-1/3">Invoice ID</span>
+            <a :href="detail.href" class="text-text-primary w-2/3">{{
+              detail.id
+            }}</a>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Organization</span>
-            <span class="text-white w-2/3">
+            <span class="text-text-secondary w-1/3">Organization</span>
+            <span class="text-text-primary w-2/3">
               <NuxtLink
                 :to="`/app/org/${detail.organization.id}`"
                 class="text-blue-400 hover:underline"
@@ -217,38 +221,42 @@
             </span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Amount</span>
-            <span class="text-white w-2/3">{{
+            <span class="text-text-secondary w-1/3">Amount</span>
+            <span class="text-text-primary w-2/3">{{
               fixMoney(detail.amount_cents, true)
             }}</span>
           </div>
           <div v-if="detail.sponsor" class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Sponsor</span>
-            <span class="text-white w-2/3">{{ detail.sponsor.name }}</span>
+            <span class="text-text-secondary w-1/3">Sponsor</span>
+            <span class="text-text-primary w-2/3">{{
+              detail.sponsor.name
+            }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Date</span>
-            <span class="text-white w-2/3">{{ date(detail.date) }}</span>
+            <span class="text-text-secondary w-1/3">Date</span>
+            <span class="text-text-primary w-2/3">{{ date(detail.date) }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Status</span>
-            <span class="text-white w-2/3">{{ detail.status }}</span>
+            <span class="text-text-secondary w-1/3">Status</span>
+            <span class="text-text-primary w-2/3">{{ detail.status }}</span>
           </div>
         </div>
       </div>
       <div v-else-if="props.type === 'check'">
-        <p class="text-zinc-400 mb-4">
+        <p class="text-text-secondary mb-4">
           A check for {{ fixMoney(detail.amount_cents, true) }} was issued on
           {{ date(detail.date) }}.
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Check ID</span>
-            <a :href="detail.href" class="text-white w-2/3">{{ detail.id }}</a>
+            <span class="text-text-secondary w-1/3">Check ID</span>
+            <a :href="detail.href" class="text-text-primary w-2/3">{{
+              detail.id
+            }}</a>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Organization</span>
-            <span class="text-white w-2/3">
+            <span class="text-text-secondary w-1/3">Organization</span>
+            <span class="text-text-primary w-2/3">
               <NuxtLink
                 :to="`/app/org/${detail.organization.id}`"
                 class="text-blue-400 hover:underline"
@@ -257,23 +265,23 @@
             </span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Amount</span>
-            <span class="text-white w-2/3">{{
+            <span class="text-text-secondary w-1/3">Amount</span>
+            <span class="text-text-primary w-2/3">{{
               fixMoney(detail.amount_cents, true)
             }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Date</span>
-            <span class="text-white w-2/3">{{ date(detail.date) }}</span>
+            <span class="text-text-secondary w-1/3">Date</span>
+            <span class="text-text-primary w-2/3">{{ date(detail.date) }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Status</span>
-            <span class="text-white w-2/3">{{ detail.status }}</span>
+            <span class="text-text-secondary w-1/3">Status</span>
+            <span class="text-text-primary w-2/3">{{ detail.status }}</span>
           </div>
         </div>
       </div>
       <div v-else-if="props.type === 'ach_transfer'">
-        <p class="text-zinc-400 mb-4">
+        <p class="text-text-secondary mb-4">
           {{ fixMoney(detail.amount_cents, true) }} was sent via ACH
           <template v-if="detail.beneficiary">
             to <b>{{ detail.beneficiary.name }}</b> </template
@@ -281,12 +289,14 @@
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">ACH Transfer ID</span>
-            <a :href="detail.href" class="text-white w-2/3">{{ detail.id }}</a>
+            <span class="text-text-secondary w-1/3">ACH Transfer ID</span>
+            <a :href="detail.href" class="text-text-primary w-2/3">{{
+              detail.id
+            }}</a>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Organization</span>
-            <span class="text-white w-2/3">
+            <span class="text-text-secondary w-1/3">Organization</span>
+            <span class="text-text-primary w-2/3">
               <NuxtLink
                 :to="`/app/org/${detail.organization.id}`"
                 class="text-blue-400 hover:underline"
@@ -295,27 +305,29 @@
             </span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Amount</span>
-            <span class="text-white w-2/3">{{
+            <span class="text-text-secondary w-1/3">Amount</span>
+            <span class="text-text-primary w-2/3">{{
               fixMoney(detail.amount_cents, true)
             }}</span>
           </div>
           <div v-if="detail.beneficiary" class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Beneficiary</span>
-            <span class="text-white w-2/3">{{ detail.beneficiary.name }}</span>
+            <span class="text-text-secondary w-1/3">Beneficiary</span>
+            <span class="text-text-primary w-2/3">{{
+              detail.beneficiary.name
+            }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Date</span>
-            <span class="text-white w-2/3">{{ date(detail.date) }}</span>
+            <span class="text-text-secondary w-1/3">Date</span>
+            <span class="text-text-primary w-2/3">{{ date(detail.date) }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Status</span>
-            <span class="text-white w-2/3">{{ detail.status }}</span>
+            <span class="text-text-secondary w-1/3">Status</span>
+            <span class="text-text-primary w-2/3">{{ detail.status }}</span>
           </div>
         </div>
       </div>
       <div v-else-if="props.type === 'hcb_fee'">
-        <p class="text-zinc-400 mb-4">
+        <p class="text-text-secondary mb-4">
           A fiscal sponsorship fee of
           {{ fixMoney(detail.amount_cents, true) }} was charged on
           {{ date(detail.date) }}, currently <b>{{ detail.status }}</b
@@ -323,26 +335,26 @@
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Fee ID</span>
-            <span class="text-white w-2/3">{{ detail.id }}</span>
+            <span class="text-text-secondary w-1/3">Fee ID</span>
+            <span class="text-text-primary w-2/3">{{ detail.id }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Amount</span>
-            <span class="text-white w-2/3">{{
+            <span class="text-text-secondary w-1/3">Amount</span>
+            <span class="text-text-primary w-2/3">{{
               fixMoney(detail.amount_cents, true)
             }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Date</span>
-            <span class="text-white w-2/3">{{ date(detail.date) }}</span>
+            <span class="text-text-secondary w-1/3">Date</span>
+            <span class="text-text-primary w-2/3">{{ date(detail.date) }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Status</span>
-            <span class="text-white w-2/3">{{ detail.status }}</span>
+            <span class="text-text-secondary w-1/3">Status</span>
+            <span class="text-text-primary w-2/3">{{ detail.status }}</span>
           </div>
           <div v-if="detail.organization" class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Organization</span>
-            <span class="text-white w-2/3">
+            <span class="text-text-secondary w-1/3">Organization</span>
+            <span class="text-text-primary w-2/3">
               <NuxtLink
                 :to="`/app/org/${detail.organization.id}`"
                 class="text-blue-400 hover:underline"
@@ -353,7 +365,7 @@
         </div>
       </div>
       <div v-else>
-        <p class="text-zinc-400">
+        <p class="text-text-secondary">
           This transaction is of type <b>{{ detail.object || props.type }}</b
           >, which HCB Goggles does not yet support. You can view the raw data
           at
@@ -368,7 +380,7 @@
         </p>
       </div>
     </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">

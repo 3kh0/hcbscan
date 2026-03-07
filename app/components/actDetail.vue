@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-zinc-900 rounded-lg p-6">
+  <UCard>
     <div class="flex items-center mb-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -18,7 +18,7 @@
     <div v-if="loading" class="text-center">
       <div class="flex flex-col items-center justify-center py-12">
         <svg
-          class="animate-spin h-8 w-8 text-white"
+          class="animate-spin h-8 w-8 text-text-primary"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -37,7 +37,7 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           />
         </svg>
-        <p class="mt-4 text-white animate-pulse">Loading details...</p>
+        <p class="mt-4 text-text-primary animate-pulse">Loading details...</p>
       </div>
     </div>
     <div v-else-if="error" class="text-red-400 text-center">
@@ -45,7 +45,7 @@
     </div>
     <div v-else>
       <div v-if="detail.transaction" class="space-y-6">
-        <p class="text-zinc-400 mb-4">
+        <p class="text-text-secondary mb-4">
           <template v-if="detail.transaction.type === 'card_charge'">
             <template v-if="detail.user"
               ><b>{{ detail.user.full_name }}</b> used an HCB card to
@@ -102,11 +102,11 @@
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Activity ID</span>
-            <span class="text-white w-2/3">{{ detail.id }}</span>
+            <span class="text-text-secondary w-1/3">Activity ID</span>
+            <span class="text-text-primary w-2/3">{{ detail.id }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Transaction ID</span>
+            <span class="text-text-secondary w-1/3">Transaction ID</span>
             <NuxtLink
               :to="`/app/txn/${detail.transaction.id}`"
               class="text-blue-400 hover:underline w-2/3"
@@ -114,22 +114,26 @@
             >
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Memo</span>
-            <span class="text-white w-2/3">{{ detail.transaction.memo }}</span>
+            <span class="text-text-secondary w-1/3">Memo</span>
+            <span class="text-text-primary w-2/3">{{
+              detail.transaction.memo
+            }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Amount</span>
-            <span class="text-white w-2/3">{{
+            <span class="text-text-secondary w-1/3">Amount</span>
+            <span class="text-text-primary w-2/3">{{
               fixMoney(detail.transaction.amount_cents, true)
             }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Date</span>
-            <span class="text-white w-2/3">{{ date(detail.created_at) }}</span>
+            <span class="text-text-secondary w-1/3">Date</span>
+            <span class="text-text-primary w-2/3">{{
+              date(detail.created_at)
+            }}</span>
           </div>
           <div class="flex items-center">
-            <span class="text-zinc-400 w-1/3">Status</span>
-            <span class="text-white w-2/3"
+            <span class="text-text-secondary w-1/3">Status</span>
+            <span class="text-text-primary w-2/3"
               ><span
                 class="px-3 py-1 rounded-full text-sm"
                 :class="
@@ -143,7 +147,7 @@
             >
           </div>
         </div>
-        <p class="text-zinc-400 mt-4 text-center">
+        <p class="text-text-secondary mt-4 text-center">
           <NuxtLink
             :to="`/app/txn/${detail.transaction.id}`"
             class="text-blue-400 hover:underline w-2/3"
@@ -152,7 +156,7 @@
         </p>
       </div>
       <div v-else-if="detail.key === 'raw_pending_stripe_transaction.create'">
-        <p class="text-zinc-400">
+        <p class="text-text-secondary">
           <template v-if="detail.user"
             ><b>{{ detail.user.full_name }}</b> made a card purchase</template
           ><template v-else>A card purchase was made</template> from
@@ -167,7 +171,7 @@
         </p>
       </div>
       <div v-else>
-        <p class="text-zinc-400">
+        <p class="text-text-secondary">
           <template v-if="detail.user"
             ><b>{{ detail.user.full_name }}</b> performed</template
           ><template v-else>Someone performed</template> a
@@ -177,7 +181,7 @@
         </p>
       </div>
     </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">

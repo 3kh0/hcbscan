@@ -66,31 +66,43 @@
     ogImage: "https://hcbscan.3kh0.net/readme.png",
     twitterImage: "https://hcbscan.3kh0.net/readme.png",
   });
+
+  const txnGridItems = computed(() => {
+    if (!txnData.value) return [];
+    const t = txnData.value;
+    const items: any[] = [
+      { label: "ID", value: t.id },
+      { label: "Object", value: t.object },
+      { label: "Memo", value: t.memo },
+      { label: "Date", value: t.date },
+      { label: "Type", value: activityLabel(t.type) },
+    ];
+    if (orgData.value) {
+      items.push({
+        label: "Organization",
+        value: orgData.value.name + (isFrozen.value ? " (Frozen)" : ""),
+        link: `/app/org/${t.organization.id}`,
+      });
+    }
+    items.push({
+      label: "Receipts",
+      value: `${t.receipts.count}${t.receipts.missing ? " (Receipt Missing)" : ""}`,
+    });
+    items.push({ label: "Comments", value: String(t.comments.count) });
+    if (t.tags?.length) {
+      items.push({
+        label: "Tags",
+        value: t.tags.map((tag: any) => tag.label).join(", "),
+      });
+    }
+    return items;
+  });
 </script>
 
 <template>
   <div class="mx-auto">
     <div v-if="loading" class="flex flex-col items-center justify-center py-12">
-      <svg
-        class="animate-spin h-8 w-8 text-white"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
-      </svg>
+      <Spinner />
       <p class="mt-4 text-white animate-pulse">Loading transaction...</p>
     </div>
 
@@ -130,157 +142,59 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h1 class="text-xl font-bold font-mono">{{ txnData.id }}</h1>
-          <p class="text-zinc-400">
-            {{ activityLabel(txnData.type) }}
-          </p>
-        </div>
-        <div
-          :class="[
-            'px-3 py-1 rounded-full text-lg font-semibold',
-            txnData.pending
-              ? 'bg-yellow-500/10 text-yellow-500'
-              : 'bg-green-500/10 text-green-500',
-          ]"
-        >
-          {{ txnData.pending ? "Pending" : "Completed" }}
-        </div>
-      </div>
+      <UPageHeader
+        :title="txnData.id"
+        :subtitle="activityLabel(txnData.type)"
+        mono
+      >
+        <template #actions>
+          <UBadge :variant="txnData.pending ? 'yellow' : 'green'" size="md">
+            {{ txnData.pending ? "Pending" : "Completed" }}
+          </UBadge>
+        </template>
+      </UPageHeader>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-0">
-        <div class="bg-zinc-900 rounded-lg p-4">
-          <p class="text-sm text-zinc-400">Amount</p>
-          <p class="text-2xl font-bold">{{ fixMoney(txnData.amount_cents) }}</p>
-        </div>
-
-        <div class="bg-zinc-900 rounded-lg p-4">
-          <p class="text-sm text-zinc-400">Date</p>
-          <p class="text-2xl font-bold">
-            {{ date(txnData.date) }}
-            <span class="text-zinc-400 text-lg font-normal">{{
-              txnData.date
-            }}</span>
-          </p>
-        </div>
-
-        <div class="bg-zinc-900 rounded-lg p-4">
-          <p class="text-sm text-zinc-400">Organization</p>
-          <div v-if="orgData" class="flex items-center gap-3 mt-1">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <UStatCard label="Amount" :value="fixMoney(txnData.amount_cents)" />
+        <UStatCard label="Date" :value="date(txnData.date)">
+          <p class="text-sm text-text-muted mt-1">{{ txnData.date }}</p>
+        </UStatCard>
+        <UCard>
+          <p class="text-sm text-text-secondary">Organization</p>
+          <div v-if="orgData" class="flex items-center gap-3 mt-2">
             <SafeNuxtImg
               v-if="orgData.logo"
               :src="orgData.logo"
               alt="Logo"
               width="36"
               height="36"
-              class="h-9 w-9 rounded-lg object-cover"
+              class="h-9 w-9 rounded-xl object-cover"
             />
             <div>
               <NuxtLink
                 :to="`/app/org/${txnData.organization.id}`"
-                class="text-blue-400 hover:underline text-lg font-semibold"
+                class="text-blue-400 hover:text-blue-300 text-lg font-semibold transition-colors duration-150"
               >
                 {{ orgData.name }}
               </NuxtLink>
-              <p class="text-xs text-zinc-400">
+              <p class="text-xs text-text-muted">
                 {{ fixMoney(orgData.balances?.balance_cents) }} balance
               </p>
             </div>
-            <span
-              v-if="isFrozen"
-              class="ml-auto px-2 py-0.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/30"
+            <UBadge v-if="isFrozen" variant="red" class="ml-auto"
+              >Frozen</UBadge
             >
-              Frozen
-            </span>
           </div>
           <NuxtLink
             v-else
             :to="`/app/org/${txnData.organization.id}`"
-            class="text-blue-400 hover:underline text-2xl font-semibold"
+            class="text-blue-400 hover:text-blue-300 text-2xl font-semibold mt-2 block transition-colors duration-150"
             >View Organization</NuxtLink
           >
-        </div>
+        </UCard>
       </div>
 
-      <div v-if="txnData" class="bg-zinc-900 rounded-lg my-4">
-        <table class="w-full">
-          <thead>
-            <tr class="text-left">
-              <th
-                class="py-2 px-4 text-left text-zinc-400 border-b border-zinc-700"
-              >
-                Key
-              </th>
-              <th
-                class="py-2 px-4 text-left text-zinc-400 border-b border-zinc-700"
-              >
-                Value
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-zinc-700">
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">ID</td>
-              <td class="py-2 px-4">{{ txnData.id }}</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">Object</td>
-              <td class="py-2 px-4">{{ txnData.object }}</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">Memo</td>
-              <td class="py-2 px-4">{{ txnData.memo }}</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">Date</td>
-              <td class="py-2 px-4">{{ txnData.date }}</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">Type</td>
-              <td class="py-2 px-4">{{ activityLabel(txnData.type) }}</td>
-            </tr>
-            <tr v-if="orgData">
-              <td class="py-2 px-4 text-zinc-400">Organization</td>
-              <td class="py-2 px-4">
-                <NuxtLink
-                  :to="`/app/org/${txnData.organization.id}`"
-                  class="text-blue-400 hover:underline"
-                >
-                  {{ orgData.name }}
-                </NuxtLink>
-                <span v-if="isFrozen" class="ml-2 text-red-400"> Frozen </span>
-              </td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">Receipts</td>
-              <td class="py-2 px-4">
-                {{ txnData.receipts.count }}
-                <span
-                  v-if="txnData.receipts.missing"
-                  class="text-yellow-500 ml-2"
-                  >(Receipt Missing)</span
-                >
-              </td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">Comments</td>
-              <td class="py-2 px-4">{{ txnData.comments.count }}</td>
-            </tr>
-            <tr v-if="txnData.tags.length">
-              <td class="py-2 px-4 text-zinc-400">Tags</td>
-              <td class="py-2 px-4">
-                <span
-                  v-for="tag in txnData.tags"
-                  :key="tag.id"
-                  class="inline-block bg-zinc-700 px-2 py-1 rounded mr-2 text-sm"
-                  >{{ tag.label }}</span
-                >
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <UDataGrid :items="txnGridItems" />
 
       <txnDetail :id="txnData[txnData.type]?.id" :type="txnData.type" />
     </div>

@@ -100,10 +100,10 @@
       <ErrorBanner :message="error" />
     </div>
 
-    <div v-else class="bg-zinc-900 rounded-lg overflow-hidden">
+    <UCard v-else padding="p-0">
       <div class="px-4 pt-4 pb-3">
         <h2 class="text-lg font-semibold">Activities list</h2>
-        <p class="text-xs text-zinc-500 mt-1">
+        <p class="text-xs text-text-muted mt-1">
           Only showing recent activities from HCB organizations that are in
           Transparency Mode and have opted in to public listing. Due to the
           amount of data, only 50 activities are shown per page.
@@ -127,39 +127,13 @@
       >
         <ActsList :acts="acts" :loading="initialLoading" />
       </div>
-    </div>
+    </UCard>
 
-    <div class="flex items-center justify-between bg-zinc-900 p-4 rounded-lg">
-      <button
-        :disabled="currentPage <= 1 || transitioning"
-        class="px-4 py-2 text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed bg-zinc-800 hover:bg-zinc-700 transition-colors duration-150"
-        @click="changePage(currentPage - 1)"
-      >
-        Previous
-      </button>
-
-      <div class="flex items-center gap-2">
-        <span class="px-4 py-2 bg-zinc-800 rounded-lg"
-          >Page {{ currentPage }}</span
-        >
-        <button
-          v-for="offset in 3"
-          :key="offset"
-          :disabled="transitioning"
-          class="px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
-          @click="changePage(currentPage + offset)"
-        >
-          +{{ offset }}
-        </button>
-      </div>
-
-      <button
-        :disabled="transitioning"
-        class="px-4 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
-        @click="changePage(currentPage + 1)"
-      >
-        Next
-      </button>
-    </div>
+    <UPagination
+      :page="currentPage"
+      :has-next="true"
+      :loading="transitioning"
+      @change="changePage"
+    />
   </div>
 </template>

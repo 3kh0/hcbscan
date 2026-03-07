@@ -40,31 +40,26 @@
     ogImage: "https://hcbscan.3kh0.net/readme.png",
     twitterImage: "https://hcbscan.3kh0.net/readme.png",
   });
+
+  const actGridItems = computed(() => {
+    if (!activityData.value) return [];
+    const a = activityData.value;
+    return [
+      { label: "ID", value: a.id },
+      { label: "Object", value: a.object },
+      { label: "Action", value: activityLabel(a.key) },
+      {
+        label: "Timestamp",
+        value: `${a.created_at} ${date(a.created_at)}`,
+      },
+    ];
+  });
 </script>
 
 <template>
   <div class="mx-auto">
     <div v-if="loading" class="flex flex-col items-center justify-center py-12">
-      <svg
-        class="animate-spin h-8 w-8 text-white"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
-      </svg>
+      <Spinner />
       <p class="mt-4 text-white animate-pulse">Loading activity...</p>
     </div>
 
@@ -73,16 +68,20 @@
     </div>
 
     <div v-else-if="activityData" class="space-y-6">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h1 class="text-xl font-bold font-mono">{{ activityData.id }}</h1>
-          <p class="text-zinc-400">{{ activityLabel(activityData.key) }}</p>
-        </div>
-        <p class="text-zinc-400">{{ date(activityData.created_at) }}</p>
-      </div>
+      <UPageHeader
+        :title="activityData.id"
+        :subtitle="activityLabel(activityData.key)"
+        mono
+      >
+        <template #actions>
+          <span class="text-text-secondary text-sm">{{
+            date(activityData.created_at)
+          }}</span>
+        </template>
+      </UPageHeader>
 
-      <div class="bg-zinc-900 rounded-lg p-4 mb-4">
-        <h2 class="text-sm text-zinc-400 mb-3">Organization</h2>
+      <UCard>
+        <h2 class="text-sm text-text-secondary mb-3">Organization</h2>
         <div class="flex items-center gap-4">
           <SafeNuxtImg
             v-if="activityData.organization.logo"
@@ -104,10 +103,10 @@
             </NuxtLink>
           </div>
         </div>
-      </div>
+      </UCard>
 
-      <div v-if="activityData.user" class="bg-zinc-900 rounded-lg p-4 mb-4">
-        <h2 class="text-sm text-zinc-400 mb-3">Performed By</h2>
+      <UCard v-if="activityData.user">
+        <h2 class="text-sm text-text-secondary mb-3">Performed By</h2>
         <NuxtLink
           :to="`/app/usr/${activityData.user.id}`"
           class="flex items-center gap-3 text-blue-400 hover:underline"
@@ -126,37 +125,9 @@
             </p>
           </div>
         </NuxtLink>
-      </div>
+      </UCard>
 
-      <div class="bg-zinc-900 rounded-lg mb-4">
-        <table class="w-full">
-          <tbody class="divide-y divide-zinc-800">
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">ID</td>
-              <td class="py-2 px-4 font-mono">{{ activityData.id }}</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">Object</td>
-              <td class="py-2 px-4">{{ activityData.object }}</td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">Action</td>
-              <td class="py-2 px-4">
-                {{ activityLabel(activityData.key) }}
-              </td>
-            </tr>
-            <tr>
-              <td class="py-2 px-4 text-zinc-400">Timestamp</td>
-              <td class="py-2 px-4">
-                {{ activityData.created_at }}
-                <span class="text-zinc-400">{{
-                  date(activityData.created_at)
-                }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <UDataGrid :items="actGridItems" />
 
       <div class="mx-auto">
         <ActDetail :id="activityId" />

@@ -19,7 +19,7 @@
         <h3 class="text-xl font-bold text-red-400 mb-2">
           {{ title || "Whoops, we stumbled on a error!" }}
         </h3>
-        <p class="text-zinc-400">{{ message }}</p>
+        <p class="text-text-secondary">{{ message }}</p>
         <div v-if="debugInfo" class="mt-4">
           <button
             class="text-sm text-blue-400 hover:underline"
@@ -29,7 +29,7 @@
           </button>
           <pre
             v-if="showDebug"
-            class="text-xs text-zinc-400 overflow-auto p-2 bg-zinc-900 rounded mt-2"
+            class="text-xs text-text-secondary overflow-auto p-2 bg-surface-1 rounded mt-2"
             >{{ debugInfo }}
         </pre
           >

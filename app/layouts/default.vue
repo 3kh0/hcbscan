@@ -40,65 +40,60 @@
 
 <template>
   <div class="max-w-7xl mx-auto">
-    <div class="flex items-center justify-between mb-6">
+    <nav class="flex items-center gap-4 mb-6">
       <NuxtLink
         to="/app"
-        class="flex items-center hover:opacity-80 transition-opacity"
+        class="flex items-center shrink-0 hover:opacity-80 transition-opacity"
       >
         <img
           src="~/assets/img/hcbscan.png"
-          class="w-16 h-16 transform transition-transform duration-200 hover:scale-105 active:scale-95"
+          class="w-9 h-9 transform transition-transform duration-200 hover:scale-105 active:scale-95"
         />
-        <div class="ml-4">
-          <h1 class="font-bold text-4xl">HCBScan</h1>
-          <p class="text-zinc-400">The HCB Explorer (beta)</p>
-        </div>
+        <span class="ml-2.5 font-bold text-xl hidden sm:inline">HCBScan</span>
       </NuxtLink>
 
-      <div class="sm:flex flex-col items-end hidden">
-        <a
-          href="https://hcb.hackclub.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex flex-col items-center hover:opacity-80 transition-opacity"
-        >
-          <p class="text-xl font-bold">This is not HCB</p>
-          <p class="text-zinc-400 mt-1">Click here to visit HCB</p>
-        </a>
+      <div class="flex-1 min-w-0">
+        <SearchBar />
       </div>
 
-      <div class="sm:hidden flex-col items-center hidden">
-        <a
-          href="https://hcb.hackclub.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex flex-col items-center hover:opacity-80 transition-opacity"
+      <a
+        href="https://hcb.hackclub.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="shrink-0 hidden sm:flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
+      >
+        <span>Not HCB</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-3.5 w-3.5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
         >
-          <img
-            src="~/assets/img/bank.png"
-            class="w-16 h-16 transform transition-transform duration-200 hover:scale-105 active:scale-95"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
           />
-        </a>
-      </div>
-    </div>
+        </svg>
+      </a>
+    </nav>
 
     <slot />
-    <footer
-      id="footer"
-      class="mt-12 pb-8 border-t border-zinc-200 dark:border-zinc-800"
-    >
+    <footer id="footer" class="mt-12 pb-8 border-t border-border">
       <div class="max-w-7xl mx-auto px-4 pt-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="space-y-4">
             <h3 class="text-xl font-bold">HCBScan</h3>
-            <p class="text-zinc-500 dark:text-zinc-400">
+            <p class="text-text-secondary">
               HCBScan is an open-source explorer for HCB that allows you to
               search for organizations, view transactions, and explore public
               financial data across HCB. We only use publicly available data
               provided by the
               <a
                 href="https://hcb.hackclub.com/docs/api/v3"
-                class="text-green-600 hover:text-green-500 transition-colors duration-200"
+                class="text-accent hover:text-accent/80 transition-colors duration-200"
                 target="_blank"
                 >HCB API</a
               >. We do not have control over the data provided by the API.
@@ -112,7 +107,7 @@
                   href="https://hcb.hackclub.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-zinc-500 hover:text-green-500 flex items-center transition-colors duration-200"
+                  class="text-text-muted hover:text-accent flex items-center transition-colors duration-200"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -136,7 +131,7 @@
                   href="https://github.com/3kh0/hcbscan/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-zinc-500 hover:text-green-500 flex items-center transition-colors duration-200"
+                  class="text-text-muted hover:text-accent flex items-center transition-colors duration-200"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +151,7 @@
                   href="https://3kh0.net"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-zinc-500 hover:text-green-500 flex items-center transition-colors duration-200"
+                  class="text-text-muted hover:text-accent flex items-center transition-colors duration-200"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -187,16 +182,10 @@
                   class="flex items-center animate-pulse"
                 >
                   <div class="relative mr-2">
-                    <div
-                      class="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-700"
-                    ></div>
+                    <div class="w-3 h-3 rounded-full bg-surface-3"></div>
                   </div>
-                  <div
-                    class="h-4 bg-zinc-200 dark:bg-zinc-700 rounded w-40"
-                  ></div>
-                  <div
-                    class="ml-2 h-4 bg-zinc-200 dark:bg-zinc-700 rounded w-16"
-                  ></div>
+                  <div class="h-4 bg-surface-2 rounded w-40"></div>
+                  <div class="ml-2 h-4 bg-surface-2 rounded w-16"></div>
                 </div>
               </template>
               <template v-else>
@@ -211,7 +200,7 @@
                       class="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping opacity-75"
                     ></div>
                   </div>
-                  <span class="text-zinc-500">Organization Indexer: </span>
+                  <span class="text-text-muted">Organization Indexer: </span>
                   <span
                     class="ml-1 font-medium"
                     :class="[heart(1) ? 'text-green-500' : 'text-red-500']"
@@ -231,7 +220,7 @@
                       class="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping opacity-75"
                     ></div>
                   </div>
-                  <span class="text-zinc-500">Activity Indexer: </span>
+                  <span class="text-text-muted">Activity Indexer: </span>
                   <span
                     class="ml-1 font-medium"
                     :class="[heart(2) ? 'text-green-500' : 'text-red-500']"
@@ -251,7 +240,7 @@
                       class="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping opacity-75"
                     ></div>
                   </div>
-                  <span class="text-zinc-500">Backup Indexers: </span>
+                  <span class="text-text-muted">Backup Indexers: </span>
                   <span
                     class="ml-1 font-medium"
                     :class="[heart(3) ? 'text-green-500' : 'text-red-500']"
@@ -261,10 +250,8 @@
                 </div>
               </template>
 
-              <div
-                class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800"
-              >
-                <div class="flex items-center text-sm text-zinc-400">
+              <div class="mt-4 pt-4 border-t border-border">
+                <div class="flex items-center text-sm text-text-secondary">
                   <span class="font-mono">{{ runtimeConfig.public.sha }}</span>
                   <span class="mx-2">•</span>
                   <span
@@ -277,7 +264,7 @@
           </div>
         </div>
         <div
-          class="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-800 text-center text-sm text-zinc-400 mx-auto"
+          class="mt-8 pt-6 border-t border-border text-center text-sm text-text-secondary mx-auto"
         >
           <p class="max-w-3xl mx-auto">
             HCBScan is not affiliated, fiscally sponsored, or endorsed by HCB.

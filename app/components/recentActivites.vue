@@ -61,27 +61,27 @@
 </script>
 
 <template>
-  <div class="bg-zinc-900 rounded-lg overflow-hidden">
+  <UCard padding="p-0">
     <div class="px-4 pt-4 pb-3">
       <div class="flex justify-between items-center">
         <h2 class="text-lg font-semibold">Recent Activities</h2>
         <div class="flex items-center gap-2">
           <span
             v-if="refreshing"
-            class="inline-flex items-center gap-1.5 text-xs text-zinc-400"
+            class="inline-flex items-center gap-1.5 text-xs text-text-secondary"
           >
-            <Spinner :size="3" color="text-zinc-400" />
+            <Spinner :size="3" color="text-text-secondary" />
             Refreshing
           </span>
           <NuxtLink
             to="/app/acts"
-            class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors duration-150"
+            class="text-sm text-text-muted hover:text-text-secondary transition-colors duration-150"
           >
             View all →
           </NuxtLink>
         </div>
       </div>
-      <p class="text-xs text-zinc-500 mt-1">
+      <p class="text-xs text-text-muted mt-1">
         Here are the most recent activities for all public organizations. Click
         on any activity to view more details about it. New activities will
         appear here in real-time as they happen!
@@ -95,5 +95,5 @@
     <TransitionGroup name="list" tag="div">
       <ActsList :acts="acts" :key="acts?.map((a) => a.id).join(',')" />
     </TransitionGroup>
-  </div>
+  </UCard>
 </template>

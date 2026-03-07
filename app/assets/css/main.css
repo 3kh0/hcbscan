@@ -14,6 +14,16 @@ body {
 }
 
 @theme {
+  --color-surface-0: #09090b;
+  --color-surface-1: #18181b;
+  --color-surface-2: #27272a;
+  --color-surface-3: #3f3f46;
+  --color-border: #3f3f4680;
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+  --color-accent: #22c55e;
+  --color-accent-soft: #22c55e1a;
   --animate-pulse: pulse 1s infinite;
   @keyframes animate-pulse {
     0% {
