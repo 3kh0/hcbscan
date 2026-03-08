@@ -99,6 +99,15 @@ export async function getUnfrozenOrgIds(ids: string[]): Promise<Set<string>> {
   return new Set(result.rows.map((r: any) => r["Organization ID"]));
 }
 
+export async function touchOrgTimestamp(ids: string[]) {
+  if (ids.length === 0) return;
+  const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
+  await query(
+    `UPDATE "hcb.hackclub.com" SET "Added" = NOW() + INTERVAL '7 days' WHERE "Organization ID" IN (${placeholders})`,
+    ids
+  );
+}
+
 export async function getOrgsNeedingRefresh(limit: number) {
   const result = await query(
     `SELECT "Organization ID" FROM "hcb.hackclub.com"

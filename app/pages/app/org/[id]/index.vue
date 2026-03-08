@@ -5,6 +5,7 @@
   const isIndexed = ref(true);
   const askIndex = ref(false);
   const frozenAt = ref<string | null>(null);
+  const isCachedView = ref(false);
 
   const {
     data: orgData,
@@ -12,7 +13,28 @@
     status: orgStatus,
   } = useAsyncData(
     `org-${route.params.id}`,
-    () => hcbFetch(`api/v3/organizations/${route.params.id}`),
+    async () => {
+      try {
+        return await hcbFetch(`api/v3/organizations/${route.params.id}`);
+      } catch {
+        const cached = await $fetch(
+          `/api/orgs/${route.params.id}/cached`
+        );
+        if (cached.found) {
+          isCachedView.value = true;
+          if (cached.org.frozen_at) frozenAt.value = cached.org.frozen_at;
+          return {
+            id: cached.org.id,
+            name: cached.org.name,
+            slug: cached.org.slug,
+            category: cached.org.category,
+            balances: { balance_cents: cached.org.balance_cents },
+            financially_frozen: !!cached.org.frozen_at,
+          };
+        }
+        throw new Error("Organization not found");
+      }
+    },
     { server: false }
   );
 
@@ -225,6 +247,33 @@
 
       <div v-else>
         <div
+          v-if="isCachedView"
+          class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-6 flex items-center gap-3"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 text-blue-400 shrink-0"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <div>
+            <p class="text-sm font-bold text-blue-400">
+              This organization appears to be private or no longer accessible.
+            </p>
+            <p class="text-xs mt-1 text-blue-400/70">
+              Showing cached data from our database. Some information may be
+              outdated or incomplete.
+            </p>
+          </div>
+        </div>
+
+        <div
           v-if="orgData?.financially_frozen"
           class="bg-red-500/10 text-red-400 border-2 border-red-500/50 rounded-lg p-4 mb-6 flex items-center gap-3"
         >
@@ -284,7 +333,7 @@
           <div v-html="pubMsg"></div>
         </UCard>
 
-        <div v-if="orgData?.users?.length > 0" class="mb-6">
+        <div v-if="!isCachedView && orgData?.users?.length > 0" class="mb-6">
           <h2 class="text-xl font-semibold mb-2">Users</h2>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <NuxtLink
@@ -309,18 +358,18 @@
             </NuxtLink>
           </div>
         </div>
-        <UCard v-else class="mb-6">
+        <UCard v-else-if="!isCachedView" class="mb-6">
           <UEmptyState message="No users found associated with this account" />
         </UCard>
 
         <div
-          v-if="txnsLoading"
+          v-if="!isCachedView && txnsLoading"
           class="flex flex-col items-center justify-center py-12 bg-surface-1 rounded-lg"
         >
           <Spinner />
           <p class="mt-4 text-white animate-pulse">Loading transactions...</p>
         </div>
-        <div v-else class="mb-6">
+        <div v-else-if="!isCachedView" class="mb-6">
           <h2 class="text-xl font-semibold mb-2">Recent Transactions</h2>
           <UCard padding="p-0">
             <TxnList :transactions="transactions" :loading="txnsLoading" />

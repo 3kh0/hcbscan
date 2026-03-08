@@ -1,5 +1,9 @@
 import { fetchOrg } from "../utils/hcb";
-import { getOrgsNeedingRefresh, bulkUpsertOrgs } from "../repositories/orgs";
+import {
+  getOrgsNeedingRefresh,
+  bulkUpsertOrgs,
+  touchOrgTimestamp,
+} from "../repositories/orgs";
 
 const MAX_ORGS_PER_RUN = 50;
 const BATCH_SIZE = 5;
@@ -23,11 +27,16 @@ export default defineTask({
     console.log(`[index-past-orgs] refreshing ${stale.length} most stale orgs`);
 
     let totalUpdated = 0;
+    const missedIds: string[] = [];
 
     for (let i = 0; i < stale.length; i += BATCH_SIZE) {
       const batch = stale.slice(i, i + BATCH_SIZE);
       const results = await Promise.all(
-        batch.map((row) => fetchOrg(row["Organization ID"]))
+        batch.map(async (row) => {
+          const org = await fetchOrg(row["Organization ID"]);
+          if (!org) missedIds.push(row["Organization ID"]);
+          return org;
+        })
       );
 
       const orgs = results
@@ -49,6 +58,13 @@ export default defineTask({
       if (i + BATCH_SIZE < stale.length) {
         await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
       }
+    }
+
+    if (missedIds.length > 0) {
+      await touchOrgTimestamp(missedIds);
+      console.log(
+        `[index-past-orgs] ${missedIds.length} orgs unreachable, kept cached data`
+      );
     }
 
     console.log(`[index-past-orgs] refreshed ${totalUpdated} orgs`);
