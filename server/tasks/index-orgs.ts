@@ -63,8 +63,6 @@ export default defineTask({
       }
     }
 
-    await runTask("index-past-orgs");
-
     console.log("[index-orgs] done");
     return { result: `Indexed ${orgs.length} orgs, ${users.length} users` };
   },

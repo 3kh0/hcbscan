@@ -99,10 +99,13 @@ export async function getUnfrozenOrgIds(ids: string[]): Promise<Set<string>> {
   return new Set(result.rows.map((r: any) => r["Organization ID"]));
 }
 
-export async function getOrgsNeedingRefresh() {
+export async function getOrgsNeedingRefresh(limit: number) {
   const result = await query(
     `SELECT "Organization ID" FROM "hcb.hackclub.com"
-     WHERE "Added" IS NULL OR "Added" < NOW() - INTERVAL '30 minutes'`
+     WHERE "Added" IS NULL OR "Added" < NOW() - INTERVAL '1 hour'
+     ORDER BY "Added" ASC NULLS FIRST
+     LIMIT $1`,
+    [limit]
   );
   return result.rows as Array<{ "Organization ID": string }>;
 }

@@ -1,27 +1,31 @@
 import { fetchOrg } from "../utils/hcb";
 import { getOrgsNeedingRefresh, bulkUpsertOrgs } from "../repositories/orgs";
 
+const MAX_ORGS_PER_RUN = 50;
 const BATCH_SIZE = 5;
-const BATCH_DELAY_MS = 3000;
+const BATCH_DELAY_MS = 1000;
 
 export default defineTask({
   meta: {
     name: "index-past-orgs",
     description:
-      "Refresh organizations with null or stale Added timestamps from the HCB API",
+      "Refresh the most stale organizations from the HCB API, oldest first",
   },
   async run() {
     console.log("[index-past-orgs] starting...");
 
+    const stale = await getOrgsNeedingRefresh(MAX_ORGS_PER_RUN);
+    if (stale.length === 0) {
+      console.log("[index-past-orgs] all orgs are up to date");
+      return { result: "All orgs up to date" };
+    }
+
+    console.log(`[index-past-orgs] refreshing ${stale.length} most stale orgs`);
+
     let totalUpdated = 0;
 
-    while (true) {
-      const stale = await getOrgsNeedingRefresh();
-      if (stale.length === 0) break;
-
-      console.log(`[index-past-orgs] ${stale.length} orgs still need refresh`);
-
-      const batch = stale.slice(0, BATCH_SIZE);
+    for (let i = 0; i < stale.length; i += BATCH_SIZE) {
+      const batch = stale.slice(i, i + BATCH_SIZE);
       const results = await Promise.all(
         batch.map((row) => fetchOrg(row["Organization ID"]))
       );
@@ -40,13 +44,14 @@ export default defineTask({
       if (orgs.length > 0) {
         await bulkUpsertOrgs(orgs);
         totalUpdated += orgs.length;
-        console.log(`[index-past-orgs] upserted batch of ${orgs.length}`);
       }
 
-      await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+      if (i + BATCH_SIZE < stale.length) {
+        await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+      }
     }
 
-    console.log(`[index-past-orgs] refreshed ${totalUpdated} orgs total`);
+    console.log(`[index-past-orgs] refreshed ${totalUpdated} orgs`);
     return { result: `Refreshed ${totalUpdated} orgs` };
   },
 });
