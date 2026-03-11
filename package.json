@@ -9,7 +9,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "format": "prettier --write .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "validate:api": "bun run scripts/validate-api.ts"
   },
   "dependencies": {
     "@nuxt/image": "^2.0.0",
