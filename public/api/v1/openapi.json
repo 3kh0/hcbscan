@@ -22,7 +22,10 @@
     }
   ],
   "tags": [
-    { "name": "Organizations", "description": "HCB organizations (fiscal sponsors, clubs, nonprofits)" },
+    {
+      "name": "Organizations",
+      "description": "HCB organizations (fiscal sponsors, clubs, nonprofits)"
+    },
     { "name": "Users", "description": "HCB users and their profiles" },
     { "name": "Activities", "description": "Transaction and activity feed" },
     { "name": "Search", "description": "Full-text search across all entities" },
@@ -38,11 +41,49 @@
         "description": "Returns a paginated list of all indexed HCB organizations. Supports sorting and filtering by category.",
         "operationId": "listOrgs",
         "parameters": [
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1, "minimum": 1 }, "description": "Page number" },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 100 }, "description": "Results per page" },
-          { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["balance", "name", "added"], "default": "balance" }, "description": "Sort field" },
-          { "name": "order", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "desc" }, "description": "Sort order" },
-          { "name": "category", "in": "query", "schema": { "type": "string" }, "description": "Filter by category" }
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1, "minimum": 1 },
+            "description": "Page number"
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Results per page"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["balance", "name", "added"],
+              "default": "balance"
+            },
+            "description": "Sort field"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc"
+            },
+            "description": "Sort order"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by category"
+          }
         ],
         "responses": {
           "200": {
@@ -57,9 +98,13 @@
                       "properties": {
                         "data": {
                           "type": "array",
-                          "items": { "$ref": "#/components/schemas/Organization" }
+                          "items": {
+                            "$ref": "#/components/schemas/Organization"
+                          }
                         },
-                        "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
                       }
                     }
                   ]
@@ -77,7 +122,13 @@
         "description": "Returns details for a single organization by its ID.",
         "operationId": "getOrg",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Organization ID" }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Organization ID"
+          }
         ],
         "responses": {
           "200": {
@@ -87,7 +138,12 @@
                 "schema": {
                   "allOf": [
                     { "$ref": "#/components/schemas/SuccessEnvelope" },
-                    { "type": "object", "properties": { "data": { "$ref": "#/components/schemas/Organization" } } }
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/Organization" }
+                      }
+                    }
                   ]
                 }
               }
@@ -104,9 +160,23 @@
         "description": "Returns a paginated activity feed for a specific organization.",
         "operationId": "getOrgActivities",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Organization ID" },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 50, "maximum": 100 } }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Organization ID"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 50, "maximum": 100 }
+          }
         ],
         "responses": {
           "200": {
@@ -119,8 +189,13 @@
                     {
                       "type": "object",
                       "properties": {
-                        "data": { "type": "array", "items": { "$ref": "#/components/schemas/Activity" } },
-                        "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Activity" }
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
                       }
                     }
                   ]
@@ -138,7 +213,13 @@
         "description": "Returns all users associated with a specific organization.",
         "operationId": "getOrgUsers",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Organization ID" }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Organization ID"
+          }
         ],
         "responses": {
           "200": {
@@ -151,7 +232,12 @@
                     {
                       "type": "object",
                       "properties": {
-                        "data": { "type": "array", "items": { "$ref": "#/components/schemas/UserSummary" } }
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/UserSummary"
+                          }
+                        }
                       }
                     }
                   ]
@@ -169,7 +255,13 @@
         "description": "Returns a user's profile including their organizations with balances, net worth, and activity count.",
         "operationId": "getUser",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "User ID" }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "User ID"
+          }
         ],
         "responses": {
           "200": {
@@ -179,7 +271,12 @@
                 "schema": {
                   "allOf": [
                     { "$ref": "#/components/schemas/SuccessEnvelope" },
-                    { "type": "object", "properties": { "data": { "$ref": "#/components/schemas/UserProfile" } } }
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/UserProfile" }
+                      }
+                    }
                   ]
                 }
               }
@@ -196,9 +293,23 @@
         "description": "Returns a paginated activity feed for a specific user.",
         "operationId": "getUserActivities",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "User ID" },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 50, "maximum": 100 } }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "User ID"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 50, "maximum": 100 }
+          }
         ],
         "responses": {
           "200": {
@@ -211,8 +322,13 @@
                     {
                       "type": "object",
                       "properties": {
-                        "data": { "type": "array", "items": { "$ref": "#/components/schemas/Activity" } },
-                        "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Activity" }
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
                       }
                     }
                   ]
@@ -230,13 +346,46 @@
         "description": "Returns a paginated global activity feed. Supports filtering by organization, user, activity type, and date range.",
         "operationId": "listActivities",
         "parameters": [
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 50, "maximum": 100 } },
-          { "name": "org_id", "in": "query", "schema": { "type": "string" }, "description": "Filter by organization ID" },
-          { "name": "user_id", "in": "query", "schema": { "type": "string" }, "description": "Filter by user ID" },
-          { "name": "key", "in": "query", "schema": { "type": "string" }, "description": "Filter by activity type key" },
-          { "name": "after", "in": "query", "schema": { "type": "string", "format": "date-time" }, "description": "Only activities after this timestamp" },
-          { "name": "before", "in": "query", "schema": { "type": "string", "format": "date-time" }, "description": "Only activities before this timestamp" }
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 50, "maximum": 100 }
+          },
+          {
+            "name": "org_id",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by organization ID"
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by user ID"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by activity type key"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Only activities after this timestamp"
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Only activities before this timestamp"
+          }
         ],
         "responses": {
           "200": {
@@ -249,8 +398,13 @@
                     {
                       "type": "object",
                       "properties": {
-                        "data": { "type": "array", "items": { "$ref": "#/components/schemas/Activity" } },
-                        "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+                        "data": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Activity" }
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
                       }
                     }
                   ]
@@ -268,9 +422,29 @@
         "description": "Full-text search across organizations, users, and activities.",
         "operationId": "search",
         "parameters": [
-          { "name": "q", "in": "query", "required": true, "schema": { "type": "string" }, "description": "Search query" },
-          { "name": "scope", "in": "query", "schema": { "type": "string", "enum": ["all", "orgs", "users", "activities"], "default": "all" }, "description": "Limit search to a specific entity type" },
-          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 15, "maximum": 50 }, "description": "Max results per entity type" }
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Search query"
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["all", "orgs", "users", "activities"],
+              "default": "all"
+            },
+            "description": "Limit search to a specific entity type"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 15, "maximum": 50 },
+            "description": "Max results per entity type"
+          }
         ],
         "responses": {
           "200": {
@@ -286,9 +460,24 @@
                         "data": {
                           "type": "object",
                           "properties": {
-                            "orgs": { "type": "array", "items": { "$ref": "#/components/schemas/OrganizationSummary" } },
-                            "users": { "type": "array", "items": { "$ref": "#/components/schemas/UserSummary" } },
-                            "activities": { "type": "array", "items": { "$ref": "#/components/schemas/ActivitySummary" } }
+                            "orgs": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/OrganizationSummary"
+                              }
+                            },
+                            "users": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/UserSummary"
+                              }
+                            },
+                            "activities": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/ActivitySummary"
+                              }
+                            }
                           }
                         }
                       }
@@ -322,10 +511,22 @@
                         "data": {
                           "type": "object",
                           "properties": {
-                            "total_organizations": { "type": "integer", "example": 2500 },
-                            "total_balance_cents": { "type": "integer", "example": 1500000000 },
-                            "activity_volume_7d": { "type": "integer", "example": 3200 },
-                            "activity_volume_previous_7d": { "type": "integer", "example": 2800 }
+                            "total_organizations": {
+                              "type": "integer",
+                              "example": 2500
+                            },
+                            "total_balance_cents": {
+                              "type": "integer",
+                              "example": 1500000000
+                            },
+                            "activity_volume_7d": {
+                              "type": "integer",
+                              "example": 3200
+                            },
+                            "activity_volume_previous_7d": {
+                              "type": "integer",
+                              "example": 2800
+                            }
                           }
                         }
                       }
@@ -358,9 +559,37 @@
         "description": "Returns ranked leaderboards. Supports balance rankings for orgs, and activity rankings for orgs and users over configurable time periods.",
         "operationId": "getLeaderboard",
         "parameters": [
-          { "name": "type", "in": "query", "required": true, "schema": { "type": "string", "enum": ["balance", "active_orgs", "active_users"] }, "description": "Leaderboard type" },
-          { "name": "period", "in": "query", "schema": { "type": "string", "enum": ["7d", "30d"], "default": "7d" }, "description": "Time period for activity leaderboards" },
-          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10, "minimum": 1, "maximum": 50 }, "description": "Number of results" }
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["balance", "active_orgs", "active_users"]
+            },
+            "description": "Leaderboard type"
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["7d", "30d"],
+              "default": "7d"
+            },
+            "description": "Time period for activity leaderboards"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 50
+            },
+            "description": "Number of results"
+          }
         ],
         "responses": {
           "200": {
@@ -415,9 +644,18 @@
                         "data": {
                           "type": "object",
                           "properties": {
-                            "api_version": { "type": "string", "example": "v1" },
-                            "status": { "type": "string", "example": "operational" },
-                            "services": { "type": "object", "additionalProperties": { "type": "boolean" } }
+                            "api_version": {
+                              "type": "string",
+                              "example": "v1"
+                            },
+                            "status": {
+                              "type": "string",
+                              "example": "operational"
+                            },
+                            "services": {
+                              "type": "object",
+                              "additionalProperties": { "type": "boolean" }
+                            }
                           }
                         }
                       }
@@ -470,10 +708,18 @@
           "id": { "type": "string", "example": "org_abc123" },
           "name": { "type": "string", "example": "Hack Club HQ" },
           "slug": { "type": "string", "example": "hack-club-hq" },
-          "category": { "type": "string", "nullable": true, "example": "hackathon" },
+          "category": {
+            "type": "string",
+            "nullable": true,
+            "example": "hackathon"
+          },
           "balance_cents": { "type": "integer", "example": 1500000 },
           "added": { "type": "string", "format": "date-time" },
-          "frozen_at": { "type": "string", "format": "date-time", "nullable": true }
+          "frozen_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
         }
       },
       "OrganizationSummary": {
@@ -573,7 +819,10 @@
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ErrorEnvelope" },
-            "example": { "ok": false, "error": { "code": "NOT_FOUND", "message": "Resource not found" } }
+            "example": {
+              "ok": false,
+              "error": { "code": "NOT_FOUND", "message": "Resource not found" }
+            }
           }
         }
       },
@@ -582,7 +831,13 @@
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ErrorEnvelope" },
-            "example": { "ok": false, "error": { "code": "BAD_REQUEST", "message": "Invalid request parameters" } }
+            "example": {
+              "ok": false,
+              "error": {
+                "code": "BAD_REQUEST",
+                "message": "Invalid request parameters"
+              }
+            }
           }
         }
       },
@@ -591,7 +846,13 @@
         "content": {
           "application/json": {
             "schema": { "$ref": "#/components/schemas/ErrorEnvelope" },
-            "example": { "ok": false, "error": { "code": "RATE_LIMITED", "message": "Rate limit exceeded. Try again later." } }
+            "example": {
+              "ok": false,
+              "error": {
+                "code": "RATE_LIMITED",
+                "message": "Rate limit exceeded. Try again later."
+              }
+            }
           }
         }
       }

@@ -1,14 +1,27 @@
 import { query } from "../../../../utils/db";
-import { wrapOk, wrapError, parsePagination, mapActivity, paginationMeta } from "../../../../utils/api-envelope";
+import {
+  wrapOk,
+  wrapError,
+  parsePagination,
+  mapActivity,
+  paginationMeta,
+} from "../../../../utils/api-envelope";
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
-  if (!id) throw createError({ statusCode: 400, data: wrapError("BAD_REQUEST", "Organization ID is required") });
+  if (!id)
+    throw createError({
+      statusCode: 400,
+      data: wrapError("BAD_REQUEST", "Organization ID is required"),
+    });
 
   const { page, per_page, offset } = parsePagination(event);
 
   const [cnt, data] = await Promise.all([
-    query(`SELECT COUNT(*) FROM "hcb.hackclub.com-acts" WHERE "Organization ID" = $1`, [id]),
+    query(
+      `SELECT COUNT(*) FROM "hcb.hackclub.com-acts" WHERE "Organization ID" = $1`,
+      [id]
+    ),
     query(
       `SELECT * FROM "hcb.hackclub.com-acts"
        WHERE "Organization ID" = $1
@@ -19,5 +32,8 @@ export default defineEventHandler(async (event) => {
   ]);
 
   const total = parseInt(cnt.rows[0].count, 10);
-  return wrapOk(data.rows.map(mapActivity), paginationMeta(page, per_page, total));
+  return wrapOk(
+    data.rows.map(mapActivity),
+    paginationMeta(page, per_page, total)
+  );
 });

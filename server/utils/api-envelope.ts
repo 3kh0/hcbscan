@@ -50,11 +50,24 @@ export function mapActivity(r: any) {
       ? { id: r["User ID"], name: r["User Name"], avatar: r["User Photo"] }
       : null,
     organization: r["Organization ID"]
-      ? { id: r["Organization ID"], name: r["Organization Name"], logo: r["Organization Logo"] }
+      ? {
+          id: r["Organization ID"],
+          name: r["Organization Name"],
+          logo: r["Organization Logo"],
+        }
       : null,
   };
 }
 
-export function paginationMeta(page: number, per_page: number, total: number): PaginationMeta {
-  return { page, per_page, total, has_more: (page - 1) * per_page + per_page < total };
+export function paginationMeta(
+  page: number,
+  per_page: number,
+  total: number
+): PaginationMeta {
+  return {
+    page,
+    per_page,
+    total,
+    has_more: (page - 1) * per_page + per_page < total,
+  };
 }

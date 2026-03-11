@@ -1,5 +1,10 @@
 import { query } from "../../utils/db";
-import { wrapOk, parsePagination, mapActivity, paginationMeta } from "../../utils/api-envelope";
+import {
+  wrapOk,
+  parsePagination,
+  mapActivity,
+  paginationMeta,
+} from "../../utils/api-envelope";
 
 export default defineEventHandler(async (event) => {
   const { page, per_page, offset } = parsePagination(event);
@@ -9,11 +14,26 @@ export default defineEventHandler(async (event) => {
   const vals: unknown[] = [];
   let idx = 1;
 
-  if (p.org_id) { conds.push(`"Organization ID" = $${idx++}`); vals.push(String(p.org_id)); }
-  if (p.user_id) { conds.push(`"User ID" = $${idx++}`); vals.push(String(p.user_id)); }
-  if (p.key) { conds.push(`"Key" = $${idx++}`); vals.push(String(p.key)); }
-  if (p.after) { conds.push(`"Created At" >= $${idx++}`); vals.push(String(p.after)); }
-  if (p.before) { conds.push(`"Created At" <= $${idx++}`); vals.push(String(p.before)); }
+  if (p.org_id) {
+    conds.push(`"Organization ID" = $${idx++}`);
+    vals.push(String(p.org_id));
+  }
+  if (p.user_id) {
+    conds.push(`"User ID" = $${idx++}`);
+    vals.push(String(p.user_id));
+  }
+  if (p.key) {
+    conds.push(`"Key" = $${idx++}`);
+    vals.push(String(p.key));
+  }
+  if (p.after) {
+    conds.push(`"Created At" >= $${idx++}`);
+    vals.push(String(p.after));
+  }
+  if (p.before) {
+    conds.push(`"Created At" <= $${idx++}`);
+    vals.push(String(p.before));
+  }
 
   const where = conds.length ? `WHERE ${conds.join(" AND ")}` : "";
 
@@ -28,5 +48,8 @@ export default defineEventHandler(async (event) => {
   ]);
 
   const total = parseInt(cnt.rows[0].count, 10);
-  return wrapOk(data.rows.map(mapActivity), paginationMeta(page, per_page, total));
+  return wrapOk(
+    data.rows.map(mapActivity),
+    paginationMeta(page, per_page, total)
+  );
 });

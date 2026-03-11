@@ -17,9 +17,7 @@
       try {
         return await hcbFetch(`api/v3/organizations/${route.params.id}`);
       } catch {
-        const cached = await $fetch(
-          `/api/orgs/${route.params.id}/cached`
-        );
+        const cached = await $fetch(`/api/orgs/${route.params.id}/cached`);
         if (cached.found) {
           isCachedView.value = true;
           if (cached.org.frozen_at) frozenAt.value = cached.org.frozen_at;

@@ -11,7 +11,10 @@ if (url) {
   });
 
   redis.on("error", (e) => console.error("[redis] conn error:", e.message));
-  redis.connect().catch(() => { console.warn("[redis] failed to connect, falling back to memory"); redis = null; });
+  redis.connect().catch(() => {
+    console.warn("[redis] failed to connect, falling back to memory");
+    redis = null;
+  });
 }
 
 export const getRedis = (): Redis | null => redis;

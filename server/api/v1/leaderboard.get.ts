@@ -6,7 +6,10 @@ export default defineEventHandler(async (event) => {
 
   const p = getQuery(event);
   const type = String(p.type || "balance");
-  const limit = Math.min(Math.max(parseInt(String(p.limit || "10"), 10) || 10, 1), 50);
+  const limit = Math.min(
+    Math.max(parseInt(String(p.limit || "10"), 10) || 10, 1),
+    50
+  );
 
   if (type === "balance") {
     const r = await query(
@@ -16,14 +19,16 @@ export default defineEventHandler(async (event) => {
        ORDER BY "Balance" DESC LIMIT $1`,
       [limit]
     );
-    return wrapOk(r.rows.map((o: any, i: number) => ({
-      rank: i + 1,
-      id: o["Organization ID"],
-      name: o["Name"],
-      slug: o["Slug"],
-      category: o["Category"],
-      balance_cents: Number(o["Balance"]),
-    })));
+    return wrapOk(
+      r.rows.map((o: any, i: number) => ({
+        rank: i + 1,
+        id: o["Organization ID"],
+        name: o["Name"],
+        slug: o["Slug"],
+        category: o["Category"],
+        balance_cents: Number(o["Balance"]),
+      }))
+    );
   }
 
   if (type === "active_orgs" || type === "active_users") {
@@ -31,7 +36,9 @@ export default defineEventHandler(async (event) => {
     const period = String(p.period || "7d");
     const isOrgs = type === "active_orgs";
 
-    const groupCol = isOrgs ? '"Organization ID", "Organization Name"' : '"User ID", "User Name", "User Photo"';
+    const groupCol = isOrgs
+      ? '"Organization ID", "Organization Name"'
+      : '"User ID", "User Name", "User Photo"';
     const filterCol = isOrgs ? '"Organization ID"' : '"User ID"';
 
     const r = await query(
@@ -43,15 +50,23 @@ export default defineEventHandler(async (event) => {
       [interval, limit]
     );
 
-    return wrapOk(r.rows.map((row: any, i: number) => ({
-      rank: i + 1,
-      id: row[isOrgs ? "Organization ID" : "User ID"],
-      name: row[isOrgs ? "Organization Name" : "User Name"],
-      ...(isOrgs ? {} : { avatar: row["User Photo"] }),
-      activity_count: parseInt(row.activity_count, 10),
-      period,
-    })));
+    return wrapOk(
+      r.rows.map((row: any, i: number) => ({
+        rank: i + 1,
+        id: row[isOrgs ? "Organization ID" : "User ID"],
+        name: row[isOrgs ? "Organization Name" : "User Name"],
+        ...(isOrgs ? {} : { avatar: row["User Photo"] }),
+        activity_count: parseInt(row.activity_count, 10),
+        period,
+      }))
+    );
   }
 
-  throw createError({ statusCode: 400, data: wrapError("BAD_REQUEST", "Invalid type. Must be one of: balance, active_orgs, active_users") });
+  throw createError({
+    statusCode: 400,
+    data: wrapError(
+      "BAD_REQUEST",
+      "Invalid type. Must be one of: balance, active_orgs, active_users"
+    ),
+  });
 });

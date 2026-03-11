@@ -366,13 +366,15 @@
       </div>
       <div v-else-if="props.type === 'wise_transfer'">
         <p class="text-text-secondary mb-4">
-          <template
-            v-if="detail.local_currency && detail.local_amount_cents"
-            >{{ formatLocalCurrency(detail.local_amount_cents, detail.local_currency) }}
+          <template v-if="detail.local_currency && detail.local_amount_cents"
+            >{{
+              formatLocalCurrency(
+                detail.local_amount_cents,
+                detail.local_currency
+              )
+            }}
             ({{ fixMoney(detail.amount_cents, true) }} USD)</template
-          ><template v-else>{{
-            fixMoney(detail.amount_cents, true)
-          }}</template>
+          ><template v-else>{{ fixMoney(detail.amount_cents, true) }}</template>
           was sent via Wise<template v-if="detail.beneficiary">
             to <b>{{ detail.beneficiary.name }}</b></template
           >
@@ -407,7 +409,10 @@
           >
             <span class="text-text-secondary w-1/3">Local Amount</span>
             <span class="text-text-primary w-2/3">{{
-              formatLocalCurrency(detail.local_amount_cents, detail.local_currency)
+              formatLocalCurrency(
+                detail.local_amount_cents,
+                detail.local_currency
+              )
             }}</span>
           </div>
           <div v-if="detail.beneficiary" class="flex items-center">
@@ -444,16 +449,16 @@
       </div>
       <div v-else-if="props.type === 'wire_transfer'">
         <p class="text-text-secondary mb-4">
-          <template
-            v-if="detail.local_currency && detail.local_amount_cents"
-            >{{ formatLocalCurrency(detail.local_amount_cents, detail.local_currency) }}
+          <template v-if="detail.local_currency && detail.local_amount_cents"
+            >{{
+              formatLocalCurrency(
+                detail.local_amount_cents,
+                detail.local_currency
+              )
+            }}
             ({{ fixMoney(detail.amount_cents, true) }} USD)</template
-          ><template v-else>{{
-            fixMoney(detail.amount_cents, true)
-          }}</template>
-          was sent via wire transfer<template
-            v-if="detail.beneficiary"
-          >
+          ><template v-else>{{ fixMoney(detail.amount_cents, true) }}</template>
+          was sent via wire transfer<template v-if="detail.beneficiary">
             to <b>{{ detail.beneficiary.name }}</b></template
           >
           on {{ date(detail.date) }}.
@@ -487,9 +492,11 @@
           >
             <span class="text-text-secondary w-1/3">Local Amount</span>
             <span class="text-text-primary w-2/3">{{
-              formatLocalCurrency(detail.local_amount_cents, detail.local_currency)
-            }}</span
-            >
+              formatLocalCurrency(
+                detail.local_amount_cents,
+                detail.local_currency
+              )
+            }}</span>
           </div>
           <div v-if="detail.beneficiary" class="flex items-center">
             <span class="text-text-secondary w-1/3">Beneficiary</span>

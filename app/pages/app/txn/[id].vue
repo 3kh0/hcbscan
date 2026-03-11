@@ -70,9 +70,7 @@
   const txnGridItems = computed(() => {
     if (!txnData.value) return [];
     const t = txnData.value;
-    const items: any[] = [
-      { label: "Memo", value: t.memo },
-    ];
+    const items: any[] = [{ label: "Memo", value: t.memo }];
     if (orgData.value) {
       items.push({
         label: "Organization",

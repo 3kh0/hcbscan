@@ -29,7 +29,11 @@ async function check(
   const count = await redis.incr(wk);
   if (count === 1) await redis.expire(wk, WINDOW + 1);
 
-  return { allowed: count <= limit, remaining: Math.max(0, limit - count), reset };
+  return {
+    allowed: count <= limit,
+    remaining: Math.max(0, limit - count),
+    reset,
+  };
 }
 
 function checkMem(
@@ -44,7 +48,11 @@ function checkMem(
   const e = store.get(key);
   if (!e || e.reset < now) {
     store.set(key, { count: 1, reset: resetAt });
-    return { allowed: true, remaining: limit - 1, reset: Math.floor(resetAt / 1000) };
+    return {
+      allowed: true,
+      remaining: limit - 1,
+      reset: Math.floor(resetAt / 1000),
+    };
   }
 
   e.count++;
