@@ -85,7 +85,7 @@
       <div class="max-w-7xl mx-auto px-4 pt-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="space-y-4">
-            <h3 class="text-xl font-bold">HCBScan</h3>
+            <h3 class="text-xl font-bold">About</h3>
             <p class="text-text-secondary">
               HCBScan is an open-source explorer for HCB that allows you to
               search for organizations, view transactions, and explore public
@@ -124,6 +124,17 @@
                     />
                   </svg>
                   Official HCB
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/api/docs"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-text-muted hover:text-accent flex items-center transition-colors duration-200"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 24 24"><path fill="currentColor" d="M3.53 21.53a.75.75 0 0 1-1.06-1.06l2.01-2.011c-.774-1.073-.908-2.265-.753-3.29c.178-1.172.743-2.2 1.243-2.7l1.5-1.5a.75.75 0 0 1 1.06 0l5.5 5.5a.75.75 0 0 1 0 1.061l-1.5 1.5c-.5.5-1.527 1.065-2.699 1.243c-1.025.155-2.217.02-3.29-.754zm7.5-11a.75.75 0 1 1-1.06-1.06L11.44 8l-.47-.47a.75.75 0 0 1 0-1.06l1.5-1.5c.5-.5 1.527-1.065 2.699-1.243c1.025-.155 2.217-.02 3.29.754l2.01-2.011a.75.75 0 1 1 1.061 1.06l-2.01 2.012c.774 1.072.91 2.264.754 3.29c-.178 1.171-.743 2.198-1.243 2.698l-1.5 1.5a.75.75 0 0 1-1.06 0l-.47-.47l-1.47 1.47a.75.75 0 1 1-1.06-1.06l1.47-1.47l-2.44-2.44z"/></svg>
+                  HCBScan API
                 </a>
               </li>
               <li>
