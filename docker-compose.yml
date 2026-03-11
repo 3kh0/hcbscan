@@ -5,10 +5,13 @@ services:
       - "3000:3000"
     environment:
       - DATABASE_URL=postgresql://app_rw:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
+      - REDIS_URL=redis://redis:6379
     volumes:
       - hcb-cache:/app/.data/hcb-image-cache
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   db:
@@ -29,6 +32,16 @@ services:
           "CMD-SHELL",
           "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}",
         ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
