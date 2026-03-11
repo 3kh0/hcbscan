@@ -3,13 +3,24 @@ export default defineEventHandler((event) => {
   return `<!doctype html>
 <html lang="en">
   <head>
+  <title>HCBScan API Docs</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>HCBScan API Docs</title>
   </head>
   <body>
-    <script id="api-reference" data-url="/api/v1/openapi.json"></script>
+    <div id="app"></div>
     <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+    <script>
+      Scalar.createApiReference('#app', {
+        url: "/api/v1/openapi.json",
+        hideClientButton: true,
+        theme: "deepSpace",
+        agent: {
+          disabled: true,
+        },
+        defaultOpenAllTags: true,
+      });
+    </script>
   </body>
 </html>`;
 });
