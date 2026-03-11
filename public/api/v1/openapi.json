@@ -2,14 +2,16 @@
   "openapi": "3.1.0",
   "info": {
     "title": "HCBScan API",
-    "description": "The public API for HCBScan — the first public explorer for HCB (Hack Club Bank) organizations, users, and transactions. HCBScan indexes and aggregates data from the HCB ecosystem, providing unique insights like user net worth, cross-org activity feeds, leaderboards, and full-text search.\n\n## Rate Limits\n\n- **Anonymous:** 60 requests per minute (by IP)\n- Rate limit headers are included on every response: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`\n\n## Response Format\n\nAll responses use a consistent envelope:\n\n```json\n{\n  \"ok\": true,\n  \"data\": { ... },\n  \"meta\": { \"page\": 1, \"per_page\": 50, \"total\": 1234, \"has_more\": true }\n}\n```\n\nErrors return:\n\n```json\n{\n  \"ok\": false,\n  \"error\": { \"code\": \"NOT_FOUND\", \"message\": \"Organization not found\" }\n}\n```",
+    "description": "HCBScan is the first public explorer for HCB organizations, users, and transactions and it indexes and aggregates data from HCB, providing unique insights like user net worth, cross-org activity feeds, leaderboards, searching, and more. This is the public API so you can integrate with it.\n\n## Rate Limits\n\n- 60 requests per minute (by IP)\n- Rate limit headers are included on every response: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`\n\n## Response Format\n\nAll responses use a consistent envelope:\n\n```json\n{\n  \"ok\": true,\n  \"data\": { ... },\n  \"meta\": { \"page\": 1, \"per_page\": 50, \"total\": 1234, \"has_more\": true }\n}\n```\n\nErrors return:\n\n```json\n{\n  \"ok\": false,\n  \"error\": { \"code\": \"NOT_FOUND\", \"message\": \"Organization not found\" }\n}\n```",
     "version": "1.0.0",
     "contact": {
       "name": "HCBScan",
-      "url": "https://hcbscan.3kh0.net"
+      "url": "https://hcbscan.3kh0.net",
+      "email": "hello@3kh0.net"
     },
     "license": {
-      "name": "MIT",
+      "name": "GPL-3.0",
+      "identifier": "GPL-3.0-only",
       "url": "https://github.com/3kh0/hcbscan/blob/main/LICENSE.txt"
     }
   },
