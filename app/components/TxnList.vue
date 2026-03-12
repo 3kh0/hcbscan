@@ -117,6 +117,26 @@
           </span>
         </div>
         <div class="flex items-center gap-2 mt-0.5">
+          <template v-if="txn.user">
+            <NuxtLink
+              :to="`/app/usr/${txn.user.id}`"
+              class="inline-flex items-center gap-1 shrink-0"
+              @click.stop
+            >
+              <SafeNuxtImg
+                :src="txn.user.photo"
+                :alt="txn.user.full_name"
+                width="16"
+                height="16"
+                class="h-4 w-4 rounded-full object-cover"
+                loading="lazy"
+              />
+              <span class="text-xs text-text-muted hover:text-blue-400 transition-colors duration-150">
+                {{ txn.user.full_name }}
+              </span>
+            </NuxtLink>
+            <span class="text-surface-3">·</span>
+          </template>
           <span class="text-xs text-text-muted font-mono">
             {{ truncId(txn.id) }}
           </span>
