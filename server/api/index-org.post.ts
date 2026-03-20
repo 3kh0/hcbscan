@@ -1,4 +1,5 @@
 import { upsertOrg } from "../repositories/orgs";
+import { upsertUsersForOrg } from "../repositories/users";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -62,6 +63,19 @@ export default defineEventHandler(async (event) => {
     balance: orgData.balances?.balance_cents || 0,
     financially_frozen: orgData.financially_frozen || false,
   });
+
+  if (orgData.users?.length) {
+    await upsertUsersForOrg(
+      orgData.id,
+      orgData.name,
+      orgData.logo || null,
+      orgData.users.map((u: any) => ({
+        id: u.id,
+        name: u.full_name,
+        avatar: u.photo || null,
+      }))
+    );
+  }
 
   return { success: true };
 });
