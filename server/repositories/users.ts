@@ -32,6 +32,44 @@ export async function getUserWithBalances(id: string) {
   return result.rows[0] ?? null;
 }
 
+export async function upsertUsersForOrg(
+  orgId: string,
+  orgName: string,
+  orgLogo: string | null,
+  users: Array<{ id: string; name: string; avatar: string | null }>
+) {
+  const orgEntry = JSON.stringify({ id: orgId, name: orgName, logo: orgLogo });
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    for (const user of users) {
+      await client.query(
+        `INSERT INTO "hcb.hackclub.com-users" ("id", "name", "avatar", "orgs")
+         VALUES ($1, $2, $3, jsonb_build_array($4::jsonb))
+         ON CONFLICT ("id") DO UPDATE SET
+           "name" = $2,
+           "avatar" = $3,
+           "orgs" = (
+             SELECT jsonb_agg(elem)
+             FROM (
+               SELECT elem FROM jsonb_array_elements("hcb.hackclub.com-users"."orgs") AS elem
+               WHERE elem->>'id' != $5
+               UNION ALL
+               SELECT $4::jsonb
+             ) sub
+           )`,
+        [user.id, user.name, user.avatar, orgEntry, orgId]
+      );
+    }
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 export async function bulkUpsertUsers(
   users: Array<{
     id: string;
