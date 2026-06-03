@@ -1,5 +1,23 @@
 import tailwindcss from "@tailwindcss/vite";
 
+function tailwindcssQuiet() {
+  const plugins = tailwindcss();
+  for (const plugin of plugins) {
+    const hook = plugin?.transform;
+    const handler = typeof hook === "function" ? hook : hook?.handler;
+    if (!handler) continue;
+    const wrapped = async function (this: unknown, ...args: unknown[]) {
+      const result = await handler.apply(this, args);
+      if (result == null) return result;
+      if (typeof result === "string") return { code: result, map: null };
+      return result.map == null ? { ...result, map: null } : result;
+    };
+    if (typeof hook === "function") plugin.transform = wrapped;
+    else hook.handler = wrapped;
+  }
+  return plugins;
+}
+
 const cmSha = process.env.SOURCE_COMMIT?.slice(0, 7) || "unknown";
 const cmDate = new Date().toISOString();
 const imageDomains = [
@@ -60,7 +78,9 @@ export default defineNuxtConfig({
   compatibilityDate: "2026-02-27",
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
-  vite: { plugins: [tailwindcss()] },
+  vite: {
+    plugins: [tailwindcssQuiet()],
+  },
   runtimeConfig: {
     slackBotToken: process.env.SLACK_BOT_TOKEN,
     slackSigningSecret: process.env.SLACK_SIGNING_SECRET,
