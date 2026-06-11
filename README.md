@@ -21,6 +21,21 @@ HCBScan is an open-source explorer for [HCB](https://hcb.hackclub.com/) that all
 
 Try out HCBScan at [hcbscan.3kh0.net](https://hcbscan.3kh0.net/)
 
+---
+
+## HCB Scan (Android App )
+
+Download APK file - [LINK](https://github.com/Sadrita404/hcbscan/releases/tag/V1)
+##  Demo Video
+
+| |
+| :---: |
+| <video src="https://github.com/user-attachments/assets/4aaf2efe-2820-4a41-8299-a419379c19a1" width="800" controls autoplay muted loop style="border-radius: 8px;"></video> |
+
+</div>
+
+---
+
 ## Features
 
 - Search for organizations by name, handle, or ID
