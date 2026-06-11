@@ -16,7 +16,7 @@ export default defineTask({
     const activities = await fetchActivities(1, 15);
 
     // dedupe??
-    const seen = new Map<string, any>();
+    const seen = new Map<string, (typeof activities)[number]>();
     for (const act of activities) {
       seen.set(act.id, act);
     }

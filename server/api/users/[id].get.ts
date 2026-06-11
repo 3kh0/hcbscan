@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
 
   const orgBalances: Record<string, number> = user.orgBalances || {};
 
-  const orgs = (user.orgs || []).map((org: any) => ({
+  const orgs = (user.orgs || []).map((org) => ({
     ...org,
     balance: orgBalances[org.id] ?? null,
   }));

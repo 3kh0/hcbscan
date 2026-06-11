@@ -56,7 +56,12 @@ for (const [p, methods] of specPaths)
       errs.push(`spec path has no route: ${m.toUpperCase()} ${p}`);
 
 for (const [p, methods] of Object.entries(spec.paths || {}))
-  for (const [m, op] of Object.entries(methods as Record<string, any>)) {
+  for (const [m, op] of Object.entries(
+    methods as Record<
+      string,
+      { operationId?: string; summary?: string; responses?: object }
+    >
+  )) {
     if (!METHODS.includes(m)) continue;
     const tag = `${m.toUpperCase()} ${p}`;
     if (!op.operationId) errs.push(`missing operationId: ${tag}`);

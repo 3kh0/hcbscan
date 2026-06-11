@@ -11,12 +11,12 @@ export default defineEventHandler(async (event) => {
       data: wrapError("BAD_REQUEST", "Organization ID is required"),
     });
 
-  const r = await query(
+  const r = await query<{ id: string; name: string; avatar: string | null }>(
     `SELECT "id", "name", "avatar" FROM "hcb.hackclub.com-users" WHERE "orgs" @> $1::jsonb`,
     [JSON.stringify([{ id }])]
   );
 
   return wrapOk(
-    r.rows.map((u: any) => ({ id: u.id, name: u.name, avatar: u.avatar }))
+    r.rows.map((u) => ({ id: u.id, name: u.name, avatar: u.avatar }))
   );
 });

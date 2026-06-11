@@ -127,7 +127,12 @@
 
   const dataGridItems = computed(() => {
     if (!orgData.value) return [];
-    const items: any[] = [];
+    const items: Array<{
+      label: string;
+      value: string;
+      link?: string;
+      external?: boolean;
+    }> = [];
     const o = orgData.value;
     if (o.id) items.push({ label: "Internal ID", value: o.id });
     if (o.object) items.push({ label: "Object", value: o.object });

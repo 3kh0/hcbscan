@@ -20,7 +20,7 @@ export default defineTask({
       `[index-orgs] fetched ${orgs.length} orgs, ${users.length} users`
     );
 
-    const formatted = orgs.map((org: any) => ({
+    const formatted = orgs.map((org) => ({
       id: org.id,
       name: org.name,
       slug: org.slug,

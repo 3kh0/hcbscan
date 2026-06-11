@@ -29,7 +29,7 @@ export function parsePagination(
   return { page, per_page, offset: (page - 1) * per_page };
 }
 
-export function mapOrg(r: any) {
+export function mapOrg(r: Record<string, unknown>) {
   return {
     id: r["Organization ID"],
     name: r["Name"],
@@ -41,7 +41,7 @@ export function mapOrg(r: any) {
   };
 }
 
-export function mapActivity(r: any) {
+export function mapActivity(r: Record<string, unknown>) {
   return {
     id: r["Activity ID"],
     key: r["Key"],

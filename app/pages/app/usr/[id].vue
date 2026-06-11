@@ -47,21 +47,13 @@
     const orgs = [...(udata.value?.orgs || [])];
     switch (orgSort.value) {
       case "balance-desc":
-        return orgs.sort(
-          (a: any, b: any) => (b.balance ?? 0) - (a.balance ?? 0)
-        );
+        return orgs.sort((a, b) => (b.balance ?? 0) - (a.balance ?? 0));
       case "balance-asc":
-        return orgs.sort(
-          (a: any, b: any) => (a.balance ?? 0) - (b.balance ?? 0)
-        );
+        return orgs.sort((a, b) => (a.balance ?? 0) - (b.balance ?? 0));
       case "name-asc":
-        return orgs.sort((a: any, b: any) =>
-          (a.name || "").localeCompare(b.name || "")
-        );
+        return orgs.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
       case "name-desc":
-        return orgs.sort((a: any, b: any) =>
-          (b.name || "").localeCompare(a.name || "")
-        );
+        return orgs.sort((a, b) => (b.name || "").localeCompare(a.name || ""));
       default:
         return orgs;
     }

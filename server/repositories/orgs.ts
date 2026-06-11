@@ -7,7 +7,7 @@ export async function getExistingOrgIds(ids: string[]): Promise<Set<string>> {
     `SELECT "Organization ID" FROM "hcb.hackclub.com" WHERE "Organization ID" IN (${placeholders})`,
     ids
   );
-  return new Set(result.rows.map((r: any) => r["Organization ID"]));
+  return new Set(result.rows.map((r) => r["Organization ID"]));
 }
 
 export async function isOrgIndexed(id: string) {
@@ -96,7 +96,7 @@ export async function getUnfrozenOrgIds(ids: string[]): Promise<Set<string>> {
     `SELECT "Organization ID" FROM "hcb.hackclub.com" WHERE "Organization ID" IN (${placeholders}) AND "Frozen At" IS NULL`,
     ids
   );
-  return new Set(result.rows.map((r: any) => r["Organization ID"]));
+  return new Set(result.rows.map((r) => r["Organization ID"]));
 }
 
 export async function touchOrgTimestamp(ids: string[]) {

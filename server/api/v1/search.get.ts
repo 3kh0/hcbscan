@@ -27,19 +27,19 @@ export default defineEventHandler(async (event) => {
   ]);
 
   return wrapOk({
-    orgs: orgs.map((r: any) => ({
+    orgs: orgs.map((r) => ({
       id: r["Organization ID"],
       name: r["Name"],
       slug: r["Slug"],
       category: r["Category"],
       balance_cents: Number(r["Balance"]),
     })),
-    users: users.map((r: any) => ({
+    users: users.map((r) => ({
       id: r.id,
       name: r.name,
       avatar: r.avatar,
     })),
-    activities: acts.map((r: any) => ({
+    activities: acts.map((r) => ({
       id: r["Activity ID"],
       key: r["Key"],
       created_at: r["Created At"],
