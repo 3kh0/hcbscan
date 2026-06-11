@@ -11,6 +11,45 @@ const BUFFER = 50;
 const stamps: number[] = [];
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+interface HcbApiUser {
+  id: string;
+  full_name: string;
+  photo: string;
+}
+
+interface HcbApiOrg {
+  id: string;
+  name: string;
+  slug: string;
+  category?: string | null;
+  logo: string | null;
+  financially_frozen?: boolean;
+  balances?: { balance_cents?: number };
+  users?: HcbApiUser[];
+}
+
+interface AggregatedUser {
+  id: string;
+  name: string;
+  avatar: string;
+  orgs: Record<string, { id: string; name: string; logo: string | null }>;
+}
+
+interface HcbActivity {
+  id: string;
+  key: string;
+  created_at: string;
+  user: { id: string; full_name: string; photo: string } | null;
+  organization: { id: string; name: string; logo: string | null } | null;
+  transaction?: {
+    id: string;
+    amount_cents: number;
+    memo: string;
+    type: string;
+    pending: boolean;
+  } | null;
+}
+
 function prune() {
   const cutoff = Date.now() - WINDOW;
   while (stamps.length && stamps[0] < cutoff) stamps.shift();
@@ -47,8 +86,8 @@ async function hfetch(url: string, opts?: RequestInit): Promise<Response> {
 
 export async function fetchAllOrgs() {
   let page = 1;
-  const orgs: any[] = [];
-  const umap: Record<string, any> = {};
+  const orgs: HcbApiOrg[] = [];
+  const umap: Record<string, AggregatedUser> = {};
 
   while (true) {
     const res = await hfetch(
@@ -56,7 +95,7 @@ export async function fetchAllOrgs() {
       { headers }
     );
     if (!res.ok) throw new Error(`HCB API error: ${res.status}`);
-    const data: any[] = await res.json();
+    const data: HcbApiOrg[] = await res.json();
     if (!data.length) break;
 
     for (const o of data) {
@@ -66,7 +105,7 @@ export async function fetchAllOrgs() {
             id: u.id,
             name: u.full_name,
             avatar: u.photo,
-            orgs: {} as Record<string, any>,
+            orgs: {},
           };
         umap[u.id].orgs[o.id] = {
           id: o.id,
@@ -84,7 +123,7 @@ export async function fetchAllOrgs() {
     await delay(500);
   }
 
-  const users = Object.values(umap).map((u: any) => ({
+  const users = Object.values(umap).map((u) => ({
     id: u.id,
     name: u.name,
     avatar: u.avatar,
@@ -95,7 +134,7 @@ export async function fetchAllOrgs() {
 }
 
 export async function fetchActivities(maxPages = 1, perPage = 15) {
-  const all: any[] = [];
+  const all: HcbActivity[] = [];
   let page = 1;
 
   while (page <= maxPages) {
@@ -104,7 +143,7 @@ export async function fetchActivities(maxPages = 1, perPage = 15) {
       { headers }
     );
     if (!res.ok) throw new Error(`HCB API error: ${res.status}`);
-    const data: any[] = await res.json();
+    const data: HcbActivity[] = await res.json();
     if (!data.length) break;
 
     all.push(...data);

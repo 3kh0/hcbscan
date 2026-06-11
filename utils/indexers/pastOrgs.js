@@ -67,7 +67,7 @@ async function syncupdated(updated) {
 
   for (let i = 0; i < updated.length; i += 100) {
     const batch = updated.slice(i, i + 100);
-    const { data, error } = await supabaseAdmin
+    const { error } = await supabaseAdmin
       .from("hcb.hackclub.com")
       .upsert(batch, {
         onConflict: "Organization ID",

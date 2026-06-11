@@ -94,7 +94,7 @@ async function yoink() {
 }
 
 async function sync(organizations) {
-  const { data: existing, error: error } = await supabaseAdmin
+  const { data: existing, error } = await supabaseAdmin
     .from(HCB_DOMAIN)
     .select('"Organization ID", Added')
     .is("Added", null);
@@ -141,7 +141,7 @@ async function sync(organizations) {
 
   for (let i = 0; i < formatted.length; i += 100) {
     const batch = formatted.slice(i, i + 100);
-    const { data, error } = await supabaseAdmin.from(HCB_DOMAIN).upsert(batch, {
+    const { error } = await supabaseAdmin.from(HCB_DOMAIN).upsert(batch, {
       onConflict: "Organization ID",
       ignoreDuplicates: false,
     });

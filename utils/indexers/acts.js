@@ -97,7 +97,7 @@ async function sync(activities) {
   console.log(`[${time()}] starting sync for ${formatted.length} rows`);
 
   try {
-    const { data, error } = await supabaseAdmin
+    const { error } = await supabaseAdmin
       .from("hcb.hackclub.com-acts")
       .upsert(formatted, {
         onConflict: "Activity ID",

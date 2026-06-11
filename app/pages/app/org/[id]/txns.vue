@@ -1,8 +1,10 @@
 <script setup lang="ts">
+  import type { HcbTransactionListItem, HcbOrgSummary } from "~/types/hcb";
+
   const route = useRoute();
   const orgId = computed(() => route.params.id as string);
-  const orgData = ref<any>(null);
-  const transactions = ref<any[]>([]);
+  const orgData = ref<HcbOrgSummary | null>(null);
+  const transactions = ref<HcbTransactionListItem[]>([]);
   const loading = ref(true);
   const loading2 = ref(false);
   const error = ref<string | null>(null);

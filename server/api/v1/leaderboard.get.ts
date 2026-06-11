@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
       [limit]
     );
     return wrapOk(
-      r.rows.map((o: any, i: number) => ({
+      r.rows.map((o, i: number) => ({
         rank: i + 1,
         id: o["Organization ID"],
         name: o["Name"],
@@ -51,12 +51,12 @@ export default defineEventHandler(async (event) => {
     );
 
     return wrapOk(
-      r.rows.map((row: any, i: number) => ({
+      r.rows.map((row, i: number) => ({
         rank: i + 1,
         id: row[isOrgs ? "Organization ID" : "User ID"],
         name: row[isOrgs ? "Organization Name" : "User Name"],
         ...(isOrgs ? {} : { avatar: row["User Photo"] }),
-        activity_count: parseInt(row.activity_count, 10),
+        activity_count: parseInt(String(row.activity_count), 10),
         period,
       }))
     );

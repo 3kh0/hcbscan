@@ -44,7 +44,7 @@ async function sync(users) {
   for (let i = 0; i < users.length; i += 100) {
     const batch = users.slice(i, i + 100);
 
-    const { data, error } = await supabaseAdmin.from(USER_TABLE).upsert(batch, {
+    const { error } = await supabaseAdmin.from(USER_TABLE).upsert(batch, {
       onConflict: "id",
       ignoreDuplicates: false,
     });

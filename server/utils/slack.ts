@@ -71,8 +71,11 @@ async function sendSlackMessage(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, blocks }),
     });
-  } catch (err: any) {
-    console.error("[slack] failed to send message:", err.message);
+  } catch (err) {
+    console.error(
+      "[slack] failed to send message:",
+      err instanceof Error ? err.message : err
+    );
   }
 }
 

@@ -75,7 +75,7 @@ export async function bulkUpsertUsers(
     id: string;
     name: string;
     avatar: string | null;
-    orgs: any[];
+    orgs: unknown[];
   }>
 ) {
   const client = await pool.connect();

@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     });
 
   const bals: Record<string, number> = u.orgBalances || {};
-  const orgs = (u.orgs || []).map((o: any) => ({
+  const orgs = (u.orgs || []).map((o) => ({
     id: o.id,
     name: o.name,
     logo: o.logo || null,

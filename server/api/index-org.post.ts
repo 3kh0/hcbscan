@@ -1,6 +1,17 @@
 import { upsertOrg } from "../repositories/orgs";
 import { upsertUsersForOrg } from "../repositories/users";
 
+interface HcbOrgResponse {
+  id: string;
+  name: string;
+  slug: string;
+  category?: string | null;
+  logo?: string | null;
+  financially_frozen?: boolean;
+  balances?: { balance_cents?: number };
+  users?: Array<{ id: string; full_name: string; photo?: string | null }>;
+}
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const id = String(body?.id || "").trim();
@@ -15,7 +26,7 @@ export default defineEventHandler(async (event) => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
 
-  let orgData;
+  let orgData: HcbOrgResponse;
   try {
     const response = await fetch(
       `https://hcb.hackclub.com/api/v3/organizations/${id}`,
@@ -39,9 +50,9 @@ export default defineEventHandler(async (event) => {
     }
 
     orgData = await response.json();
-  } catch (err: any) {
-    if (err.statusCode) throw err;
-    if (err.name === "AbortError") {
+  } catch (err) {
+    if (err && typeof err === "object" && "statusCode" in err) throw err;
+    if (err instanceof Error && err.name === "AbortError") {
       throw createError({
         statusCode: 504,
         statusMessage: "HCB API request timed out",
@@ -69,7 +80,7 @@ export default defineEventHandler(async (event) => {
       orgData.id,
       orgData.name,
       orgData.logo || null,
-      orgData.users.map((u: any) => ({
+      orgData.users.map((u) => ({
         id: u.id,
         name: u.full_name,
         avatar: u.photo || null,

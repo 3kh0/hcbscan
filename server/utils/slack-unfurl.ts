@@ -99,7 +99,7 @@ const routes: Array<{
 }> = [
   {
     re: /^\/app\/?$/,
-    resolve: async (_m, url) => {
+    resolve: async (_m, _url) => {
       const s = await $fetch<Record<string, number>>("/api/stats");
       return [
         {
@@ -119,7 +119,7 @@ const routes: Array<{
   },
   {
     re: /^\/app\/org\/([^/]+)\/txns\/?$/,
-    resolve: async (m, url) => {
+    resolve: async (m, _url) => {
       const o = await fetchOrgData(m[1]);
       if (!o) return null;
       const logo = proxyImageUrl(o.logo);
@@ -145,7 +145,7 @@ const routes: Array<{
   },
   {
     re: /^\/app\/org\/([^/]+)\/?$/,
-    resolve: async (m, url) => {
+    resolve: async (m, _url) => {
       const o = await fetchOrgData(m[1]);
       if (!o) return null;
       const logo = proxyImageUrl(o.logo);
@@ -171,7 +171,7 @@ const routes: Array<{
   },
   {
     re: /^\/app\/usr\/([^/]+)\/?$/,
-    resolve: async (m, url) => {
+    resolve: async (m, _url) => {
       const u = await $fetch<{
         name: string;
         avatar?: string;
@@ -202,7 +202,7 @@ const routes: Array<{
   },
   {
     re: /^\/app\/txn\/([^/]+)\/?$/,
-    resolve: async (m, url) => {
+    resolve: async (m, _url) => {
       const t = await hcbApiFetch(`api/v3/transactions/${m[1]}`);
       if (!t) return null;
 
@@ -248,7 +248,7 @@ const routes: Array<{
   },
   {
     re: /^\/app\/act\/([^/]+)\/?$/,
-    resolve: async (m, url) => {
+    resolve: async (m, _url) => {
       const a = await hcbApiFetch(`api/v3/activities/${m[1]}`);
       if (!a) return null;
 

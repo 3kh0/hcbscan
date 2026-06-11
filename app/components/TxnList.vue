@@ -1,6 +1,8 @@
 <script setup lang="ts">
+  import type { HcbTransactionListItem } from "~/types/hcb";
+
   defineProps<{
-    transactions: any[];
+    transactions: HcbTransactionListItem[];
     loading?: boolean;
   }>();
 

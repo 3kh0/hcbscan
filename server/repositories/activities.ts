@@ -34,7 +34,7 @@ export async function getExistingActivityIds(
     `SELECT "Activity ID" FROM "hcb.hackclub.com-acts" WHERE "Activity ID" IN (${placeholders})`,
     ids
   );
-  return new Set(result.rows.map((r: any) => r["Activity ID"]));
+  return new Set(result.rows.map((r) => r["Activity ID"]));
 }
 
 export async function bulkUpsertActivities(

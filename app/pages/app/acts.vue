@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import type { HcbActivityListItem } from "~/types/hcb";
+
   interface RawAct {
     "Activity ID": string;
     Key: string;
@@ -14,7 +16,7 @@
   const route = useRoute();
   const router = useRouter();
   const currentPage = ref(Number(route.query.page) || 1);
-  const acts = ref<any[]>([]);
+  const acts = ref<HcbActivityListItem[]>([]);
   const initialLoading = ref(true);
   const transitioning = ref(false);
   const error = ref<string | null>(null);

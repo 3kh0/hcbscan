@@ -1,13 +1,7 @@
 <script setup lang="ts">
-  interface Act {
-    id: string;
-    key: string;
-    created_at: string;
-    user: { id: string; full_name: string; photo: string } | null;
-    organization: { id: string; name: string; logo: string | null };
-  }
+  import type { HcbActivityListItem } from "~/types/hcb";
 
-  defineProps<{ acts: Act[]; loading?: boolean }>();
+  defineProps<{ acts: HcbActivityListItem[]; loading?: boolean }>();
 
   const truncId = (id: string) =>
     !id || id.length <= 12 ? id : `${id.slice(0, 6)}…${id.slice(-4)}`;

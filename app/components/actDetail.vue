@@ -43,7 +43,7 @@
     <div v-else-if="error" class="text-red-400 text-center">
       {{ error }}
     </div>
-    <div v-else>
+    <div v-else-if="detail">
       <div v-if="detail.transaction" class="space-y-6">
         <p class="text-text-secondary mb-4">
           <template v-if="detail.transaction.type === 'card_charge'">
@@ -185,6 +185,8 @@
 </template>
 
 <script setup lang="ts">
+  import type { HcbActivityDetail } from "~/types/hcb";
+
   const props = defineProps({
     id: {
       type: String,
@@ -192,7 +194,7 @@
     },
   });
 
-  const detail = ref<any | null>(null);
+  const detail = ref<HcbActivityDetail | null>(null);
   const loading = ref(true);
   const error = ref<string | null>(null);
 

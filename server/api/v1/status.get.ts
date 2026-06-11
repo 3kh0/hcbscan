@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const rows = await getStatus();
 
   const services: Record<string, boolean> = {};
-  for (const row of rows as any[]) {
+  for (const row of rows) {
     services[`service_${row.item}`] = row.online;
   }
 
