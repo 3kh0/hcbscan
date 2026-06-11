@@ -306,7 +306,7 @@ async function fetchOrgData(id: string) {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 async function hcbApiFetch(path: string): Promise<Record<string, any> | null> {
   try {
     const res = await fetch(`https://hcb.hackclub.com/${path}`, {

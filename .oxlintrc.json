@@ -1,0 +1,82 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["import", "typescript", "oxc", "vue"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true,
+    "node": true
+  },
+  "globals": {
+    "defineNuxtConfig": "readonly",
+    "defineNuxtPlugin": "readonly",
+    "defineNuxtRouteMiddleware": "readonly",
+    "defineEventHandler": "readonly",
+    "defineNitroPlugin": "readonly",
+    "defineTask": "readonly",
+    "useRuntimeConfig": "readonly",
+    "useState": "readonly",
+    "useFetch": "readonly",
+    "useAsyncData": "readonly",
+    "useRoute": "readonly",
+    "useRouter": "readonly",
+    "useHead": "readonly",
+    "useSeoMeta": "readonly",
+    "navigateTo": "readonly",
+    "computed": "readonly",
+    "defineEmits": "readonly",
+    "defineExpose": "readonly",
+    "defineProps": "readonly",
+    "onMounted": "readonly",
+    "onUnmounted": "readonly",
+    "reactive": "readonly",
+    "ref": "readonly",
+    "shallowReactive": "readonly",
+    "shallowRef": "readonly",
+    "toRef": "readonly",
+    "toRefs": "readonly",
+    "watch": "readonly",
+    "watchEffect": "readonly",
+    "nextTick": "readonly",
+    "$fetch": "readonly"
+  },
+  "ignorePatterns": [
+    "**/.output",
+    "**/.data",
+    "**/.nuxt",
+    "**/.nitro",
+    "**/.cache",
+    "**/dist",
+    "**/tmp",
+    "**/node_modules",
+    "**/logs",
+    "**/*.log",
+    "**/users.json",
+    "**/public"
+  ],
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "args": "after-used",
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "**/*.vue"],
+      "rules": {
+        "typescript/no-explicit-any": "error",
+        "typescript/consistent-type-imports": [
+          "error",
+          { "prefer": "type-imports", "disallowTypeAnnotations": false }
+        ]
+      }
+    }
+  ]
+}

@@ -71,7 +71,7 @@ export default defineNuxtConfig({
       pathPrefix: false,
     },
   ],
-  modules: ["@nuxt/image", "@nuxt/a11y", "@nuxt/eslint"],
+  modules: ["@nuxt/image", "@nuxt/a11y"],
   image: {
     domains: imageDomains,
   },
