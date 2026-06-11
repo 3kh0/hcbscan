@@ -131,7 +131,9 @@
                 class="h-4 w-4 rounded-full object-cover"
                 loading="lazy"
               />
-              <span class="text-xs text-text-muted hover:text-blue-400 transition-colors duration-150">
+              <span
+                class="text-xs text-text-muted hover:text-blue-400 transition-colors duration-150"
+              >
                 {{ txn.user.full_name }}
               </span>
             </NuxtLink>
