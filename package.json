@@ -16,10 +16,9 @@
   },
   "dependencies": {
     "@nuxt/image": "^2.0.0",
-    "@tailwindcss/vite": "^4.3.0",
+    "@tailwindcss/vite": "^4.3.1",
     "@vueuse/core": "^14.3.0",
     "dotenv": "^17.4.2",
-    "esbuild": "^0.28.0",
     "ioredis": "^5.11.1",
     "json2csv": "^6.0.0-alpha.2",
     "lodash": "^4.18.1",
@@ -27,7 +26,7 @@
     "nprogress": "^0.2.0",
     "nuxt": "^4.4.8",
     "pg": "^8.21.0",
-    "tailwindcss": "^4.3.0",
+    "tailwindcss": "^4.3.1",
     "vue": "^3.5.38",
     "vue-router": "^5.1.0"
   },
