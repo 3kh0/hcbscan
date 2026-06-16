@@ -34,8 +34,8 @@
     "@nuxt/a11y": "^1.0.0-alpha.1",
     "@types/nprogress": "^0.2.3",
     "@types/pg": "^8.20.0",
-    "oxfmt": "^0.54.0",
-    "oxlint": "^1.69.0"
+    "oxfmt": "^0.55.0",
+    "oxlint": "^1.70.0"
   },
   "trustedDependencies": [
     "@parcel/watcher",
