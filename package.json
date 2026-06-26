@@ -27,7 +27,7 @@
     "nuxt": "^4.4.8",
     "pg": "^8.22.0",
     "tailwindcss": "^4.3.1",
-    "vue": "^3.5.38",
+    "vue": "^3.5.39",
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
