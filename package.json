@@ -26,7 +26,7 @@
     "nprogress": "^0.2.0",
     "nuxt": "^4.4.8",
     "pg": "^8.22.0",
-    "tailwindcss": "^4.3.2",
+    "tailwindcss": "^4.3.3",
     "vue": "^3.5.39",
     "vue-router": "^5.2.0"
   },
