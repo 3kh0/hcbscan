@@ -24,7 +24,7 @@
     "lodash": "^4.18.1",
     "marked": "^18.0.7",
     "nprogress": "^0.2.0",
-    "nuxt": "^4.5.0",
+    "nuxt": "^4.5.1",
     "pg": "^8.22.0",
     "tailwindcss": "^4.3.3",
     "vue": "^3.5.40",
@@ -34,8 +34,8 @@
     "@nuxt/a11y": "^1.0.0-alpha.1",
     "@types/nprogress": "^0.2.3",
     "@types/pg": "^8.20.0",
-    "oxfmt": "^0.59.0",
-    "oxlint": "^1.74.0"
+    "oxfmt": "^0.61.0",
+    "oxlint": "^1.76.0"
   },
   "trustedDependencies": [
     "@parcel/watcher",
