@@ -15,7 +15,7 @@
     "validate:api": "bun run scripts/validate-api.ts"
   },
   "dependencies": {
-    "@nuxt/image": "^2.0.0",
+    "@nuxt/image": "^2.1.0",
     "@tailwindcss/vite": "^4.3.3",
     "@vueuse/core": "^14.4.0",
     "dotenv": "^17.4.2",
