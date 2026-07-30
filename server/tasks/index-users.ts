@@ -1,5 +1,5 @@
-import { fetchAllOrgs } from "../utils/hcb";
-import { bulkUpsertUsers } from "../repositories/users";
+import { fetchAllOrgs, toOrgRosters } from "../utils/hcb";
+import { reconcileOrgMemberships } from "../repositories/users";
 
 export default defineTask({
   meta: {
@@ -10,13 +10,22 @@ export default defineTask({
   async run() {
     console.log("[index-users] starting...");
 
-    const { users } = await fetchAllOrgs();
-    console.log(`[index-users] fetched ${users.length} users`);
+    const { orgs } = await fetchAllOrgs();
+    const rosters = toOrgRosters(orgs);
+    console.log(
+      `[index-users] fetched ${rosters.reduce((n, r) => n + r.users.length, 0)} memberships across ${orgs.length} orgs`
+    );
 
-    await bulkUpsertUsers(users);
-    console.log(`[index-users] upserted ${users.length} users`);
+    const membership = await reconcileOrgMemberships(rosters);
+    console.log(
+      `[index-users] reconciled ${membership.orgsReconciled} org rosters ` +
+        `(+${membership.linksAdded}/-${membership.linksRemoved} memberships, ` +
+        `${membership.orgsSkipped} orgs had no roster)`
+    );
 
     console.log("[index-users] done");
-    return { result: `Indexed ${users.length} users` };
+    return {
+      result: `Reconciled ${membership.orgsReconciled} rosters (+${membership.linksAdded}/-${membership.linksRemoved})`,
+    };
   },
 });

@@ -14,10 +14,10 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 interface HcbApiUser {
   id: string;
   full_name: string;
-  photo: string;
+  photo?: string | null;
 }
 
-interface HcbApiOrg {
+export interface HcbApiOrg {
   id: string;
   name: string;
   slug: string;
@@ -26,13 +26,6 @@ interface HcbApiOrg {
   financially_frozen?: boolean;
   balances?: { balance_cents?: number };
   users?: HcbApiUser[];
-}
-
-interface AggregatedUser {
-  id: string;
-  name: string;
-  avatar: string;
-  orgs: Record<string, { id: string; name: string; logo: string | null }>;
 }
 
 interface HcbActivity {
@@ -84,10 +77,22 @@ async function hfetch(url: string, opts?: RequestInit): Promise<Response> {
   return res;
 }
 
+export function toOrgRosters(orgs: HcbApiOrg[]) {
+  return orgs.map((o) => ({
+    id: o.id,
+    name: o.name,
+    logo: o.logo || null,
+    users: (o.users || []).map((u) => ({
+      id: u.id,
+      name: u.full_name,
+      avatar: u.photo || null,
+    })),
+  }));
+}
+
 export async function fetchAllOrgs() {
   let page = 1;
   const orgs: HcbApiOrg[] = [];
-  const umap: Record<string, AggregatedUser> = {};
 
   while (true) {
     const res = await hfetch(
@@ -98,23 +103,6 @@ export async function fetchAllOrgs() {
     const data: HcbApiOrg[] = await res.json();
     if (!data.length) break;
 
-    for (const o of data) {
-      for (const u of o.users || []) {
-        if (!umap[u.id])
-          umap[u.id] = {
-            id: u.id,
-            name: u.full_name,
-            avatar: u.photo,
-            orgs: {},
-          };
-        umap[u.id].orgs[o.id] = {
-          id: o.id,
-          name: o.name,
-          logo: o.logo || null,
-        };
-      }
-    }
-
     orgs.push(...data);
     console.log(
       `[hcb] fetched page ${page} (${data.length} orgs, ${orgs.length} total)`
@@ -123,14 +111,7 @@ export async function fetchAllOrgs() {
     await delay(500);
   }
 
-  const users = Object.values(umap).map((u) => ({
-    id: u.id,
-    name: u.name,
-    avatar: u.avatar,
-    orgs: Object.values(u.orgs),
-  }));
-
-  return { orgs, users };
+  return { orgs };
 }
 
 export async function fetchActivities(maxPages = 1, perPage = 15) {

@@ -1,10 +1,10 @@
-import { fetchAllOrgs } from "../utils/hcb";
+import { fetchAllOrgs, toOrgRosters } from "../utils/hcb";
 import {
   bulkUpsertOrgs,
   getExistingOrgIds,
   getUnfrozenOrgIds,
 } from "../repositories/orgs";
-import { bulkUpsertUsers } from "../repositories/users";
+import { reconcileOrgMemberships } from "../repositories/users";
 import { notifyNewOrg, notifyOrgFrozen } from "../utils/slack";
 
 export default defineTask({
@@ -15,9 +15,10 @@ export default defineTask({
   async run() {
     console.log("[index-orgs] starting...");
 
-    const { orgs, users } = await fetchAllOrgs();
+    const { orgs } = await fetchAllOrgs();
+    const rosters = toOrgRosters(orgs);
     console.log(
-      `[index-orgs] fetched ${orgs.length} orgs, ${users.length} users`
+      `[index-orgs] fetched ${orgs.length} orgs, ${rosters.reduce((n, r) => n + r.users.length, 0)} memberships`
     );
 
     const formatted = orgs.map((org) => ({
@@ -44,8 +45,12 @@ export default defineTask({
     await bulkUpsertOrgs(formatted);
     console.log(`[index-orgs] upserted ${formatted.length} orgs`);
 
-    await bulkUpsertUsers(users);
-    console.log(`[index-orgs] upserted ${users.length} users`);
+    const membership = await reconcileOrgMemberships(rosters);
+    console.log(
+      `[index-orgs] reconciled ${membership.orgsReconciled} org rosters ` +
+        `(+${membership.linksAdded}/-${membership.linksRemoved} memberships, ` +
+        `${membership.orgsSkipped} orgs had no roster)`
+    );
 
     if (newOrgs.length > 0) {
       console.log(`[index-orgs] ${newOrgs.length} new orgs, notifying slack`);
@@ -64,6 +69,8 @@ export default defineTask({
     }
 
     console.log("[index-orgs] done");
-    return { result: `Indexed ${orgs.length} orgs, ${users.length} users` };
+    return {
+      result: `Indexed ${orgs.length} orgs, reconciled ${membership.orgsReconciled} rosters`,
+    };
   },
 });

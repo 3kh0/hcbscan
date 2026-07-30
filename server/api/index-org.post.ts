@@ -1,16 +1,6 @@
 import { upsertOrg } from "../repositories/orgs";
-import { upsertUsersForOrg } from "../repositories/users";
-
-interface HcbOrgResponse {
-  id: string;
-  name: string;
-  slug: string;
-  category?: string | null;
-  logo?: string | null;
-  financially_frozen?: boolean;
-  balances?: { balance_cents?: number };
-  users?: Array<{ id: string; full_name: string; photo?: string | null }>;
-}
+import { reconcileOrgMemberships } from "../repositories/users";
+import { toOrgRosters, type HcbApiOrg } from "../utils/hcb";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -26,7 +16,7 @@ export default defineEventHandler(async (event) => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
 
-  let orgData: HcbOrgResponse;
+  let orgData: HcbApiOrg;
   try {
     const response = await fetch(
       `https://hcb.hackclub.com/api/v3/organizations/${id}`,
@@ -75,18 +65,7 @@ export default defineEventHandler(async (event) => {
     financially_frozen: orgData.financially_frozen || false,
   });
 
-  if (orgData.users?.length) {
-    await upsertUsersForOrg(
-      orgData.id,
-      orgData.name,
-      orgData.logo || null,
-      orgData.users.map((u) => ({
-        id: u.id,
-        name: u.full_name,
-        avatar: u.photo || null,
-      }))
-    );
-  }
+  await reconcileOrgMemberships(toOrgRosters([orgData]));
 
   return { success: true };
 });

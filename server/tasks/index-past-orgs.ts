@@ -1,9 +1,10 @@
-import { fetchOrg } from "../utils/hcb";
+import { fetchOrg, toOrgRosters, type HcbApiOrg } from "../utils/hcb";
 import {
   getOrgsNeedingRefresh,
   bulkUpsertOrgs,
   touchOrgTimestamp,
 } from "../repositories/orgs";
+import { reconcileOrgMemberships } from "../repositories/users";
 
 const MAX_ORGS_PER_RUN = 50;
 const BATCH_SIZE = 5;
@@ -27,6 +28,8 @@ export default defineTask({
     console.log(`[index-past-orgs] refreshing ${stale.length} most stale orgs`);
 
     let totalUpdated = 0;
+    let linksAdded = 0;
+    let linksRemoved = 0;
     const missedIds: string[] = [];
 
     for (let i = 0; i < stale.length; i += BATCH_SIZE) {
@@ -39,20 +42,23 @@ export default defineTask({
         })
       );
 
-      const orgs = results
-        .filter((org) => org !== null)
-        .map((org) => ({
-          id: org.id,
-          name: org.name,
-          slug: org.slug,
-          category: org.category || null,
-          balance: org.balances?.balance_cents || 0,
-          financially_frozen: org.financially_frozen || false,
-        }));
+      const fetched: HcbApiOrg[] = results.filter((org) => org !== null);
+      const orgs = fetched.map((org) => ({
+        id: org.id,
+        name: org.name,
+        slug: org.slug,
+        category: org.category || null,
+        balance: org.balances?.balance_cents || 0,
+        financially_frozen: org.financially_frozen || false,
+      }));
 
       if (orgs.length > 0) {
         await bulkUpsertOrgs(orgs);
         totalUpdated += orgs.length;
+
+        const membership = await reconcileOrgMemberships(toOrgRosters(fetched));
+        linksAdded += membership.linksAdded;
+        linksRemoved += membership.linksRemoved;
       }
 
       if (i + BATCH_SIZE < stale.length) {
@@ -67,7 +73,11 @@ export default defineTask({
       );
     }
 
-    console.log(`[index-past-orgs] refreshed ${totalUpdated} orgs`);
-    return { result: `Refreshed ${totalUpdated} orgs` };
+    console.log(
+      `[index-past-orgs] refreshed ${totalUpdated} orgs (+${linksAdded}/-${linksRemoved} memberships)`
+    );
+    return {
+      result: `Refreshed ${totalUpdated} orgs (+${linksAdded}/-${linksRemoved} memberships)`,
+    };
   },
 });
