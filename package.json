@@ -33,7 +33,7 @@
   "devDependencies": {
     "@nuxt/a11y": "^1.0.0-alpha.1",
     "@types/nprogress": "^0.2.3",
-    "@types/pg": "^8.20.0",
+    "@types/pg": "^8.20.3",
     "oxfmt": "^0.61.0",
     "oxlint": "^1.76.0"
   },
