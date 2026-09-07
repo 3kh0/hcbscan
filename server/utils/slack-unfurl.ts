@@ -9,9 +9,14 @@ export function verifySlackSignature(
   body: string,
   sig: string
 ): boolean {
-  if (Math.abs(Date.now() / 1000 - Number(ts)) > 300) return false;
+  const tsNum = Number(ts);
+  if (!Number.isFinite(tsNum)) return false;
+  if (Math.abs(Date.now() / 1000 - tsNum) > 300) return false;
   const computed = `v0=${crypto.createHmac("sha256", secret).update(`v0:${ts}:${body}`).digest("hex")}`;
-  return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(sig));
+  const expected = Buffer.from(computed);
+  const actual = Buffer.from(sig);
+  if (expected.length !== actual.length) return false;
+  return crypto.timingSafeEqual(expected, actual);
 }
 
 function money(cents: number): string {
@@ -341,13 +346,26 @@ export async function postUnfurl(
   ts: string,
   unfurls: Record<string, { blocks: unknown[] }>
 ): Promise<void> {
+  const urls = Object.keys(unfurls).join(", ");
   try {
-    await $fetch("https://slack.com/api/chat.unfurl", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: { channel, ts, unfurls },
-    });
+    const res = await $fetch<{ ok: boolean; error?: string; warning?: string }>(
+      "https://slack.com/api/chat.unfurl",
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: { channel, ts, unfurls },
+      }
+    );
+    if (!res?.ok) {
+      console.error(
+        `[slack-unfurl] chat.unfurl rejected: ${res?.error || "unknown error"} (channel=${channel} ts=${ts} urls=${urls})`
+      );
+    } else if (res.warning) {
+      console.warn(
+        `[slack-unfurl] chat.unfurl warning: ${res.warning} (urls=${urls})`
+      );
+    }
   } catch (e: unknown) {
-    console.error("[slack-unfurl] chat.unfurl failed:", e);
+    console.error(`[slack-unfurl] chat.unfurl failed (urls=${urls}):`, e);
   }
 }
