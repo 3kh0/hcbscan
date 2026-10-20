@@ -52,6 +52,7 @@ const activityLabels = {
 };
 
 export function activityLabel(key) {
+  if (!key) return "Transaction";
   return activityLabels[key] || key.replace(/[_.]/g, " ");
 }
 
