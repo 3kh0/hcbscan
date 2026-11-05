@@ -35,7 +35,7 @@
     "@types/nprogress": "^0.2.3",
     "@types/pg": "^8.23.1",
     "oxfmt": "^0.67.0",
-    "oxlint": "^1.82.0"
+    "oxlint": "^1.83.0"
   },
   "trustedDependencies": [
     "@parcel/watcher",
